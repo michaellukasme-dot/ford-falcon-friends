@@ -188,7 +188,8 @@ footer .heart{color:var(--maroon)}
     <section class="panel" id="panel-clubs">
       <div class="section-eyebrow">Gather — a forest of clubs</div>
       <h2 class="section-title">Clubs</h2>
-      <div class="cs"><div class="cs-ico">🏁</div><h3>The clubs that already exist</h3>
+      <div id="clubsLive"></div>
+      <div class="cs" id="clubsTeaser"><div class="cs-ico">🏁</div><h3>The clubs that already exist</h3>
         <p>A directory that connects the real community — not a replacement for it.</p>
         <ul class="preview-list">
           <li><b>Falcon Club of America</b> — 33 chapters across 5 regions</li>
@@ -414,6 +415,15 @@ setTimeout(maybeShowInstall, 1200);
 .ff-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--subtle)}
 .ff-note{font-size:.72rem;color:var(--subtle);text-align:center;margin-top:4px}
 .ff-x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:var(--subtle);cursor:pointer}
+.club-org{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.club-org-name{font-family:'Fraunces',serif;font-weight:800;color:var(--maroon);font-size:1.15rem;margin-bottom:6px}
+.club-region{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gold-deep);margin:10px 0 4px}
+.club-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-top:1px solid var(--line);font-size:.86rem;flex-wrap:wrap}
+.club-row.first{border-top:none}
+.club-ch{font-weight:700;color:var(--ink)}
+.club-geo{color:var(--subtle);font-size:.76rem;flex:1;min-width:120px}
+.club-link{color:var(--gold-deep);font-weight:700;font-size:.74rem;text-decoration:none;white-space:nowrap}
+.club-stub{color:var(--subtle);font-size:.82rem;font-style:italic}
 </style>
 <div class="ff-sheet-ov" id="authOv" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="ff-sheet">
@@ -500,8 +510,36 @@ setTimeout(maybeShowInstall, 1200);
   var addEl=document.getElementById('addCarBtn'); var prevAdd=addEl.onclick;
   addEl.onclick=function(){ var rr=(typeof currentLookup==='function')?currentLookup():null; if(prevAdd) prevAdd.call(addEl); if(session && rr){ cloudInsert({nick:(document.getElementById('reNick').value||rr.trim), gen:rr.gen, year:rr.year, body:rr.body, trim:rr.trim, paint:rr.paint, code:rr.code, qty:rr.qty}); } };
 
+  function esc(x){ return (x==null?'':String(x)).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]; }); }
+  async function renderClubs(){
+    try{
+      var cr=await sb.from('clubs').select('*'); var clubs=cr.data||[]; if(!clubs.length) return;
+      var lr=await sb.from('club_links').select('*'); var links=lr.data||[];
+      var orgs=clubs.filter(function(c){return !c.parent_id;});
+      var html='';
+      orgs.forEach(function(o){
+        var chapters=clubs.filter(function(c){return c.parent_id===o.id;});
+        html+='<div class="club-org"><div class="club-org-name">'+esc(o.name)+'</div>';
+        if(chapters.length){
+          var byReg={}; chapters.forEach(function(c){ var r=c.region||'Other'; (byReg[r]=byReg[r]||[]).push(c); });
+          Object.keys(byReg).sort().forEach(function(r){
+            html+='<div class="club-region">'+esc(r)+'</div>';
+            byReg[r].sort(function(a,b){return (a.name||'').localeCompare(b.name||'');}).forEach(function(c,i){
+              var link=links.filter(function(l){return l.club_id===c.id && l.type==='website';})[0];
+              html+='<div class="club-row'+(i===0?' first':'')+'"><span class="club-ch">'+esc(c.name)+'</span>'+
+                (c.geographic_location?'<span class="club-geo">'+esc(c.geographic_location)+'</span>':'<span class="club-geo"></span>')+
+                (link&&link.url?'<a class="club-link" href="'+esc(link.url)+'" target="_blank" rel="noopener">site \u2197</a>':'')+'</div>';
+            });
+          });
+        } else { html+='<div class="club-stub">Chapters &amp; links coming soon.</div>'; }
+        html+='</div>';
+      });
+      var host=document.getElementById('clubsLive'); if(host) host.innerHTML=html;
+      var t=document.getElementById('clubsTeaser'); if(t) t.style.display='none';
+    }catch(e){ /* keep teaser */ }
+  }
   sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); });
-  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); })();
+  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); })();
 })();
 </script>
 </body>
