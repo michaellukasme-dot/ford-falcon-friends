@@ -570,6 +570,10 @@ textarea.evt-in{min-height:54px;resize:vertical}
 .evt-title{font-family:'Fraunces',serif;font-weight:800;font-size:1.25rem;color:var(--ink);margin-bottom:4px}
 .evt-meta{font-size:.86rem;color:var(--ink);margin-bottom:4px}
 .evt-host{font-size:.78rem;color:var(--subtle);margin-bottom:6px}
+.evt-clubs{font-size:.78rem;color:var(--gold-deep);font-weight:700;margin-bottom:6px}
+.evt-clubs-wrap{margin-top:4px}
+.evt-clubs-lbl{display:block;font-size:.72rem;color:var(--subtle);margin-bottom:4px}
+#evtClubs{height:auto;padding:6px;line-height:1.5}
 .evt-desc{color:var(--ink);white-space:pre-wrap;line-height:1.45;margin-bottom:8px}
 .evt-join{display:inline-block;color:var(--gold-deep);font-weight:700;text-decoration:none;margin-bottom:8px}
 .evt-lineup{font-size:.86rem;color:var(--maroon);font-weight:700;border-top:1px solid var(--line);padding-top:9px;margin-bottom:9px}
@@ -852,7 +856,8 @@ textarea.evt-in{min-height:54px;resize:vertical}
   /* ---- Cruises & Meetups ---- */
   function evtFmtDate(ts){ try{ var d=new Date(ts); return d.toLocaleDateString([], {weekday:'short',month:'short',day:'numeric'})+', '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }catch(e){ return ''+ts; } }
   async function cruCarOpts(){ var opts='<option value="">Just me</option>'; if(!session) return opts; try{ var r=await sb.from('garage_cars').select('id,nickname,year,trim_option,body_style').eq('owner_id',session.user.id).order('created_at',{ascending:true}); var cars=r.data||[]; var seen={}; cars=cars.filter(function(c){ var k=(c.nickname||'')+'|'+c.year+'|'+(c.trim_option||'')+'|'+(c.body_style||''); if(seen[k])return false; seen[k]=1; return true; }); opts+=cars.map(function(c){ var label=[c.year,c.trim_option,c.body_style].filter(Boolean).join(' '); return '<option value="'+c.id+'" data-label="'+esc(label)+'">'+esc(c.nickname||label)+'</option>'; }).join(''); }catch(e){} return opts; }
-  function evtCard(e, hostName, goingCars, myStatus, carOpts){
+  function evtCard(e, hostName, goingCars, myStatus, carOpts, clubs){
+    var clubsChips=(clubs&&clubs.length)?'<div class="evt-clubs">\ud83c\udfc1 '+clubs.map(esc).join(' \u00b7 ')+'</div>':'';
     var TL={cruise:'Cruise',meetup:'Meetup',cars_and_coffee:'Cars & Coffee',show:'Show',tech_day:'Tech Day'};
     var tl=TL[e.event_type]||'Meetup';
     var fmtBadge=(e.format&&e.format!=='in_person')?'<span class="evt-fmt">'+(e.format==='virtual'?'Virtual':'Hybrid')+'</span>':'';
@@ -866,7 +871,7 @@ textarea.evt-in{min-height:54px;resize:vertical}
       '<div class="evt-badges"><span class="evt-type">'+tl+'</span>'+fmtBadge+'</div>'+
       '<div class="evt-title">'+esc(e.title)+'</div>'+
       '<div class="evt-meta">'+meta+'</div>'+
-      (hostName?'<div class="evt-host">Hosted by '+esc(hostName)+'</div>':'')+
+      (hostName?'<div class="evt-host">Hosted by '+esc(hostName)+'</div>':'')+clubsChips+
       (e.description?'<div class="evt-desc">'+esc(e.description)+'</div>':'')+join+
       '<div class="evt-lineup">'+lineup+'</div>'+
       '<div class="rsvp-row"><select class="rsvp-car" id="rc-'+e.id+'">'+carOpts+'</select>'+
@@ -888,10 +893,14 @@ textarea.evt-in{min-height:54px;resize:vertical}
       var nameById={}; try{ var ar=await sb.from('profiles').select('id,display_name').in('id',hids); (ar.data||[]).forEach(function(u){ nameById[u.id]=u.display_name; }); }catch(e){}
       var goingBy={}, myBy={};
       try{ var rr=await sb.from('event_rsvps').select('event_id,user_id,status,car_label').in('event_id',ids); (rr.data||[]).forEach(function(x){ if(x.status==='going'){ (goingBy[x.event_id]=goingBy[x.event_id]||[]).push(x.car_label||''); } if(session&&x.user_id===session.user.id) myBy[x.event_id]=x.status; }); }catch(e){}
+      var clubBy={};
+      try{ var ecr=await sb.from('event_clubs').select('event_id,club_id').in('event_id',ids); var ec=ecr.data||[]; var cids=[]; ec.forEach(function(x){ if(cids.indexOf(x.club_id)<0)cids.push(x.club_id); }); var cn={}; if(cids.length){ var cnr=await sb.from('clubs').select('id,name').in('id',cids); (cnr.data||[]).forEach(function(c){ cn[c.id]=c.name; }); } ec.forEach(function(x){ (clubBy[x.event_id]=clubBy[x.event_id]||[]).push(cn[x.club_id]||'Chapter'); }); }catch(e){}
       var carOpts=await cruCarOpts();
-      host.innerHTML=events.map(function(e){ return evtCard(e, nameById[e.host_id], goingBy[e.id]||[], myBy[e.id], carOpts); }).join('');
+      host.innerHTML=events.map(function(e){ return evtCard(e, nameById[e.host_id], goingBy[e.id]||[], myBy[e.id], carOpts, clubBy[e.id]); }).join('');
     }catch(e){ host.innerHTML='<div class="feed-empty">Cruises couldn\'t load: '+esc(e.message||e)+'</div>'; }
   }
+  var _chapters=null;
+  async function fillEvtClubs(){ var sel=document.getElementById('evtClubs'); if(!sel) return; try{ if(!_chapters){ var cr=await sb.from('clubs').select('id,name,region,parent_id').not('parent_id','is',null).order('name'); _chapters=cr.data||[]; } sel.innerHTML=_chapters.map(function(c){ return '<option value="'+c.id+'">'+esc(c.name)+(c.region?(' \u2014 '+esc(c.region)):'')+'</option>'; }).join(''); }catch(e){} }
   function cruFmtChange(){ var w=document.getElementById('evtUrlWrap'); var f=document.getElementById('evtFormat').value; if(w) w.style.display=(f==='virtual'||f==='hybrid')?'':'none'; }
   function renderEvtComposer(){
     var host=document.getElementById('cruComposer'); if(!host) return;
@@ -904,9 +913,11 @@ textarea.evt-in{min-height:54px;resize:vertical}
       '<input class="evt-in" id="evtWhen" type="datetime-local">'+
       '<input class="evt-in" id="evtLoc" placeholder="Where (city / venue)">'+
       '<input class="evt-in" id="evtMeet" placeholder="Meet point (optional) \u2014 e.g. Starbucks on Main">'+
+      '<div class="evt-clubs-wrap"><label class="evt-clubs-lbl">Co-hosting chapters (optional) \u2014 hold \u2318/Ctrl to pick several</label><select class="evt-in" id="evtClubs" multiple size="4"></select></div>'+
       '<div id="evtUrlWrap" style="display:none"><input class="evt-in" id="evtUrl" placeholder="Online link (Zoom / Meet)"></div>'+
       '<textarea class="evt-in" id="evtDesc" placeholder="Details (optional)"></textarea>'+
       '<div style="text-align:right;margin-top:8px"><button class="btn-post" id="evtPost" onclick="CRU.post()">Post meet</button></div></div>';
+    fillEvtClubs();
   }
   async function cruPost(){
     if(!session){ document.getElementById('avBtn').click(); return; }
@@ -919,7 +930,7 @@ textarea.evt-in{min-height:54px;resize:vertical}
     var ue=document.getElementById('evtUrl'); var vurl=ue?(ue.value||'').trim():'';
     var desc=(document.getElementById('evtDesc').value||'').trim();
     var btn=document.getElementById('evtPost'); btn.disabled=true; btn.textContent='Posting\u2026';
-    try{ var r=await sb.from('events').insert({host_id:session.user.id, event_type:type, title:title, description:desc||null, meet_point:meet||null, location_text:loc||null, start_at:new Date(when).toISOString(), format:fmt, virtual_url:vurl||null}); if(r.error) throw r.error; toast('\u2713 Posted'); await renderCruises(); }
+    try{ var r=await sb.from('events').insert({host_id:session.user.id, event_type:type, title:title, description:desc||null, meet_point:meet||null, location_text:loc||null, start_at:new Date(when).toISOString(), format:fmt, virtual_url:vurl||null}).select('id').single(); if(r.error) throw r.error; var _eid=r.data&&r.data.id; var _csel=document.getElementById('evtClubs'); var _cids=_csel?Array.prototype.slice.call(_csel.selectedOptions).map(function(o){return o.value;}):[]; if(_eid&&_cids.length){ try{ await sb.from('event_clubs').insert(_cids.map(function(cid){return {event_id:_eid, club_id:cid};})); }catch(_e){} } toast('\u2713 Posted'); await renderCruises(); }
     catch(e){ toast('Post failed: '+(e.message||e)); }
     btn.disabled=false; btn.textContent='Post meet';
   }
