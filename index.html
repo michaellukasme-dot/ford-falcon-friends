@@ -262,8 +262,8 @@ footer .heart{color:var(--maroon)}
 <script>
 /* ===================== CONFIG (Step 2 fills these) ===================== */
 const FFF = {
-  SUPABASE_URL: '',          // paste at Step 2 (Supabase project URL)
-  SUPABASE_ANON_KEY: '',     // paste at Step 2 (anon/public key)
+  SUPABASE_URL: 'https://qisdpzvlaudwuzsbgrqz.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_51X1NLeiABkT2FgX71crjA_PN4w0Opi',
   AUTH: 'magic-link'         // D7: magic-link first
 };
 
@@ -402,6 +402,107 @@ if('serviceWorker' in navigator){ window.addEventListener('load', function(){ na
 /* ===================== INIT ===================== */
 renderGarage(); renderStat();
 setTimeout(maybeShowInstall, 1200);
+</script>
+<style>
+.ff-sheet-ov{position:fixed;inset:0;background:rgba(40,20,12,.5);display:none;align-items:center;justify-content:center;z-index:90;padding:18px}
+.ff-sheet-ov.show{display:flex}
+.ff-sheet{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px 20px;width:min(94vw,400px)}
+.ff-sheet h3{font-family:'Fraunces',serif;color:var(--maroon);margin:0 0 4px;font-size:1.3rem}
+.ff-sheet p{color:var(--subtle);font-size:.86rem;margin:0 0 14px}
+.ff-sheet input{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:.95rem;font-family:inherit;margin-bottom:10px;box-sizing:border-box}
+.ff-btn{display:block;width:100%;padding:12px;border:none;border-radius:11px;background:var(--maroon);color:var(--cream);font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;margin-bottom:8px}
+.ff-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--subtle)}
+.ff-note{font-size:.72rem;color:var(--subtle);text-align:center;margin-top:4px}
+.ff-x{position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:var(--subtle);cursor:pointer}
+</style>
+<div class="ff-sheet-ov" id="authOv" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="ff-sheet">
+    <button class="ff-x" onclick="document.getElementById('authOv').classList.remove('show')">&#10005;</button>
+    <div id="authSignedOut">
+      <h3>Sign in to Falcon Friends</h3>
+      <p>We&rsquo;ll email you a magic link &mdash; no password to remember.</p>
+      <input id="authEmail" type="email" placeholder="you@email.com" autocomplete="email">
+      <button class="ff-btn" id="authSend">Send magic link</button>
+      <div class="ff-note">Free &middot; signing in moves your garage to your account and syncs it across devices.</div>
+    </div>
+    <div id="authProfile" style="display:none">
+      <h3 id="authHi">Your profile</h3>
+      <p>This is how you show up on the board.</p>
+      <input id="authName" placeholder="Trail / display name">
+      <input id="authHandle" placeholder="handle (e.g. red-precious)">
+      <button class="ff-btn" id="authSave">Save profile</button>
+      <button class="ff-btn ghost" id="authSignout">Sign out</button>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ===================== Step 2: magic-link auth + cloud garage (defensive) ===================== */
+(function(){
+  if(!window.supabase || !FFF.SUPABASE_URL){ return; }   // offline / lib missing -> Step-1 localStorage mode stays intact
+  var sb = window.supabase.createClient(FFF.SUPABASE_URL, FFF.SUPABASE_ANON_KEY);
+  window._sb = sb;
+  var session=null, profile=null;
+  var ov=document.getElementById('authOv');
+  function hide(){ ov.classList.remove('show'); }
+  function slug(x){ return (x||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40); }
+  function lget(){ try{ return JSON.parse(localStorage.getItem('fff_garage')||'[]'); }catch(e){ return []; } }
+  function lset(g){ try{ localStorage.setItem('fff_garage', JSON.stringify(g)); }catch(e){} }
+
+  document.getElementById('avBtn').onclick=function(){
+    if(session){ document.getElementById('authSignedOut').style.display='none'; document.getElementById('authProfile').style.display='block';
+      document.getElementById('authHi').textContent = (profile&&profile.display_name)?('Hi, '+profile.display_name):'Finish your profile';
+      document.getElementById('authName').value=(profile&&profile.display_name)||'';
+      document.getElementById('authHandle').value=(profile&&profile.handle)||''; }
+    else { document.getElementById('authSignedOut').style.display='block'; document.getElementById('authProfile').style.display='none'; }
+    ov.classList.add('show');
+  };
+  function renderAvatar(){
+    var el=document.getElementById('avBtn');
+    if(session){ var n=(profile&&profile.display_name)||(session.user.email||'?'); el.textContent=(n.trim().charAt(0)||'\u2605').toUpperCase(); el.title=(profile&&profile.display_name)||'Your profile'; }
+    else { el.innerHTML='&#128100;'; el.title='Sign in'; }
+  }
+  document.getElementById('authSend').onclick=async function(){
+    var email=(document.getElementById('authEmail').value||'').trim(); if(!email){ toast('Enter your email'); return; }
+    this.disabled=true; this.textContent='Sending\u2026';
+    try{ var r=await sb.auth.signInWithOtp({email:email, options:{emailRedirectTo:window.location.origin}}); if(r.error) throw r.error; toast('\u2709\ufe0f Check your email for the magic link.'); hide(); }
+    catch(e){ toast('Could not send: '+(e.message||e)); }
+    this.disabled=false; this.textContent='Send magic link';
+  };
+  document.getElementById('authSave').onclick=async function(){
+    if(!session) return; var name=(document.getElementById('authName').value||'').trim(); var h=slug(document.getElementById('authHandle').value||name);
+    this.disabled=true;
+    try{ var r=await sb.from('profiles').upsert({id:session.user.id, display_name:name, handle:h||null}); if(r.error) throw r.error; profile={id:session.user.id,display_name:name,handle:h}; renderAvatar(); toast('\u2713 Profile saved'); hide(); }
+    catch(e){ toast('Save failed: '+(e.message||e)); }
+    this.disabled=false;
+  };
+  document.getElementById('authSignout').onclick=async function(){ await sb.auth.signOut(); session=null; profile=null; renderAvatar(); hide(); toast('Signed out'); };
+
+  async function ensureProfile(){
+    try{ var r=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+      if(r.data){ profile=r.data; }
+      else { var dn=(session.user.email||'').split('@')[0]; var ins=await sb.from('profiles').insert({id:session.user.id, display_name:dn, handle:slug(dn)}).select().maybeSingle(); profile=ins.data||{id:session.user.id,display_name:dn}; }
+    }catch(e){}
+  }
+  async function cloudInsert(c){
+    if(!session) return;
+    try{ await sb.from('garage_cars').insert({owner_id:session.user.id, nickname:c.nick||c.trim||'My Falcon', generation:c.gen, year:parseInt(c.year,10)||null, body_style:c.body, trim_option:c.trim, paint_color:c.paint, body_style_code:c.code, estimated_quantity_sold:c.qty||null, story:c.note||null, is_public:true}); }catch(e){}
+  }
+  async function cloudSync(){
+    if(!session) return;
+    try{
+      var r=await sb.from('garage_cars').select('*').eq('owner_id',session.user.id).order('created_at',{ascending:true}); var cars=r.data||[];
+      if(cars.length===0){ var local=lget(); for(var i=0;i<local.length;i++){ await cloudInsert(local[i]); } var r2=await sb.from('garage_cars').select('*').eq('owner_id',session.user.id).order('created_at',{ascending:true}); cars=r2.data||[]; }
+      var mapped=cars.map(function(c){ return {nick:c.nickname, gen:c.generation, year:String(c.year||''), body:c.body_style, trim:c.trim_option, paint:c.paint_color, code:c.body_style_code, qty:c.estimated_quantity_sold, status:'owned', photo:'', note:c.story||''}; });
+      lset(mapped); if(typeof renderGarage==='function') renderGarage();
+    }catch(e){}
+  }
+  var addEl=document.getElementById('addCarBtn'); var prevAdd=addEl.onclick;
+  addEl.onclick=function(){ var rr=(typeof currentLookup==='function')?currentLookup():null; if(prevAdd) prevAdd.call(addEl); if(session && rr){ cloudInsert({nick:(document.getElementById('reNick').value||rr.trim), gen:rr.gen, year:rr.year, body:rr.body, trim:rr.trim, paint:rr.paint, code:rr.code, qty:rr.qty}); } };
+
+  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); });
+  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); })();
+})();
 </script>
 </body>
 </html>
