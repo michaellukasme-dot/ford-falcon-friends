@@ -1,6 +1,6 @@
 /* Ford Falcon Friends — service worker
    network-first for HTML (so updates land), cache-first for static assets. */
-const CACHE_VERSION = 'fff-v9';
+const CACHE_VERSION = 'fff-v10';
 const PRECACHE = [
   './',
   './index.html',
