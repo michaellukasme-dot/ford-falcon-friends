@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ford Falcon Friends — the digital clubhouse for classic Falcon owners</title>
+<meta name="description" content="A free community for classic Ford Falcon (1960–1970) owners and fans. Register your car, see how rare it is, find clubs, cruises, and meetups. No ads. No subscription.">
+<meta name="theme-color" content="#5e1c21">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Falcon Friends">
+<link rel="icon" href="icons/icon-48.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,600&family=Archivo:wght@400;500;600;700&family=Kaushan+Script&display=swap" rel="stylesheet">
+<style>
+:root{
+  --maroon:#5e1c21; --maroon2:#7a2128; --cream:#f4ece0; --paper:#faf6ee;
+  --gold:#d6a441; --gold-deep:#b9863a; --ink:#2a211c; --chrome:#d3d6da;
+  --line:#e6dac8; --subtle:#8f8270; --green:#3b6b4a;
+  --shadow:0 6px 22px rgba(60,30,15,.13);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Archivo',system-ui,sans-serif;color:var(--ink);
+  background:
+    radial-gradient(120% 60% at 50% -10%, #fff8 0%, #fff0 60%),
+    linear-gradient(180deg,#f7efe3 0%, #f1e7d6 100%);
+  background-attachment:fixed;
+  -webkit-tap-highlight-color:transparent;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.app{max-width:680px;margin:0 auto;min-height:100vh;background:transparent;position:relative}
+/* ---- header ---- */
+header.topbar{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(180deg,var(--maroon) 0%, #501319 100%);
+  color:var(--cream);padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 0 var(--gold), 0 6px 18px rgba(40,15,10,.25);
+}
+.brand{display:flex;align-items:baseline;gap:7px;font-family:'Fraunces',serif;font-weight:900;font-size:1.28rem;letter-spacing:.2px;line-height:1}
+.brand .script{font-family:'Kaushan Script',cursive;font-weight:400;color:var(--gold);font-size:1.5rem;line-height:1}
+.brand .friends{font-weight:500;font-size:1.05rem;opacity:.92}
+.topbar .spacer{flex:1}
+.av-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--gold);background:#fff2;color:var(--cream);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;padding:0;overflow:hidden}
+.av-btn img{width:100%;height:100%;object-fit:cover}
+/* ---- tab strip ---- */
+nav.tabs{position:sticky;top:0;z-index:30;display:flex;gap:6px;overflow-x:auto;padding:10px 12px;
+  background:var(--paper);border-bottom:1px solid var(--line);scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:22px;padding:7px 14px;
+  font-weight:600;font-size:.84rem;color:var(--maroon);cursor:pointer;white-space:nowrap;transition:.15s}
+.tab.active{background:var(--maroon);color:var(--cream);border-color:var(--maroon)}
+/* ---- panels ---- */
+main{padding:16px 16px 90px}
+.panel{display:none;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.section-eyebrow{font-family:'Fraunces',serif;font-weight:600;font-style:italic;color:var(--gold-deep);font-size:.82rem;letter-spacing:.4px;text-transform:uppercase}
+h2.section-title{font-family:'Fraunces',serif;font-weight:900;font-size:1.55rem;margin:.1rem 0 .2rem;color:var(--maroon);line-height:1.05}
+.lead{color:var(--subtle);font-size:.92rem;margin:0 0 16px}
+/* ---- garage grid ---- */
+.garage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:13px;margin-bottom:8px}
+.car-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:.15s;display:flex;flex-direction:column}
+.car-card:active{transform:scale(.98)}
+.car-photo{aspect-ratio:4/3;background:linear-gradient(135deg,#7a2128,#3a1014);position:relative;display:flex;align-items:flex-end}
+.car-photo img{width:100%;height:100%;object-fit:cover}
+.car-photo .nofoto{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff8;font-size:1.8rem}
+.rarity-badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#3a2400;font-weight:700;font-size:.66rem;padding:3px 8px;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.car-body{padding:10px 11px 12px}
+.car-nick{font-family:'Fraunces',serif;font-weight:700;font-size:1rem;color:var(--ink);line-height:1.1}
+.car-spec{font-size:.76rem;color:var(--subtle);margin-top:3px;line-height:1.3}
+.car-status{display:inline-block;margin-top:7px;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--green);background:#e8f0e9;padding:2px 8px;border-radius:12px}
+.add-card{background:repeating-linear-gradient(45deg,#fff,#fff 10px,#fbf4e7 10px,#fbf4e7 20px);border:2px dashed var(--gold);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:150px;cursor:pointer;color:var(--maroon);font-weight:700;text-align:center;padding:14px}
+.add-card .plus{font-size:2rem;line-height:1}
+/* ---- rarity engine ---- */
+.rarity-engine{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px;box-shadow:var(--shadow)}
+.re-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fld label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--subtle);margin-bottom:4px}
+.fld select,.fld input{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:.9rem;font-family:inherit;color:var(--ink)}
+.fld select:disabled{opacity:.5}
+.fld.full{grid-column:1/-1}
+.rarity-readout{margin-top:14px;border-radius:14px;padding:16px;text-align:center;
+  background:linear-gradient(160deg,var(--maroon),#48121a);color:var(--cream);box-shadow:inset 0 0 0 2px var(--gold)}
+.rarity-readout .ro-num{font-family:'Fraunces',serif;font-weight:900;font-size:2.2rem;color:var(--gold);line-height:1}
+.rarity-readout .ro-sub{font-size:.86rem;margin-top:6px;opacity:.95}
+.rarity-readout .ro-est{font-size:.66rem;opacity:.7;margin-top:8px;text-transform:uppercase;letter-spacing:.5px}
+.rarity-readout.empty{background:#fff;color:var(--subtle);box-shadow:inset 0 0 0 1px var(--line);font-size:.86rem}
+.btn{display:block;width:100%;margin-top:13px;padding:13px;border:none;border-radius:11px;background:var(--gold);
+  color:#3a2400;font-weight:800;font-size:.96rem;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--maroon);color:var(--maroon)}
+/* ---- stat card ---- */
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:18px;box-shadow:var(--shadow)}
+.stat-card h3{font-family:'Fraunces',serif;margin:0 0 4px;color:var(--maroon);font-size:1.05rem}
+.bars{display:flex;align-items:flex-end;gap:5px;height:64px;margin-top:10px}
+.bar{flex:1;background:linear-gradient(180deg,var(--gold),var(--gold-deep));border-radius:3px 3px 0 0;position:relative;min-height:4px}
+.bar span{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:.56rem;color:var(--subtle)}
+.stat-total{font-size:.82rem;color:var(--subtle);margin-top:24px}
+.stat-total b{color:var(--ink);font-size:1rem}
+/* ---- coming soon panels ---- */
+.cs{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 18px;box-shadow:var(--shadow);text-align:center;margin-top:8px}
+.cs .cs-ico{font-size:2.2rem}
+.cs h3{font-family:'Fraunces',serif;color:var(--maroon);margin:8px 0 4px;font-size:1.3rem}
+.cs p{color:var(--subtle);font-size:.9rem;margin:0 auto;max-width:380px;line-height:1.5}
+.cs .pill{display:inline-block;margin-top:12px;background:#fbeede;color:var(--gold-deep);font-weight:700;font-size:.7rem;padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.preview-list{list-style:none;padding:0;margin:14px 0 0;text-align:left;display:inline-block}
+.preview-list li{padding:6px 0 6px 24px;position:relative;font-size:.86rem;color:var(--ink)}
+.preview-list li:before{content:'›';position:absolute;left:6px;color:var(--gold-deep);font-weight:800}
+/* ---- install toast ---- */
+.install-toast{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;
+  background:linear-gradient(180deg,#fff,#fbf4e8);border-top:2px solid var(--gold);
+  padding:14px 16px calc(env(safe-area-inset-bottom) + 14px);box-shadow:0 -6px 22px rgba(60,30,15,.18)}
+.install-toast.show{display:flex;align-items:center;gap:12px}
+.install-toast .it-ico{width:40px;height:40px;border-radius:10px;flex:0 0 auto}
+.install-toast .it-txt{flex:1;font-size:.82rem;line-height:1.35}
+.install-toast .it-txt b{color:var(--maroon)}
+.install-toast button{border:none;border-radius:9px;padding:9px 14px;font-weight:700;font-size:.82rem;cursor:pointer}
+.it-yes{background:var(--maroon);color:var(--cream)}
+.it-no{background:transparent;color:var(--subtle)}
+footer{text-align:center;color:var(--subtle);font-size:.72rem;padding:18px 16px 30px;line-height:1.5}
+footer .heart{color:var(--maroon)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--ink);color:#fff;padding:11px 18px;border-radius:24px;font-size:.85rem;z-index:80;transition:.25s;pointer-events:none;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">Ford <span class="script">Falcon</span> <span class="friends">Friends</span></div>
+    <div class="spacer"></div>
+    <button class="av-btn" id="avBtn" title="Your profile">&#128100;</button>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-p="garage">🅖 My Garage</button>
+    <button class="tab" data-p="feed">📣 Feed</button>
+    <button class="tab" data-p="clubs">🏁 Clubs</button>
+    <button class="tab" data-p="cruises">🚗 Cruises</button>
+    <button class="tab" data-p="market">🏷️ Market</button>
+    <button class="tab" data-p="magazine">📰 Magazine</button>
+    <button class="tab" data-p="games">🎲 Games</button>
+    <button class="tab" data-p="vin">🔎 VIN</button>
+  </nav>
+
+  <main>
+    <!-- GARAGE -->
+    <section class="panel active" id="panel-garage">
+      <div class="section-eyebrow">Be someone — your car is your identity</div>
+      <h2 class="section-title">My Garage</h2>
+      <p class="lead">Register every Falcon you own. The registry tells you how rare your exact spec is — <em>1 of ~N ever built.</em></p>
+      <div class="garage-grid" id="garageGrid"></div>
+
+      <div class="rarity-engine">
+        <div class="section-eyebrow">Add a Falcon</div>
+        <h2 class="section-title" style="font-size:1.2rem;margin-bottom:10px">How rare is yours?</h2>
+        <div class="re-grid">
+          <div class="fld"><label>Generation</label><select id="reGen"></select></div>
+          <div class="fld"><label>Year</label><select id="reYear" disabled></select></div>
+          <div class="fld"><label>Body Style</label><select id="reBody" disabled></select></div>
+          <div class="fld"><label>Trim</label><select id="reTrim" disabled></select></div>
+          <div class="fld full"><label>Paint Color</label><select id="rePaint" disabled></select></div>
+        </div>
+        <div class="rarity-readout empty" id="rarityReadout">Pick your car above to see how rare it is.</div>
+        <div class="fld full" style="margin-top:12px"><label>Nickname (optional)</label><input id="reNick" placeholder="e.g. Red Precious" maxlength="40"></div>
+        <button class="btn" id="addCarBtn" disabled>+ Add to My Garage</button>
+      </div>
+
+      <div class="stat-card" id="statCard"></div>
+    </section>
+
+    <!-- FEED -->
+    <section class="panel" id="panel-feed">
+      <div class="section-eyebrow">Talk — post as your car</div>
+      <h2 class="section-title">The Feed</h2>
+      <div class="cs"><div class="cs-ico">📣</div><h3>Coming in the build</h3>
+        <p>A community feed where you post <em>as a car</em> — build updates, questions, shots from the road — with comments and likes from people who get it.</p>
+        <span class="pill">Phase 2 · Social Core</span></div>
+    </section>
+
+    <!-- CLUBS -->
+    <section class="panel" id="panel-clubs">
+      <div class="section-eyebrow">Gather — a forest of clubs</div>
+      <h2 class="section-title">Clubs</h2>
+      <div class="cs"><div class="cs-ico">🏁</div><h3>The clubs that already exist</h3>
+        <p>A directory that connects the real community — not a replacement for it.</p>
+        <ul class="preview-list">
+          <li><b>Falcon Club of America</b> — 33 chapters across 5 regions</li>
+          <li><b>Ranchero Club</b> — its own chapters & sub-clubs</li>
+          <li><b>Convertible Club</b> — peer organization</li>
+          <li>Org → chapter → sub-club hierarchy; links to chapter emails & the Facebook group</li>
+        </ul>
+        <span class="pill">Phase 2 · seeded from registry</span></div>
+    </section>
+
+    <!-- CRUISES -->
+    <section class="panel" id="panel-cruises">
+      <div class="section-eyebrow">Gather — bring your Falcon</div>
+      <h2 class="section-title">Cruises & Meetups</h2>
+      <div class="cs"><div class="cs-ico">🚗</div><h3>Set up a cruise, arrange a meetup</h3>
+        <p>Plan a drive (meet point → route → destination) or a cars-and-coffee. Friends <em>confirm with the car they're bringing.</em> Repeating schedules, map, and calendar.</p>
+        <span class="pill">Phase 3 · Events</span></div>
+    </section>
+
+    <!-- MARKET -->
+    <section class="panel" id="panel-market">
+      <div class="section-eyebrow">Transact — the only paid surface</div>
+      <h2 class="section-title">Marketplace</h2>
+      <div class="cs"><div class="cs-ico">🏷️</div><h3>Dues, tickets, swag</h3>
+        <p>The app is free. Money only moves here: club membership dues, event tickets, and club/seller swag. Order history and ticket codes included.</p>
+        <span class="pill">Phase 4 · Stripe</span></div>
+    </section>
+
+    <!-- MAGAZINE -->
+    <section class="panel" id="panel-magazine">
+      <div class="section-eyebrow">Read — the digital clubhouse</div>
+      <h2 class="section-title">The Magazine</h2>
+      <div class="cs"><div class="cs-ico">📰</div><h3>A monthly, auto-assembled from the app</h3>
+        <p>In the spirit of <em>The National Falcon News</em> — member spotlights, a verified-owner cover car, Tech Corner DIY, and the annual member-car calendar.</p>
+        <span class="pill">Phase 5</span></div>
+    </section>
+
+    <!-- GAMES -->
+    <section class="panel" id="panel-games">
+      <div class="section-eyebrow">Play</div>
+      <h2 class="section-title">Games</h2>
+      <div class="cs"><div class="cs-ico">🎲</div><h3>Name the Year</h3>
+        <p>Random angles of every Falcon — including the <b>Econoline</b> family — shuffled into a first-to-guess challenge, plus a small games suite.</p>
+        <span class="pill">Phase 6</span></div>
+    </section>
+
+    <!-- VIN -->
+    <section class="panel" id="panel-vin">
+      <div class="section-eyebrow">Identity — verified</div>
+      <h2 class="section-title">VIN Decoder</h2>
+      <div class="cs"><div class="cs-ico">🔎</div><h3>Snap the VIN / door tag</h3>
+        <p>Decode the factory, birth date, and production estimate of your exact Falcon — and get an off-the-line portrait of how it left the plant.</p>
+        <span class="pill">Phase later</span></div>
+    </section>
+  </main>
+
+  <footer>
+    Free forever &middot; no ads &middot; no subscription &middot; your garage stays on this device until you sign in.<br>
+    Made with <span class="heart">&#10084;</span> for the Falcon community &middot; production figures are <em>estimates</em>.
+  </footer>
+</div>
+
+<div class="install-toast" id="installToast">
+  <img class="it-ico" src="icons/icon-96.png" alt="">
+  <div class="it-txt"><b>Add Falcon Friends to your home screen.</b> Launch full-screen, even offline.</div>
+  <button class="it-yes" id="itYes">Add</button>
+  <button class="it-no" id="itNo">Not now</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== CONFIG (Step 2 fills these) ===================== */
+const FFF = {
+  SUPABASE_URL: '',          // paste at Step 2 (Supabase project URL)
+  SUPABASE_ANON_KEY: '',     // paste at Step 2 (anon/public key)
+  AUTH: 'magic-link'         // D7: magic-link first
+};
+
+/* ===================== EMBEDDED REGISTRY (real data, 708 configs) ===================== */
+const REGISTRY = {"Gen 1":{"1960":{"2-Door Sedan":{"Standard Base":{"Corinthian White":["64A",3761],"Monte Carlo Red":["64A",3761],"Raven Black":["64A",3761],"Starlight Blue":["64A",3761],"Sultana Turquoise":["64A",3761],"Belmont Green":["64A",3761]},"Deluxe":{"Corinthian White":["64A",3761],"Monte Carlo Red":["64A",3761],"Raven Black":["64A",3761],"Starlight Blue":["64A",3761],"Sultana Turquoise":["64A",3761],"Belmont Green":["64A",3761]}},"4-Door Sedan":{"Standard Base":{"Corinthian White":["54A",4835],"Monte Carlo Red":["54A",4835],"Raven Black":["54A",4835],"Starlight Blue":["54A",4835],"Sultana Turquoise":["54A",4835],"Belmont Green":["54A",4835]},"Deluxe":{"Corinthian White":["54A",4835],"Monte Carlo Red":["54A",4835],"Raven Black":["54A",4835],"Starlight Blue":["54A",4835],"Sultana Turquoise":["54A",4835],"Belmont Green":["54A",4835]}},"2-Door Station Wagon":{"Standard Base":{"Corinthian White":["59A",459],"Monte Carlo Red":["59A",459],"Raven Black":["59A",459],"Starlight Blue":["59A",459],"Sultana Turquoise":["59A",459],"Belmont Green":["59A",459]},"Deluxe":{"Corinthian White":["59A",459],"Monte Carlo Red":["59A",459],"Raven Black":["59A",459],"Starlight Blue":["59A",459],"Sultana Turquoise":["59A",459],"Belmont Green":["59A",459]}},"4-Door Station Wagon":{"Standard Base":{"Corinthian White":["71A",1102],"Monte Carlo Red":["71A",1102],"Raven Black":["71A",1102],"Starlight Blue":["71A",1102],"Sultana Turquoise":["71A",1102],"Belmont Green":["71A",1102]},"Deluxe":{"Corinthian White":["71A",1102],"Monte Carlo Red":["71A",1102],"Raven Black":["71A",1102],"Starlight Blue":["71A",1102],"Sultana Turquoise":["71A",1102],"Belmont Green":["71A",1102]}},"2-Door Coupe Utility":{"Standard Ranchero":{"Corinthian White":["66A",2757],"Monte Carlo Red":["66A",2757],"Raven Black":["66A",2757],"Starlight Blue":["66A",2757],"Sultana Turquoise":["66A",2757],"Belmont Green":["66A",2757]}}},"1961":{"2-Door Sedan":{"Standard Base":{"Corinthian White":["64A / 64C",2240],"Monte Carlo Red":["64A / 64C",2240],"Raven Black":["64A / 64C",2240],"Starlight Blue":["64A / 64C",2240],"Sultana Turquoise":["64A / 64C",2240],"Belmont Green":["64A / 64C",2240]},"Deluxe":{"Corinthian White":["64A / 64C",2240],"Monte Carlo Red":["64A / 64C",2240],"Raven Black":["64A / 64C",2240],"Starlight Blue":["64A / 64C",2240],"Sultana Turquoise":["64A / 64C",2240],"Belmont Green":["64A / 64C",2240]},"Futura":{"Corinthian White":["64A / 64C",2240],"Monte Carlo Red":["64A / 64C",2240],"Raven Black":["64A / 64C",2240],"Starlight Blue":["64A / 64C",2240],"Sultana Turquoise":["64A / 64C",2240],"Belmont Green":["64A / 64C",2240]}},"4-Door Sedan":{"Standard Base":{"Corinthian White":["54A",4321],"Monte Carlo Red":["54A",4321],"Raven Black":["54A",4321],"Starlight Blue":["54A",4321],"Sultana Turquoise":["54A",4321],"Belmont Green":["54A",4321]},"Deluxe":{"Corinthian White":["54A",4321],"Monte Carlo Red":["54A",4321],"Raven Black":["54A",4321],"Starlight Blue":["54A",4321],"Sultana Turquoise":["54A",4321],"Belmont Green":["54A",4321]}},"2-Door Station Wagon":{"Standard Base":{"Corinthian White":["59A",960],"Monte Carlo Red":["59A",960],"Raven Black":["59A",960],"Starlight Blue":["59A",960],"Sultana Turquoise":["59A",960],"Belmont Green":["59A",960]}},"4-Door Station Wagon":{"Standard Base":{"Corinthian White":["71A / 71H",768],"Monte Carlo Red":["71A / 71H",768],"Raven Black":["71A / 71H",768],"Starlight Blue":["71A / 71H",768],"Sultana Turquoise":["71A / 71H",768],"Belmont Green":["71A / 71H",768]},"Deluxe":{"Corinthian White":["71A / 71H",768],"Monte Carlo Red":["71A / 71H",768],"Raven Black":["71A / 71H",768],"Starlight Blue":["71A / 71H",768],"Sultana Turquoise":["71A / 71H",768],"Belmont Green":["71A / 71H",768]},"Squire Woodgrain":{"Corinthian White":["71A / 71H",768],"Monte Carlo Red":["71A / 71H",768],"Raven Black":["71A / 71H",768],"Starlight Blue":["71A / 71H",768],"Sultana Turquoise":["71A / 71H",768],"Belmont Green":["71A / 71H",768]}},"2-Door Coupe Utility":{"Standard Ranchero":{"Corinthian White":["66A",1440],"Monte Carlo Red":["66A",1440],"Raven Black":["66A",1440],"Starlight Blue":["66A",1440],"Sultana Turquoise":["66A",1440],"Belmont Green":["66A",1440]},"Deluxe Ranchero":{"Corinthian White":["66A",1440],"Monte Carlo Red":["66A",1440],"Raven Black":["66A",1440],"Starlight Blue":["66A",1440],"Sultana Turquoise":["66A",1440],"Belmont Green":["66A",1440]}},"2-Door Sedan Delivery":{"Standard Delivery":{"Corinthian White":["78A",267],"Monte Carlo Red":["78A",267],"Raven Black":["78A",267],"Starlight Blue":["78A",267],"Sultana Turquoise":["78A",267],"Belmont Green":["78A",267]}}},"1962":{"2-Door Sedan":{"Standard Base":{"Corinthian White":["64A / 64B",3176],"Monte Carlo Red":["64A / 64B",3176],"Raven Black":["64A / 64B",3176],"Starlight Blue":["64A / 64B",3176],"Sultana Turquoise":["64A / 64B",3176],"Belmont Green":["64A / 64B",3176]},"Deluxe":{"Corinthian White":["64A / 64B",3176],"Monte Carlo Red":["64A / 64B",3176],"Raven Black":["64A / 64B",3176],"Starlight Blue":["64A / 64B",3176],"Sultana Turquoise":["64A / 64B",3176],"Belmont Green":["64A / 64B",3176]}},"4-Door Sedan":{"Standard Base":{"Corinthian White":["54A / 54B",4083],"Monte Carlo Red":["54A / 54B",4083],"Raven Black":["54A / 54B",4083],"Starlight Blue":["54A / 54B",4083],"Sultana Turquoise":["54A / 54B",4083],"Belmont Green":["54A / 54B",4083]},"Deluxe":{"Corinthian White":["54A / 54B",4083],"Monte Carlo Red":["54A / 54B",4083],"Raven Black":["54A / 54B",4083],"Starlight Blue":["54A / 54B",4083],"Sultana Turquoise":["54A / 54B",4083],"Belmont Green":["54A / 54B",4083]}},"2-Door Station Wagon":{"Standard Base":{"Corinthian White":["59A",882],"Monte Carlo Red":["59A",882],"Raven Black":["59A",882],"Starlight Blue":["59A",882],"Sultana Turquoise":["59A",882],"Belmont Green":["59A",882]}},"4-Door Station Wagon":{"Standard Base":{"Corinthian White":["71A / 71B / 71C",705],"Monte Carlo Red":["71A / 71B / 71C",705],"Raven Black":["71A / 71B / 71C",705],"Starlight Blue":["71A / 71B / 71C",705],"Sultana Turquoise":["71A / 71B / 71C",705],"Belmont Green":["71A / 71B / 71C",705]},"Deluxe":{"Corinthian White":["71A / 71B / 71C",705],"Monte Carlo Red":["71A / 71B / 71C",705],"Raven Black":["71A / 71B / 71C",705],"Starlight Blue":["71A / 71B / 71C",705],"Sultana Turquoise":["71A / 71B / 71C",705],"Belmont Green":["71A / 71B / 71C",705]},"Squire":{"Corinthian White":["71A / 71B / 71C",705],"Monte Carlo Red":["71A / 71B / 71C",705],"Raven Black":["71A / 71B / 71C",705],"Starlight Blue":["71A / 71B / 71C",705],"Sultana Turquoise":["71A / 71B / 71C",705],"Belmont Green":["71A / 71B / 71C",705]}},"2-Door Coupe Utility":{"Standard Ranchero":{"Corinthian White":["66A / 66B",1323],"Monte Carlo Red":["66A / 66B",1323],"Raven Black":["66A / 66B",1323],"Starlight Blue":["66A / 66B",1323],"Sultana Turquoise":["66A / 66B",1323],"Belmont Green":["66A / 66B",1323]},"Deluxe Ranchero":{"Corinthian White":["66A / 66B",1323],"Monte Carlo Red":["66A / 66B",1323],"Raven Black":["66A / 66B",1323],"Starlight Blue":["66A / 66B",1323],"Sultana Turquoise":["66A / 66B",1323],"Belmont Green":["66A / 66B",1323]}},"2-Door Sedan Delivery":{"Standard Delivery":{"Corinthian White":["78A",219],"Monte Carlo Red":["78A",219],"Raven Black":["78A",219],"Starlight Blue":["78A",219],"Sultana Turquoise":["78A",219],"Belmont Green":["78A",219]}},"2-Door Club Coupe":{"Futura Hardtop":{"Corinthian White":["65A",2751],"Monte Carlo Red":["65A",2751],"Raven Black":["65A",2751],"Starlight Blue":["65A",2751],"Sultana Turquoise":["65A",2751],"Belmont Green":["65A",2751]}}},"1963":{"2-Door Sedan":{"Standard Base":{"Corinthian White":["64A / 64B",2990],"Monte Carlo Red":["64A / 64B",2990],"Raven Black":["64A / 64B",2990],"Starlight Blue":["64A / 64B",2990],"Sultana Turquoise":["64A / 64B",2990],"Belmont Green":["64A / 64B",2990]},"Deluxe":{"Corinthian White":["64A / 64B",2990],"Monte Carlo Red":["64A / 64B",2990],"Raven Black":["64A / 64B",2990],"Starlight Blue":["64A / 64B",2990],"Sultana Turquoise":["64A / 64B",2990],"Belmont Green":["64A / 64B",2990]}},"4-Door Sedan":{"Standard Base":{"Corinthian White":["54A / 54B",3844],"Monte Carlo Red":["54A / 54B",3844],"Raven Black":["54A / 54B",3844],"Starlight Blue":["54A / 54B",3844],"Sultana Turquoise":["54A / 54B",3844],"Belmont Green":["54A / 54B",3844]},"Deluxe":{"Corinthian White":["54A / 54B",3844],"Monte Carlo Red":["54A / 54B",3844],"Raven Black":["54A / 54B",3844],"Starlight Blue":["54A / 54B",3844],"Sultana Turquoise":["54A / 54B",3844],"Belmont Green":["54A / 54B",3844]}},"2-Door Station Wagon":{"Standard Base":{"Corinthian White":["59A",913],"Monte Carlo Red":["59A",913],"Raven Black":["59A",913],"Starlight Blue":["59A",913],"Sultana Turquoise":["59A",913],"Belmont Green":["59A",913]}},"4-Door Station Wagon":{"Standard Base":{"Corinthian White":["71A / 71B / 71C",730],"Monte Carlo Red":["71A / 71B / 71C",730],"Raven Black":["71A / 71B / 71C",730],"Starlight Blue":["71A / 71B / 71C",730],"Sultana Turquoise":["71A / 71B / 71C",730],"Belmont Green":["71A / 71B / 71C",730]},"Deluxe":{"Corinthian White":["71A / 71B / 71C",730],"Monte Carlo Red":["71A / 71B / 71C",730],"Raven Black":["71A / 71B / 71C",730],"Starlight Blue":["71A / 71B / 71C",730],"Sultana Turquoise":["71A / 71B / 71C",730],"Belmont Green":["71A / 71B / 71C",730]},"Squire":{"Corinthian White":["71A / 71B / 71C",730],"Monte Carlo Red":["71A / 71B / 71C",730],"Raven Black":["71A / 71B / 71C",730],"Starlight Blue":["71A / 71B / 71C",730],"Sultana Turquoise":["71A / 71B / 71C",730],"Belmont Green":["71A / 71B / 71C",730]}},"2-Door Coupe Utility":{"Standard Ranchero":{"Corinthian White":["66A / 66B",1369],"Monte Carlo Red":["66A / 66B",1369],"Raven Black":["66A / 66B",1369],"Starlight Blue":["66A / 66B",1369],"Sultana Turquoise":["66A / 66B",1369],"Belmont Green":["66A / 66B",1369]},"Deluxe Ranchero":{"Corinthian White":["66A / 66B",1369],"Monte Carlo Red":["66A / 66B",1369],"Raven Black":["66A / 66B",1369],"Starlight Blue":["66A / 66B",1369],"Sultana Turquoise":["66A / 66B",1369],"Belmont Green":["66A / 66B",1369]}},"2-Door Sedan Delivery":{"Standard Delivery":{"Corinthian White":["78A",194],"Monte Carlo Red":["78A",194],"Raven Black":["78A",194],"Starlight Blue":["78A",194],"Sultana Turquoise":["78A",194],"Belmont Green":["78A",194]}},"2-Door Hardtop":{"Futura Super Sport":{"Corinthian White":["63A / 63B",2314],"Monte Carlo Red":["63A / 63B",2314],"Raven Black":["63A / 63B",2314],"Starlight Blue":["63A / 63B",2314],"Sultana Turquoise":["63A / 63B",2314],"Belmont Green":["63A / 63B",2314]},"Sprint V8":{"Corinthian White":["63A / 63B",2314],"Monte Carlo Red":["63A / 63B",2314],"Raven Black":["63A / 63B",2314],"Starlight Blue":["63A / 63B",2314],"Sultana Turquoise":["63A / 63B",2314],"Belmont Green":["63A / 63B",2314]}},"2-Door Convertible":{"Futura Super Sport":{"Corinthian White":["76A / 76B",467],"Monte Carlo Red":["76A / 76B",467],"Raven Black":["76A / 76B",467],"Starlight Blue":["76A / 76B",467],"Sultana Turquoise":["76A / 76B",467],"Belmont Green":["76A / 76B",467]},"Sprint V8":{"Corinthian White":["76A / 76B",467],"Monte Carlo Red":["76A / 76B",467],"Raven Black":["76A / 76B",467],"Starlight Blue":["76A / 76B",467],"Sultana Turquoise":["76A / 76B",467],"Belmont Green":["76A / 76B",467]}}}},"Gen 2":{"1964":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A / 62B / 62C",1784],"Rangoon Red":["62A / 62B / 62C",1784],"Raven Black":["62A / 62B / 62C",1784],"Caspian Blue":["62A / 62B / 62C",1784],"Dynasty Green":["62A / 62B / 62C",1784],"Silver Smoke Gray":["62A / 62B / 62C",1784],"Vintage Burgundy":["62A / 62B / 62C",1784]},"Deluxe":{"Wimbledon White":["62A / 62B / 62C",1784],"Rangoon Red":["62A / 62B / 62C",1784],"Raven Black":["62A / 62B / 62C",1784],"Caspian Blue":["62A / 62B / 62C",1784],"Dynasty Green":["62A / 62B / 62C",1784],"Silver Smoke Gray":["62A / 62B / 62C",1784],"Vintage Burgundy":["62A / 62B / 62C",1784]},"Futura":{"Wimbledon White":["62A / 62B / 62C",1784],"Rangoon Red":["62A / 62B / 62C",1784],"Raven Black":["62A / 62B / 62C",1784],"Caspian Blue":["62A / 62B / 62C",1784],"Dynasty Green":["62A / 62B / 62C",1784],"Silver Smoke Gray":["62A / 62B / 62C",1784],"Vintage Burgundy":["62A / 62B / 62C",1784]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54B / 54C",2293],"Rangoon Red":["54A / 54B / 54C",2293],"Raven Black":["54A / 54B / 54C",2293],"Caspian Blue":["54A / 54B / 54C",2293],"Dynasty Green":["54A / 54B / 54C",2293],"Silver Smoke Gray":["54A / 54B / 54C",2293],"Vintage Burgundy":["54A / 54B / 54C",2293]},"Deluxe":{"Wimbledon White":["54A / 54B / 54C",2293],"Rangoon Red":["54A / 54B / 54C",2293],"Raven Black":["54A / 54B / 54C",2293],"Caspian Blue":["54A / 54B / 54C",2293],"Dynasty Green":["54A / 54B / 54C",2293],"Silver Smoke Gray":["54A / 54B / 54C",2293],"Vintage Burgundy":["54A / 54B / 54C",2293]},"Futura":{"Wimbledon White":["54A / 54B / 54C",2293],"Rangoon Red":["54A / 54B / 54C",2293],"Raven Black":["54A / 54B / 54C",2293],"Caspian Blue":["54A / 54B / 54C",2293],"Dynasty Green":["54A / 54B / 54C",2293],"Silver Smoke Gray":["54A / 54B / 54C",2293],"Vintage Burgundy":["54A / 54B / 54C",2293]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A / 71B / 71C",555],"Rangoon Red":["71A / 71B / 71C",555],"Raven Black":["71A / 71B / 71C",555],"Caspian Blue":["71A / 71B / 71C",555],"Dynasty Green":["71A / 71B / 71C",555],"Silver Smoke Gray":["71A / 71B / 71C",555],"Vintage Burgundy":["71A / 71B / 71C",555]},"Deluxe":{"Wimbledon White":["71A / 71B / 71C",555],"Rangoon Red":["71A / 71B / 71C",555],"Raven Black":["71A / 71B / 71C",555],"Caspian Blue":["71A / 71B / 71C",555],"Dynasty Green":["71A / 71B / 71C",555],"Silver Smoke Gray":["71A / 71B / 71C",555],"Vintage Burgundy":["71A / 71B / 71C",555]},"Squire":{"Wimbledon White":["71A / 71B / 71C",555],"Rangoon Red":["71A / 71B / 71C",555],"Raven Black":["71A / 71B / 71C",555],"Caspian Blue":["71A / 71B / 71C",555],"Dynasty Green":["71A / 71B / 71C",555],"Silver Smoke Gray":["71A / 71B / 71C",555],"Vintage Burgundy":["71A / 71B / 71C",555]}},"2-Door Station Wagon":{"Standard Base":{"Wimbledon White":["59A",694],"Rangoon Red":["59A",694],"Raven Black":["59A",694],"Caspian Blue":["59A",694],"Dynasty Green":["59A",694],"Silver Smoke Gray":["59A",694],"Vintage Burgundy":["59A",694]}},"2-Door Coupe Utility":{"Standard Ranchero":{"Wimbledon White":["66A / 66B / 66H",694],"Rangoon Red":["66A / 66B / 66H",694],"Raven Black":["66A / 66B / 66H",694],"Caspian Blue":["66A / 66B / 66H",694],"Dynasty Green":["66A / 66B / 66H",694],"Silver Smoke Gray":["66A / 66B / 66H",694],"Vintage Burgundy":["66A / 66B / 66H",694]},"Deluxe Ranchero":{"Wimbledon White":["66A / 66B / 66H",694],"Rangoon Red":["66A / 66B / 66H",694],"Raven Black":["66A / 66B / 66H",694],"Caspian Blue":["66A / 66B / 66H",694],"Dynasty Green":["66A / 66B / 66H",694],"Silver Smoke Gray":["66A / 66B / 66H",694],"Vintage Burgundy":["66A / 66B / 66H",694]},"Custom Ranchero":{"Wimbledon White":["66A / 66B / 66H",694],"Rangoon Red":["66A / 66B / 66H",694],"Raven Black":["66A / 66B / 66H",694],"Caspian Blue":["66A / 66B / 66H",694],"Dynasty Green":["66A / 66B / 66H",694],"Silver Smoke Gray":["66A / 66B / 66H",694],"Vintage Burgundy":["66A / 66B / 66H",694]}},"2-Door Sedan Delivery":{"Standard Delivery":{"Wimbledon White":["78A",168],"Rangoon Red":["78A",168],"Raven Black":["78A",168],"Caspian Blue":["78A",168],"Dynasty Green":["78A",168],"Silver Smoke Gray":["78A",168],"Vintage Burgundy":["78A",168]}},"2-Door Hardtop":{"Futura Coupe":{"Wimbledon White":["63A / 63B",1825],"Rangoon Red":["63A / 63B",1825],"Raven Black":["63A / 63B",1825],"Caspian Blue":["63A / 63B",1825],"Dynasty Green":["63A / 63B",1825],"Silver Smoke Gray":["63A / 63B",1825],"Vintage Burgundy":["63A / 63B",1825]},"Sprint Performance":{"Wimbledon White":["63A / 63B",1825],"Rangoon Red":["63A / 63B",1825],"Raven Black":["63A / 63B",1825],"Caspian Blue":["63A / 63B",1825],"Dynasty Green":["63A / 63B",1825],"Silver Smoke Gray":["63A / 63B",1825],"Vintage Burgundy":["63A / 63B",1825]}},"2-Door Convertible":{"Futura Convertible":{"Wimbledon White":["76A / 76B",453],"Rangoon Red":["76A / 76B",453],"Raven Black":["76A / 76B",453],"Caspian Blue":["76A / 76B",453],"Dynasty Green":["76A / 76B",453],"Silver Smoke Gray":["76A / 76B",453],"Vintage Burgundy":["76A / 76B",453]},"Sprint Convertible":{"Wimbledon White":["76A / 76B",453],"Rangoon Red":["76A / 76B",453],"Raven Black":["76A / 76B",453],"Caspian Blue":["76A / 76B",453],"Dynasty Green":["76A / 76B",453],"Silver Smoke Gray":["76A / 76B",453],"Vintage Burgundy":["76A / 76B",453]}}},"1965":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A / 62B / 62C",1281],"Rangoon Red":["62A / 62B / 62C",1281],"Raven Black":["62A / 62B / 62C",1281],"Caspian Blue":["62A / 62B / 62C",1281],"Dynasty Green":["62A / 62B / 62C",1281],"Silver Smoke Gray":["62A / 62B / 62C",1281],"Vintage Burgundy":["62A / 62B / 62C",1281]},"Deluxe":{"Wimbledon White":["62A / 62B / 62C",1281],"Rangoon Red":["62A / 62B / 62C",1281],"Raven Black":["62A / 62B / 62C",1281],"Caspian Blue":["62A / 62B / 62C",1281],"Dynasty Green":["62A / 62B / 62C",1281],"Silver Smoke Gray":["62A / 62B / 62C",1281],"Vintage Burgundy":["62A / 62B / 62C",1281]},"Futura":{"Wimbledon White":["62A / 62B / 62C",1281],"Rangoon Red":["62A / 62B / 62C",1281],"Raven Black":["62A / 62B / 62C",1281],"Caspian Blue":["62A / 62B / 62C",1281],"Dynasty Green":["62A / 62B / 62C",1281],"Silver Smoke Gray":["62A / 62B / 62C",1281],"Vintage Burgundy":["62A / 62B / 62C",1281]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54B / 54C",1647],"Rangoon Red":["54A / 54B / 54C",1647],"Raven Black":["54A / 54B / 54C",1647],"Caspian Blue":["54A / 54B / 54C",1647],"Dynasty Green":["54A / 54B / 54C",1647],"Silver Smoke Gray":["54A / 54B / 54C",1647],"Vintage Burgundy":["54A / 54B / 54C",1647]},"Deluxe":{"Wimbledon White":["54A / 54B / 54C",1647],"Rangoon Red":["54A / 54B / 54C",1647],"Raven Black":["54A / 54B / 54C",1647],"Caspian Blue":["54A / 54B / 54C",1647],"Dynasty Green":["54A / 54B / 54C",1647],"Silver Smoke Gray":["54A / 54B / 54C",1647],"Vintage Burgundy":["54A / 54B / 54C",1647]},"Futura":{"Wimbledon White":["54A / 54B / 54C",1647],"Rangoon Red":["54A / 54B / 54C",1647],"Raven Black":["54A / 54B / 54C",1647],"Caspian Blue":["54A / 54B / 54C",1647],"Dynasty Green":["54A / 54B / 54C",1647],"Silver Smoke Gray":["54A / 54B / 54C",1647],"Vintage Burgundy":["54A / 54B / 54C",1647]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A / 71B / 71C",434],"Rangoon Red":["71A / 71B / 71C",434],"Raven Black":["71A / 71B / 71C",434],"Caspian Blue":["71A / 71B / 71C",434],"Dynasty Green":["71A / 71B / 71C",434],"Silver Smoke Gray":["71A / 71B / 71C",434],"Vintage Burgundy":["71A / 71B / 71C",434]},"Deluxe":{"Wimbledon White":["71A / 71B / 71C",434],"Rangoon Red":["71A / 71B / 71C",434],"Raven Black":["71A / 71B / 71C",434],"Caspian Blue":["71A / 71B / 71C",434],"Dynasty Green":["71A / 71B / 71C",434],"Silver Smoke Gray":["71A / 71B / 71C",434],"Vintage Burgundy":["71A / 71B / 71C",434]},"Squire":{"Wimbledon White":["71A / 71B / 71C",434],"Rangoon Red":["71A / 71B / 71C",434],"Raven Black":["71A / 71B / 71C",434],"Caspian Blue":["71A / 71B / 71C",434],"Dynasty Green":["71A / 71B / 71C",434],"Silver Smoke Gray":["71A / 71B / 71C",434],"Vintage Burgundy":["71A / 71B / 71C",434]}},"2-Door Station Wagon":{"Standard Base":{"Wimbledon White":["59A",543],"Rangoon Red":["59A",543],"Raven Black":["59A",543],"Caspian Blue":["59A",543],"Dynasty Green":["59A",543],"Silver Smoke Gray":["59A",543],"Vintage Burgundy":["59A",543]}},"2-Door Coupe Utility":{"Standard Ranchero":{"Wimbledon White":["66A / 66B / 66H",543],"Rangoon Red":["66A / 66B / 66H",543],"Raven Black":["66A / 66B / 66H",543],"Caspian Blue":["66A / 66B / 66H",543],"Dynasty Green":["66A / 66B / 66H",543],"Silver Smoke Gray":["66A / 66B / 66H",543],"Vintage Burgundy":["66A / 66B / 66H",543]},"Deluxe Ranchero":{"Wimbledon White":["66A / 66B / 66H",543],"Rangoon Red":["66A / 66B / 66H",543],"Raven Black":["66A / 66B / 66H",543],"Caspian Blue":["66A / 66B / 66H",543],"Dynasty Green":["66A / 66B / 66H",543],"Silver Smoke Gray":["66A / 66B / 66H",543],"Vintage Burgundy":["66A / 66B / 66H",543]},"Custom Ranchero":{"Wimbledon White":["66A / 66B / 66H",543],"Rangoon Red":["66A / 66B / 66H",543],"Raven Black":["66A / 66B / 66H",543],"Caspian Blue":["66A / 66B / 66H",543],"Dynasty Green":["66A / 66B / 66H",543],"Silver Smoke Gray":["66A / 66B / 66H",543],"Vintage Burgundy":["66A / 66B / 66H",543]}},"2-Door Sedan Delivery":{"Standard Delivery":{"Wimbledon White":["78A",141],"Rangoon Red":["78A",141],"Raven Black":["78A",141],"Caspian Blue":["78A",141],"Dynasty Green":["78A",141],"Silver Smoke Gray":["78A",141],"Vintage Burgundy":["78A",141]}},"2-Door Hardtop":{"Futura Coupe":{"Wimbledon White":["63A / 63B",1425],"Rangoon Red":["63A / 63B",1425],"Raven Black":["63A / 63B",1425],"Caspian Blue":["63A / 63B",1425],"Dynasty Green":["63A / 63B",1425],"Silver Smoke Gray":["63A / 63B",1425],"Vintage Burgundy":["63A / 63B",1425]},"Sprint Performance":{"Wimbledon White":["63A / 63B",1425],"Rangoon Red":["63A / 63B",1425],"Raven Black":["63A / 63B",1425],"Caspian Blue":["63A / 63B",1425],"Dynasty Green":["63A / 63B",1425],"Silver Smoke Gray":["63A / 63B",1425],"Vintage Burgundy":["63A / 63B",1425]}},"2-Door Convertible":{"Futura Convertible":{"Wimbledon White":["76A / 76B",362],"Rangoon Red":["76A / 76B",362],"Raven Black":["76A / 76B",362],"Caspian Blue":["76A / 76B",362],"Dynasty Green":["76A / 76B",362],"Silver Smoke Gray":["76A / 76B",362],"Vintage Burgundy":["76A / 76B",362]},"Sprint Convertible":{"Wimbledon White":["76A / 76B",362],"Rangoon Red":["76A / 76B",362],"Raven Black":["76A / 76B",362],"Caspian Blue":["76A / 76B",362],"Dynasty Green":["76A / 76B",362],"Silver Smoke Gray":["76A / 76B",362],"Vintage Burgundy":["76A / 76B",362]}}}},"Gen 3":{"1966":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A",1241],"Candyapple Red":["62A",1241],"Raven Black":["62A",1241],"Nightmist Blue":["62A",1241],"Springtime Yellow":["62A",1241],"Sauterne Gold":["62A",1241]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54C",797],"Candyapple Red":["54A / 54C",797],"Raven Black":["54A / 54C",797],"Nightmist Blue":["54A / 54C",797],"Springtime Yellow":["54A / 54C",797],"Sauterne Gold":["54A / 54C",797]},"Futura Trims":{"Wimbledon White":["54A / 54C",797],"Candyapple Red":["54A / 54C",797],"Raven Black":["54A / 54C",797],"Nightmist Blue":["54A / 54C",797],"Springtime Yellow":["54A / 54C",797],"Sauterne Gold":["54A / 54C",797]}},"2-Door Club Coupe":{"Futura Sports Coupe":{"Wimbledon White":["62C",1187],"Candyapple Red":["62C",1187],"Raven Black":["62C",1187],"Nightmist Blue":["62C",1187],"Springtime Yellow":["62C",1187],"Sauterne Gold":["62C",1187]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A / 71C",367],"Candyapple Red":["71A / 71C",367],"Raven Black":["71A / 71C",367],"Nightmist Blue":["71A / 71C",367],"Springtime Yellow":["71A / 71C",367],"Sauterne Gold":["71A / 71C",367]},"Futura Wagon":{"Wimbledon White":["71A / 71C",367],"Candyapple Red":["71A / 71C",367],"Raven Black":["71A / 71C",367],"Nightmist Blue":["71A / 71C",367],"Springtime Yellow":["71A / 71C",367],"Sauterne Gold":["71A / 71C",367]}}},"1967":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A",1267],"Candyapple Red":["62A",1267],"Raven Black":["62A",1267],"Nightmist Blue":["62A",1267],"Springtime Yellow":["62A",1267],"Sauterne Gold":["62A",1267]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54C",814],"Candyapple Red":["54A / 54C",814],"Raven Black":["54A / 54C",814],"Nightmist Blue":["54A / 54C",814],"Springtime Yellow":["54A / 54C",814],"Sauterne Gold":["54A / 54C",814]},"Futura Trims":{"Wimbledon White":["54A / 54C",814],"Candyapple Red":["54A / 54C",814],"Raven Black":["54A / 54C",814],"Nightmist Blue":["54A / 54C",814],"Springtime Yellow":["54A / 54C",814],"Sauterne Gold":["54A / 54C",814]}},"2-Door Club Coupe":{"Futura Sports Coupe":{"Wimbledon White":["62C",818],"Candyapple Red":["62C",818],"Raven Black":["62C",818],"Nightmist Blue":["62C",818],"Springtime Yellow":["62C",818],"Sauterne Gold":["62C",818]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A / 71C",390],"Candyapple Red":["71A / 71C",390],"Raven Black":["71A / 71C",390],"Nightmist Blue":["71A / 71C",390],"Springtime Yellow":["71A / 71C",390],"Sauterne Gold":["71A / 71C",390]},"Futura Wagon":{"Wimbledon White":["71A / 71C",390],"Candyapple Red":["71A / 71C",390],"Raven Black":["71A / 71C",390],"Nightmist Blue":["71A / 71C",390],"Springtime Yellow":["71A / 71C",390],"Sauterne Gold":["71A / 71C",390]}}},"1968":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A",1177],"Candyapple Red":["62A",1177],"Raven Black":["62A",1177],"Nightmist Blue":["62A",1177],"Springtime Yellow":["62A",1177],"Sauterne Gold":["62A",1177]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54C",757],"Candyapple Red":["54A / 54C",757],"Raven Black":["54A / 54C",757],"Nightmist Blue":["54A / 54C",757],"Springtime Yellow":["54A / 54C",757],"Sauterne Gold":["54A / 54C",757]},"Futura Trims":{"Wimbledon White":["54A / 54C",757],"Candyapple Red":["54A / 54C",757],"Raven Black":["54A / 54C",757],"Nightmist Blue":["54A / 54C",757],"Springtime Yellow":["54A / 54C",757],"Sauterne Gold":["54A / 54C",757]}},"2-Door Club Coupe":{"Futura Sports Coupe":{"Wimbledon White":["62C",842],"Candyapple Red":["62C",842],"Raven Black":["62C",842],"Nightmist Blue":["62C",842],"Springtime Yellow":["62C",842],"Sauterne Gold":["62C",842]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A / 71C",362],"Candyapple Red":["71A / 71C",362],"Raven Black":["71A / 71C",362],"Nightmist Blue":["71A / 71C",362],"Springtime Yellow":["71A / 71C",362],"Sauterne Gold":["71A / 71C",362]},"Futura Wagon":{"Wimbledon White":["71A / 71C",362],"Candyapple Red":["71A / 71C",362],"Raven Black":["71A / 71C",362],"Nightmist Blue":["71A / 71C",362],"Springtime Yellow":["71A / 71C",362],"Sauterne Gold":["71A / 71C",362]}}},"1969":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A",1371],"Candyapple Red":["62A",1371],"Raven Black":["62A",1371],"Nightmist Blue":["62A",1371],"Springtime Yellow":["62A",1371],"Sauterne Gold":["62A",1371]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54C",881],"Candyapple Red":["54A / 54C",881],"Raven Black":["54A / 54C",881],"Nightmist Blue":["54A / 54C",881],"Springtime Yellow":["54A / 54C",881],"Sauterne Gold":["54A / 54C",881]},"Futura Trims":{"Wimbledon White":["54A / 54C",881],"Candyapple Red":["54A / 54C",881],"Raven Black":["54A / 54C",881],"Nightmist Blue":["54A / 54C",881],"Springtime Yellow":["54A / 54C",881],"Sauterne Gold":["54A / 54C",881]}},"2-Door Club Coupe":{"Futura Sports Coupe":{"Wimbledon White":["62C",1103],"Candyapple Red":["62C",1103],"Raven Black":["62C",1103],"Nightmist Blue":["62C",1103],"Springtime Yellow":["62C",1103],"Sauterne Gold":["62C",1103]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A / 71C",313],"Candyapple Red":["71A / 71C",313],"Raven Black":["71A / 71C",313],"Nightmist Blue":["71A / 71C",313],"Springtime Yellow":["71A / 71C",313],"Sauterne Gold":["71A / 71C",313]},"Futura Wagon":{"Wimbledon White":["71A / 71C",313],"Candyapple Red":["71A / 71C",313],"Raven Black":["71A / 71C",313],"Nightmist Blue":["71A / 71C",313],"Springtime Yellow":["71A / 71C",313],"Sauterne Gold":["71A / 71C",313]}}},"1970":{"2-Door Sedan":{"Standard Base":{"Wimbledon White":["62A",2091],"Candyapple Red":["62A",2091],"Raven Black":["62A",2091],"Nightmist Blue":["62A",2091],"Springtime Yellow":["62A",2091],"Sauterne Gold":["62A",2091]}},"4-Door Sedan":{"Standard Base":{"Wimbledon White":["54A / 54C",1344],"Candyapple Red":["54A / 54C",1344],"Raven Black":["54A / 54C",1344],"Nightmist Blue":["54A / 54C",1344],"Springtime Yellow":["54A / 54C",1344],"Sauterne Gold":["54A / 54C",1344]},"Futura Trims":{"Wimbledon White":["54A / 54C",1344],"Candyapple Red":["54A / 54C",1344],"Raven Black":["54A / 54C",1344],"Nightmist Blue":["54A / 54C",1344],"Springtime Yellow":["54A / 54C",1344],"Sauterne Gold":["54A / 54C",1344]}},"4-Door Station Wagon":{"Standard Base":{"Wimbledon White":["71A",405],"Candyapple Red":["71A",405],"Raven Black":["71A",405],"Nightmist Blue":["71A",405],"Springtime Yellow":["71A",405],"Sauterne Gold":["71A",405]}}}}};
+const YEARLY   = [{"Year":"1960","2-Door Sedan":"45135","4-Door Sedan":"58030","4-Door Wagon":"13234","2-Door Coupe Utility (Ranchero)":"16543","2-Door Hardtop":"0","2-Door Club Coupe":"0","2-Door Convertible":"0","2-Door Wagon":"5514","2-Door Sedan Delivery":"0"},{"Year":"1961","2-Door Sedan":"40337","4-Door Sedan":"51862","4-Door Wagon":"13833","2-Door Coupe Utility (Ranchero)":"17291","2-Door Hardtop":"0","2-Door Club Coupe":"0","2-Door Convertible":"0","2-Door Wagon":"5763","2-Door Sedan Delivery":"1605"},{"Year":"1962","2-Door Sedan":"38115","4-Door Sedan":"49005","4-Door Wagon":"12702","2-Door Coupe Utility (Ranchero)":"15878","2-Door Hardtop":"0","2-Door Club Coupe":"16511","2-Door Convertible":"0","2-Door Wagon":"5292","2-Door Sedan Delivery":"1315"},{"Year":"1963","2-Door Sedan":"35882","4-Door Sedan":"46134","4-Door Wagon":"13150","2-Door Coupe Utility (Ranchero)":"16438","2-Door Hardtop":"27778","2-Door Club Coupe":"0","2-Door Convertible":"5611","2-Door Wagon":"5479","2-Door Sedan Delivery":"1167"},{"Year":"1964","2-Door Sedan":"37465","4-Door Sedan":"48170","4-Door Wagon":"11672","2-Door Coupe Utility (Ranchero)":"14590","2-Door Hardtop":"25557","2-Door Club Coupe":"0","2-Door Convertible":"6351","2-Door Wagon":"4863","2-Door Sedan Delivery":"1176"},{"Year":"1965","2-Door Sedan":"26917","4-Door Sedan":"34607","4-Door Wagon":"9126","2-Door Coupe Utility (Ranchero)":"11407","2-Door Hardtop":"19963","2-Door Club Coupe":"0","2-Door Convertible":"5081","2-Door Wagon":"3802","2-Door Sedan Delivery":"991"},{"Year":"1966","2-Door Sedan":"7446","4-Door Sedan":"9574","4-Door Wagon":"4413","2-Door Coupe Utility (Ranchero)":"0","2-Door Hardtop":"0","2-Door Club Coupe":"7126","2-Door Convertible":"0","2-Door Wagon":"0","2-Door Sedan Delivery":"0"},{"Year":"1967","2-Door Sedan":"7606","4-Door Sedan":"9779","4-Door Wagon":"4688","2-Door Coupe Utility (Ranchero)":"0","2-Door Hardtop":"0","2-Door Club Coupe":"4908","2-Door Convertible":"0","2-Door Wagon":"0","2-Door Sedan Delivery":"0"},{"Year":"1968","2-Door Sedan":"7066","4-Door Sedan":"9086","4-Door Wagon":"4349","2-Door Coupe Utility (Ranchero)":"0","2-Door Hardtop":"0","2-Door Club Coupe":"5052","2-Door Convertible":"0","2-Door Wagon":"0","2-Door Sedan Delivery":"0"},{"Year":"1969","2-Door Sedan":"8231","4-Door Sedan":"10583","4-Door Wagon":"3762","2-Door Coupe Utility (Ranchero)":"0","2-Door Hardtop":"0","2-Door Club Coupe":"6620","2-Door Convertible":"0","2-Door Wagon":"0","2-Door Sedan Delivery":"0"},{"Year":"1970","2-Door Sedan":"12549","4-Door Sedan":"16135","4-Door Wagon":"2430","2-Door Coupe Utility (Ranchero)":"0","2-Door Hardtop":"0","2-Door Club Coupe":"0","2-Door Convertible":"0","2-Door Wagon":"0","2-Door Sedan Delivery":"0"}];
+
+/* ===================== TABS ===================== */
+document.getElementById('tabs').addEventListener('click', function(e){
+  var b = e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  b.classList.add('active');
+  document.getElementById('panel-' + b.dataset.p).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ===================== RARITY ENGINE ===================== */
+var reGen=document.getElementById('reGen'), reYear=document.getElementById('reYear'),
+    reBody=document.getElementById('reBody'), reTrim=document.getElementById('reTrim'),
+    rePaint=document.getElementById('rePaint'), readout=document.getElementById('rarityReadout'),
+    addBtn=document.getElementById('addCarBtn'), nick=document.getElementById('reNick');
+
+function fill(sel, items, ph){
+  sel.innerHTML = '<option value="">'+ph+'</option>' + items.map(function(i){return '<option>'+i+'</option>'}).join('');
+  sel.disabled = false;
+}
+function resetFrom(level){
+  var order=[reYear,reBody,reTrim,rePaint];
+  order.slice(level).forEach(function(s){ s.innerHTML='<option value="">—</option>'; s.disabled=true; });
+  setReadout(null);
+}
+fill(reGen, Object.keys(REGISTRY), 'Choose generation');
+reGen.disabled=false; reGen.querySelector('option').textContent='Choose generation';
+
+reGen.onchange=function(){ resetFrom(0); if(!reGen.value)return; fill(reYear, Object.keys(REGISTRY[reGen.value]), 'Choose year'); };
+reYear.onchange=function(){ resetFrom(1); if(!reYear.value)return; fill(reBody, Object.keys(REGISTRY[reGen.value][reYear.value]), 'Choose body style'); };
+reBody.onchange=function(){ resetFrom(2); if(!reBody.value)return; fill(reTrim, Object.keys(REGISTRY[reGen.value][reYear.value][reBody.value]), 'Choose trim'); };
+reTrim.onchange=function(){ resetFrom(3); if(!reTrim.value)return; fill(rePaint, Object.keys(REGISTRY[reGen.value][reYear.value][reBody.value][reTrim.value]), 'Choose paint'); };
+rePaint.onchange=function(){ if(!rePaint.value){setReadout(null);return;} setReadout(currentLookup()); };
+
+function currentLookup(){
+  try{
+    var rec = REGISTRY[reGen.value][reYear.value][reBody.value][reTrim.value][rePaint.value];
+    return { code:rec[0], qty:rec[1], gen:reGen.value, year:reYear.value, body:reBody.value, trim:reTrim.value, paint:rePaint.value };
+  }catch(e){ return null; }
+}
+function setReadout(r){
+  if(!r){ readout.className='rarity-readout empty'; readout.textContent='Pick your car above to see how rare it is.'; addBtn.disabled=true; return; }
+  readout.className='rarity-readout';
+  readout.innerHTML = '<div class="ro-num">1 of ~'+r.qty.toLocaleString()+'</div>'+
+    '<div class="ro-sub">'+r.year+' '+r.trim+' '+r.body+'<br>in '+r.paint+' &middot; body code '+r.code+'</div>'+
+    '<div class="ro-est">Estimated production</div>';
+  addBtn.disabled=false;
+}
+
+/* ===================== MY GARAGE (localStorage; survives until sign-in) ===================== */
+var GKEY='fff_garage';
+function loadGarage(){ try{ return JSON.parse(localStorage.getItem(GKEY)||'null')||[]; }catch(e){ return []; } }
+function saveGarage(g){ try{ localStorage.setItem(GKEY, JSON.stringify(g)); }catch(e){} }
+
+function seedIfEmpty(){
+  var g=loadGarage();
+  if(g.length) return g;
+  g=[
+    {nick:'Red Precious', gen:'Gen 2', year:'1964', body:'2-Door Hardtop', trim:'Futura Coupe', paint:'(maroon/burgundy)', code:'62A', qty:null, status:'driven', photo:'seed/red_precious_santa_cruz.jpg', note:'NFN May 2019 cover car'},
+    {nick:'Sports Convertible', gen:'Gen 2', year:'1964', body:'2-Door Convertible', trim:'Futura Sports', paint:'Rangoon Red', code:'63B', qty:null, status:'driven', photo:'', note:'Factory 260 / 4-speed'}
+  ];
+  // try to resolve a real qty for each seed from the registry
+  g.forEach(function(c){
+    try{ var rec=REGISTRY[c.gen][c.year][c.body][c.trim][c.paint]; if(rec){c.code=rec[0]; c.qty=rec[1];} }catch(e){}
+  });
+  saveGarage(g); return g;
+}
+function renderGarage(){
+  var g=seedIfEmpty(), grid=document.getElementById('garageGrid');
+  grid.innerHTML = g.map(function(c,i){
+    var photo = c.photo ? '<img src="'+c.photo+'" alt="'+c.nick+'">' : '<div class="nofoto">&#128663;</div>';
+    var badge = c.qty ? '<div class="rarity-badge">1 of ~'+Number(c.qty).toLocaleString()+'</div>' : '';
+    return '<div class="car-card" onclick="toast(\''+(c.nick||'Your Falcon').replace(/\'/g,"")+' — My Car build page lands in Phase 1.\')">'+
+      '<div class="car-photo">'+photo+badge+'</div>'+
+      '<div class="car-body"><div class="car-nick">'+(c.nick||'My Falcon')+'</div>'+
+      '<div class="car-spec">'+c.year+' '+c.trim+'<br>'+c.body+' &middot; '+c.paint+'</div>'+
+      '<span class="car-status">'+(c.status||'owned')+'</span></div></div>';
+  }).join('') + '<div class="add-card" onclick="document.getElementById(\'reGen\').scrollIntoView({behavior:\'smooth\'})"><div class="plus">+</div>Add another<br>Falcon</div>';
+}
+addBtn.onclick=function(){
+  var r=currentLookup(); if(!r) return;
+  var g=loadGarage();
+  g.push({nick:(nick.value.trim()||r.trim), gen:r.gen, year:r.year, body:r.body, trim:r.trim, paint:r.paint, code:r.code, qty:r.qty, status:'owned', photo:'', note:''});
+  saveGarage(g); renderGarage();
+  toast('★ Added to your garage — 1 of ~'+r.qty.toLocaleString());
+  nick.value=''; rePaint.value=''; setReadout(null);
+  document.getElementById('garageGrid').scrollIntoView({behavior:'smooth'});
+};
+
+/* ===================== PRODUCTION STAT CARD ===================== */
+function renderStat(){
+  var card=document.getElementById('statCard');
+  var rows=YEARLY.map(function(r){
+    var total=0; for(var k in r){ if(k!=='Year'){ var n=parseInt(r[k]||0,10); if(!isNaN(n)) total+=n; } }
+    return {year:r.Year, total:total};
+  });
+  var max=Math.max.apply(null, rows.map(function(r){return r.total})), grand=rows.reduce(function(a,r){return a+r.total},0);
+  card.innerHTML='<h3>Falcon production · 1960–1970</h3>'+
+    '<div style="font-size:.8rem;color:var(--subtle)">Estimated units built per year (all body styles)</div>'+
+    '<div class="bars">'+rows.map(function(r){var h=Math.round(r.total/max*100); return '<div class="bar" style="height:'+h+'%"><span>'+("'"+String(r.year).slice(2))+'</span></div>';}).join('')+'</div>'+
+    '<div class="stat-total">Roughly <b>'+grand.toLocaleString()+'</b> Falcons built across the 1960–70 run — every one of yours is a slice of that.</div>';
+}
+
+/* ===================== TOAST ===================== */
+var _tt;
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(function(){t.classList.remove('show')},2600); }
+
+/* ===================== PWA INSTALL ===================== */
+var deferredPrompt=null;
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true; }
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt=e; maybeShowInstall(); });
+function maybeShowInstall(){
+  if(isStandalone()) return;
+  if(localStorage.getItem('fff_install_dismissed')==='1') return;
+  document.getElementById('installToast').classList.add('show');
+}
+document.getElementById('itYes').onclick=async function(){
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; document.getElementById('installToast').classList.remove('show'); }
+  else if(isIOS()){ toast('Tap the Share icon, then “Add to Home Screen.”'); }
+  else { toast('Use your browser menu → Install / Add to Home Screen.'); }
+};
+document.getElementById('itNo').onclick=function(){ localStorage.setItem('fff_install_dismissed','1'); document.getElementById('installToast').classList.remove('show'); };
+document.getElementById('avBtn').onclick=function(){ toast('Profile & sign-in arrive at Step 2 (magic-link).'); };
+
+/* ===================== SERVICE WORKER ===================== */
+if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('service-worker.js').catch(function(){}); }); }
+
+/* ===================== INIT ===================== */
+renderGarage(); renderStat();
+setTimeout(maybeShowInstall, 1200);
+</script>
+</body>
+</html>
