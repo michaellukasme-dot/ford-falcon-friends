@@ -123,6 +123,8 @@ h2.section-title{font-family:'Fraunces',serif;font-weight:900;font-size:1.55rem;
 .install-toast button{border:none;border-radius:9px;padding:9px 14px;font-weight:700;font-size:.82rem;cursor:pointer}
 .it-yes{background:var(--maroon);color:var(--cream)}
 .it-no{background:transparent;color:var(--subtle)}
+footer .foot-link{display:inline-block;margin-top:8px;color:var(--maroon);font-weight:700;text-decoration:none}
+footer .foot-link:hover{text-decoration:underline}
 footer{text-align:center;color:var(--subtle);font-size:.72rem;padding:18px 16px 30px;line-height:1.5}
 footer .heart{color:var(--maroon)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;
@@ -263,14 +265,15 @@ footer .heart{color:var(--maroon)}
 
   <footer>
     Free forever &middot; no ads &middot; no subscription &middot; your garage stays on this device until you sign in.<br>
-    Made with <span class="heart">&#10084;</span> for the Falcon community &middot; production figures are <em>estimates</em>.
+    Made with <span class="heart">&#10084;</span> for the Falcon community &middot; production figures are <em>estimates</em>.<br>
+    <a class="foot-link" href="guide.html">Owner&rsquo;s Guide &mdash; how to use &amp; install &rarr;</a>
   </footer>
 </div>
 
 <div class="install-toast" id="installToast">
+  <button class="it-yes" id="itYes">Add</button>
   <img class="it-ico" src="icons/icon-96.png" alt="">
   <div class="it-txt"><b>Add Falcon Friends to your home screen.</b> Launch full-screen, even offline.</div>
-  <button class="it-yes" id="itYes">Add</button>
   <button class="it-no" id="itNo">Not now</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -407,8 +410,8 @@ function maybeShowInstall(){
 }
 document.getElementById('itYes').onclick=async function(){
   if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; document.getElementById('installToast').classList.remove('show'); }
-  else if(isIOS()){ toast('Tap the Share icon, then “Add to Home Screen.”'); }
-  else { toast('Use your browser menu → Install / Add to Home Screen.'); }
+  else if(isIOS()){ toast('On iPhone/iPad: tap Share, then “Add to Home Screen.” Full steps in the Guide (footer link).'); }
+  else { toast('No Install option here? You’re likely in a private/incognito window — reopen ford-falcon.com normally, then use the address-bar install icon. Steps in the Guide (footer).'); }
 };
 document.getElementById('itNo').onclick=function(){ localStorage.setItem('fff_install_dismissed','1'); document.getElementById('installToast').classList.remove('show'); };
 document.getElementById('avBtn').onclick=function(){ toast('Profile & sign-in arrive at Step 2 (magic-link).'); };
