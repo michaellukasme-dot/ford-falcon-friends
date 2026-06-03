@@ -453,6 +453,13 @@ setTimeout(maybeShowInstall, 1200);
 .comment-add input{flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--cream);color:var(--ink)}
 .comment-add button{background:var(--gold-deep);color:#fff;border:none;border-radius:9px;padding:7px 12px;font-weight:700;cursor:pointer}
 .feed-empty{text-align:center;color:var(--subtle);padding:24px;font-style:italic}
+.post-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:10px}
+.post-imgs img{width:100%;height:150px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer}
+.cmp-photo{background:none;border:1px solid var(--line);border-radius:9px;padding:8px 14px;cursor:pointer;color:var(--maroon);font-weight:700;font:inherit}
+.cmp-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.cmp-thumbs .t{position:relative}
+.cmp-thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.cmp-thumbs .rm{position:absolute;top:-7px;right:-7px;background:var(--maroon);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:13px;line-height:1;padding:0}
 </style>
 <div class="ff-sheet-ov" id="authOv" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="ff-sheet">
@@ -579,10 +586,11 @@ setTimeout(maybeShowInstall, 1200);
     var init=(who.trim().charAt(0)||'\u2605').toUpperCase();
     var kindBadge=(p.kind&&p.kind!=='update')?'<div class="post-kind '+esc(p.kind)+'">'+esc(p.kind)+'</div>':'';
     var carChip=p.car_label?'<span class="post-car">\ud83c\udd56 '+esc(p.car_label)+'</span>':'';
+    var imgs=(p.image_urls&&p.image_urls.length)?'<div class="post-imgs">'+p.image_urls.map(function(u){return '<img src="'+esc(u)+'" loading="lazy" onclick="window.open(this.src,\'_blank\')">';}).join('')+'</div>':'';
     return '<div class="post" id="post-'+p.id+'">'+
       '<div class="post-head"><div class="post-av">'+esc(init)+'</div>'+
         '<div><div class="post-who">'+esc(who)+'</div><div class="post-meta">'+ago(p.created_at)+'</div></div>'+carChip+'</div>'+
-      kindBadge+'<div class="post-body">'+esc(p.body)+'</div>'+
+      kindBadge+'<div class="post-body">'+esc(p.body)+'</div>'+imgs+
       '<div class="post-foot">'+
         '<button class="'+(liked?'liked':'')+'" onclick="FEED.like(\''+p.id+'\',this)">\u2665 <span class="lc">'+lc+'</span></button>'+
         '<button onclick="FEED.comments(\''+p.id+'\')">\ud83d\udcac <span class="cc">'+cc+'</span></button>'+
@@ -591,6 +599,7 @@ setTimeout(maybeShowInstall, 1200);
   async function renderComposer(){
     var host=document.getElementById('feedComposer'); if(!host) return;
     if(!session){ host.innerHTML='<div class="signin-nudge">Sign in to post as your Falcon, like, and comment.<br><button onclick="document.getElementById(\'avBtn\').click()">Sign in</button></div>'; return; }
+    pendingFiles=[];
     var cars=[];
     try{ var r=await sb.from('garage_cars').select('id,nickname,year,trim_option,body_style').eq('owner_id',session.user.id).order('created_at',{ascending:true}); cars=r.data||[]; }catch(e){}
     var seen={}; cars=cars.filter(function(c){ var k=(c.nickname||'')+'|'+c.year+'|'+(c.trim_option||'')+'|'+(c.body_style||''); if(seen[k])return false; seen[k]=1; return true; });
@@ -599,13 +608,16 @@ setTimeout(maybeShowInstall, 1200);
       '<select id="cmpCar">'+opts+'</select>'+
       '<select id="cmpKind"><option value="update">Update</option><option value="question">Question</option><option value="build">Build</option></select>'+
       '</div><textarea id="cmpBody" placeholder="What\'s happening with your Falcon?"></textarea>'+
-      '<div style="text-align:right;margin-top:8px"><button class="btn-post" id="cmpPost" onclick="FEED.post()">Post</button></div></div>';
+      '<input type="file" accept="image/*" multiple id="cmpFiles" style="display:none" onchange="FEED.pickFiles(this)">'+
+      '<div class="cmp-thumbs" id="cmpThumbs"></div>'+
+      '<div style="display:flex;align-items:center;margin-top:8px"><button type="button" class="cmp-photo" onclick="document.getElementById(\'cmpFiles\').click()">\ud83d\udcf7 Photo</button>'+
+      '<button class="btn-post" id="cmpPost" onclick="FEED.post()" style="margin-left:auto">Post</button></div></div>';
   }
   async function renderFeed(){
     renderComposer();
     var host=document.getElementById('feedList'); if(!host) return;
     try{
-      var pr=await sb.from('posts').select('id,author_id,car_label,kind,body,created_at').order('created_at',{ascending:false}).limit(100);
+      var pr=await sb.from('posts').select('id,author_id,car_label,kind,body,image_urls,created_at').order('created_at',{ascending:false}).limit(100);
       if(pr.error) throw pr.error;
       var posts=pr.data||[];
       if(!posts.length){ host.innerHTML='<div class="feed-empty">No posts yet \u2014 be the first to post as your Falcon.</div>'; return; }
@@ -622,12 +634,26 @@ setTimeout(maybeShowInstall, 1200);
   }
   async function feedPost(){
     if(!session){ document.getElementById('avBtn').click(); return; }
-    var body=(document.getElementById('cmpBody').value||'').trim(); if(!body){ toast('Write something first'); return; }
+    var body=(document.getElementById('cmpBody').value||'').trim();
+    if(!body && !pendingFiles.length){ toast('Write something or add a photo'); return; }
     var carSel=document.getElementById('cmpCar'); var carId=carSel.value||null;
     var carLabel=carId?(carSel.options[carSel.selectedIndex].getAttribute('data-label')||null):null;
     var kind=document.getElementById('cmpKind').value||'update';
     var btn=document.getElementById('cmpPost'); btn.disabled=true; btn.textContent='Posting\u2026';
-    try{ var r=await sb.from('posts').insert({author_id:session.user.id, car_id:carId, car_label:carLabel, kind:kind, body:body}); if(r.error) throw r.error; document.getElementById('cmpBody').value=''; toast('\u2713 Posted'); await renderFeed(); }
+    try{
+      var imageUrls=[];
+      for(var i=0;i<pendingFiles.length;i++){
+        try{
+          var blob=await resizeImage(pendingFiles[i],1280,0.82);
+          var path=session.user.id+'/'+Date.now()+'_'+i+'.jpg';
+          var up=await sb.storage.from('post-images').upload(path, blob, {contentType:'image/jpeg'}); if(up.error) throw up.error;
+          var pub=sb.storage.from('post-images').getPublicUrl(path);
+          if(pub&&pub.data&&pub.data.publicUrl) imageUrls.push(pub.data.publicUrl);
+        }catch(ie){ /* skip this image */ }
+      }
+      var r=await sb.from('posts').insert({author_id:session.user.id, car_id:carId, car_label:carLabel, kind:kind, body:body, image_urls:imageUrls}); if(r.error) throw r.error;
+      document.getElementById('cmpBody').value=''; pendingFiles=[]; toast('\u2713 Posted'); await renderFeed();
+    }
     catch(e){ toast('Post failed: '+(e.message||e)); }
     btn.disabled=false; btn.textContent='Post';
   }
@@ -662,7 +688,19 @@ setTimeout(maybeShowInstall, 1200);
       var box=document.getElementById('cm-'+postId); if(box) box.innerHTML=commentsHTML(cs, nm, postId);
     }catch(e){ toast('Comment failed'); }
   }
-  window.FEED={ post:feedPost, like:feedLike, comments:feedComments, addc:feedAddComment };
+  var pendingFiles=[];
+  function resizeImage(file, maxDim, q){
+    return new Promise(function(resolve){
+      try{ var img=new Image(); var url=URL.createObjectURL(file);
+        img.onload=function(){ var w=img.width,h=img.height,sc=Math.min(1,maxDim/Math.max(w,h)); var cw=Math.round(w*sc),ch=Math.round(h*sc); var cv=document.createElement('canvas'); cv.width=cw; cv.height=ch; cv.getContext('2d').drawImage(img,0,0,cw,ch); cv.toBlob(function(b){ URL.revokeObjectURL(url); resolve(b||file); },'image/jpeg',q||0.82); };
+        img.onerror=function(){ URL.revokeObjectURL(url); resolve(file); }; img.src=url;
+      }catch(e){ resolve(file); }
+    });
+  }
+  function renderThumbs(){ var host=document.getElementById('cmpThumbs'); if(!host) return; host.innerHTML=pendingFiles.map(function(f,i){ return '<div class="t"><img src="'+URL.createObjectURL(f)+'"><button class="rm" onclick="FEED.rmThumb('+i+')">\u00d7</button></div>'; }).join(''); }
+  function feedPickFiles(input){ var fs=input.files?Array.prototype.slice.call(input.files):[]; for(var i=0;i<fs.length && pendingFiles.length<4;i++){ if(fs[i].type.indexOf('image/')===0) pendingFiles.push(fs[i]); } input.value=''; renderThumbs(); }
+  function feedRmThumb(i){ pendingFiles.splice(i,1); renderThumbs(); }
+  window.FEED={ post:feedPost, like:feedLike, comments:feedComments, addc:feedAddComment, pickFiles:feedPickFiles, rmThumb:feedRmThumb };
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='feed') renderFeed(); });
 
   sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); });
