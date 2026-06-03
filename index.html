@@ -179,9 +179,8 @@ footer .heart{color:var(--maroon)}
     <section class="panel" id="panel-feed">
       <div class="section-eyebrow">Talk — post as your car</div>
       <h2 class="section-title">The Feed</h2>
-      <div class="cs"><div class="cs-ico">📣</div><h3>Coming in the build</h3>
-        <p>A community feed where you post <em>as a car</em> — build updates, questions, shots from the road — with comments and likes from people who get it.</p>
-        <span class="pill">Phase 2 · Social Core</span></div>
+      <div id="feedComposer"></div>
+      <div id="feedList"></div>
     </section>
 
     <!-- CLUBS -->
@@ -424,6 +423,36 @@ setTimeout(maybeShowInstall, 1200);
 .club-geo{color:var(--subtle);font-size:.76rem;flex:1;min-width:120px}
 .club-link{color:var(--gold-deep);font-weight:700;font-size:.74rem;text-decoration:none;white-space:nowrap}
 .club-stub{color:var(--subtle);font-size:.82rem;font-style:italic}
+.composer{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.composer-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.composer select,.composer textarea{font:inherit;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--cream);color:var(--ink)}
+.composer select{flex:1;min-width:130px}
+.composer textarea{width:100%;box-sizing:border-box;min-height:62px;resize:vertical}
+.btn-post{background:var(--maroon);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:700;cursor:pointer}
+.btn-post:disabled{opacity:.5;cursor:default}
+.signin-nudge{background:#fff;border:1px dashed var(--gold);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px;color:var(--subtle)}
+.signin-nudge button{background:var(--maroon);color:#fff;border:none;border-radius:9px;padding:8px 16px;font-weight:700;cursor:pointer;margin-top:8px}
+.post{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.post-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.post-av{width:38px;height:38px;border-radius:50%;background:var(--maroon);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Fraunces',serif;flex-shrink:0}
+.post-who{font-weight:700;color:var(--ink);line-height:1.15}
+.post-meta{font-size:.74rem;color:var(--subtle)}
+.post-car{margin-left:auto;background:var(--cream);border:1px solid var(--gold);color:var(--maroon);font-size:.72rem;font-weight:700;border-radius:20px;padding:2px 10px;white-space:nowrap}
+.post-kind{display:inline-block;font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:6px;margin-bottom:6px}
+.post-kind.question{background:#fff3d6;color:#9a6b00}
+.post-kind.build{background:#e7f0e3;color:#3f6b2e}
+.post-body{color:var(--ink);white-space:pre-wrap;line-height:1.5;margin-bottom:10px}
+.post-foot{display:flex;gap:18px;border-top:1px solid var(--line);padding-top:9px;font-size:.88rem}
+.post-foot button{background:none;border:none;color:var(--subtle);font:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0}
+.post-foot button.liked{color:var(--maroon);font-weight:700}
+.comments{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+.comment{font-size:.88rem;padding:6px 0}
+.comment b{color:var(--ink)}
+.comment .ct{color:var(--subtle);font-size:.72rem;margin-left:6px}
+.comment-add{display:flex;gap:8px;margin-top:8px}
+.comment-add input{flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--cream);color:var(--ink)}
+.comment-add button{background:var(--gold-deep);color:#fff;border:none;border-radius:9px;padding:7px 12px;font-weight:700;cursor:pointer}
+.feed-empty{text-align:center;color:var(--subtle);padding:24px;font-style:italic}
 </style>
 <div class="ff-sheet-ov" id="authOv" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="ff-sheet">
@@ -538,8 +567,93 @@ setTimeout(maybeShowInstall, 1200);
       var t=document.getElementById('clubsTeaser'); if(t) t.style.display='none';
     }catch(e){ /* keep teaser */ }
   }
-  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); });
-  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); })();
+  function ago(ts){ var s=(Date.now()-new Date(ts).getTime())/1000; if(s<60)return'just now'; var m=s/60; if(m<60)return Math.floor(m)+'m ago'; var h=m/60; if(h<24)return Math.floor(h)+'h ago'; var d=h/24; if(d<7)return Math.floor(d)+'d ago'; return new Date(ts).toLocaleDateString(); }
+  function commentsHTML(cs, postId){
+    var html = cs.length ? cs.map(function(c){ var who=(c.author&&c.author.display_name)||'Friend'; return '<div class="comment"><b>'+esc(who)+'</b><span class="ct">'+ago(c.created_at)+'</span><br>'+esc(c.body)+'</div>'; }).join('') : '<div class="comment ct">No comments yet.</div>';
+    if(session){ html+='<div class="comment-add"><input id="ci-'+postId+'" placeholder="Add a comment\u2026"><button onclick="FEED.addc(\''+postId+'\')">Send</button></div>'; }
+    else { html+='<div class="comment ct">Sign in to comment.</div>'; }
+    return html;
+  }
+  function postCard(p, liked){
+    var who=(p.author&&p.author.display_name)||'Falcon friend';
+    var init=(who.trim().charAt(0)||'\u2605').toUpperCase();
+    var lc=(p.post_likes&&p.post_likes[0]&&p.post_likes[0].count)||0;
+    var cc=(p.comments&&p.comments[0]&&p.comments[0].count)||0;
+    var kindBadge=(p.kind&&p.kind!=='update')?'<div class="post-kind '+esc(p.kind)+'">'+esc(p.kind)+'</div>':'';
+    var carChip=p.car_label?'<span class="post-car">\ud83c\udd56 '+esc(p.car_label)+'</span>':'';
+    return '<div class="post" id="post-'+p.id+'">'+
+      '<div class="post-head"><div class="post-av">'+esc(init)+'</div>'+
+        '<div><div class="post-who">'+esc(who)+'</div><div class="post-meta">'+ago(p.created_at)+'</div></div>'+carChip+'</div>'+
+      kindBadge+'<div class="post-body">'+esc(p.body)+'</div>'+
+      '<div class="post-foot">'+
+        '<button class="'+(liked?'liked':'')+'" onclick="FEED.like(\''+p.id+'\',this)">\u2665 <span class="lc">'+lc+'</span></button>'+
+        '<button onclick="FEED.comments(\''+p.id+'\')">\ud83d\udcac <span class="cc">'+cc+'</span></button>'+
+      '</div><div class="comments" id="cm-'+p.id+'" style="display:none"></div></div>';
+  }
+  async function renderComposer(){
+    var host=document.getElementById('feedComposer'); if(!host) return;
+    if(!session){ host.innerHTML='<div class="signin-nudge">Sign in to post as your Falcon, like, and comment.<br><button onclick="document.getElementById(\'avBtn\').click()">Sign in</button></div>'; return; }
+    var cars=[];
+    try{ var r=await sb.from('garage_cars').select('id,nickname,year,trim_option,body_style').eq('owner_id',session.user.id).order('created_at',{ascending:true}); cars=r.data||[]; }catch(e){}
+    var opts='<option value="">Just me</option>'+cars.map(function(c){ var label=[c.year,c.trim_option,c.body_style].filter(Boolean).join(' '); return '<option value="'+c.id+'" data-label="'+esc(label)+'">'+esc(c.nickname||label)+' \u2014 '+esc(label)+'</option>'; }).join('');
+    host.innerHTML='<div class="composer"><div class="composer-row">'+
+      '<select id="cmpCar">'+opts+'</select>'+
+      '<select id="cmpKind"><option value="update">Update</option><option value="question">Question</option><option value="build">Build</option></select>'+
+      '</div><textarea id="cmpBody" placeholder="What\'s happening with your Falcon?"></textarea>'+
+      '<div style="text-align:right;margin-top:8px"><button class="btn-post" id="cmpPost" onclick="FEED.post()">Post</button></div></div>';
+  }
+  async function renderFeed(){
+    renderComposer();
+    var host=document.getElementById('feedList'); if(!host) return;
+    try{
+      var r=await sb.from('posts').select('id,author_id,car_label,kind,body,created_at,author:profiles(display_name,handle),post_likes(count),comments(count)').order('created_at',{ascending:false}).limit(100);
+      if(r.error) throw r.error;
+      var posts=r.data||[]; var likedSet={};
+      if(session){ var lr=await sb.from('post_likes').select('post_id').eq('user_id',session.user.id); (lr.data||[]).forEach(function(x){ likedSet[x.post_id]=1; }); }
+      host.innerHTML = posts.length ? posts.map(function(p){ return postCard(p, likedSet[p.id]); }).join('') : '<div class="feed-empty">No posts yet \u2014 be the first to post as your Falcon.</div>';
+    }catch(e){ host.innerHTML='<div class="feed-empty">Feed isn\'t available yet \u2014 run migration 002c, then refresh.</div>'; }
+  }
+  async function feedPost(){
+    if(!session){ document.getElementById('avBtn').click(); return; }
+    var body=(document.getElementById('cmpBody').value||'').trim(); if(!body){ toast('Write something first'); return; }
+    var carSel=document.getElementById('cmpCar'); var carId=carSel.value||null;
+    var carLabel=carId?(carSel.options[carSel.selectedIndex].getAttribute('data-label')||null):null;
+    var kind=document.getElementById('cmpKind').value||'update';
+    var btn=document.getElementById('cmpPost'); btn.disabled=true; btn.textContent='Posting\u2026';
+    try{ var r=await sb.from('posts').insert({author_id:session.user.id, car_id:carId, car_label:carLabel, kind:kind, body:body}); if(r.error) throw r.error; document.getElementById('cmpBody').value=''; toast('\u2713 Posted'); await renderFeed(); }
+    catch(e){ toast('Post failed: '+(e.message||e)); }
+    btn.disabled=false; btn.textContent='Post';
+  }
+  async function feedLike(postId, btn){
+    if(!session){ document.getElementById('avBtn').click(); return; }
+    var liked=btn.classList.contains('liked'); var span=btn.querySelector('.lc'); var n=parseInt(span.textContent,10)||0; btn.disabled=true;
+    try{
+      if(liked){ var d=await sb.from('post_likes').delete().eq('post_id',postId).eq('user_id',session.user.id); if(d.error)throw d.error; btn.classList.remove('liked'); span.textContent=Math.max(0,n-1); }
+      else { var i=await sb.from('post_likes').insert({post_id:postId, user_id:session.user.id}); if(i.error)throw i.error; btn.classList.add('liked'); span.textContent=n+1; }
+    }catch(e){ toast('Could not update like'); }
+    btn.disabled=false;
+  }
+  async function feedComments(postId){
+    var box=document.getElementById('cm-'+postId); if(!box) return;
+    if(box.style.display!=='none'){ box.style.display='none'; return; }
+    box.style.display='block'; box.innerHTML='<div class="comment ct">Loading\u2026</div>';
+    try{ var r=await sb.from('comments').select('body,created_at,author:profiles(display_name)').eq('post_id',postId).order('created_at',{ascending:true}); box.innerHTML=commentsHTML(r.data||[], postId); }
+    catch(e){ box.innerHTML='<div class="comment ct">Could not load comments.</div>'; }
+  }
+  async function feedAddComment(postId){
+    if(!session){ document.getElementById('avBtn').click(); return; }
+    var inp=document.getElementById('ci-'+postId); var body=(inp.value||'').trim(); if(!body) return; inp.disabled=true;
+    try{ var r=await sb.from('comments').insert({post_id:postId, author_id:session.user.id, body:body}); if(r.error)throw r.error; inp.value='';
+      var card=document.getElementById('post-'+postId); if(card){ var cc=card.querySelector('.cc'); if(cc) cc.textContent=(parseInt(cc.textContent,10)||0)+1; }
+      var rr=await sb.from('comments').select('body,created_at,author:profiles(display_name)').eq('post_id',postId).order('created_at',{ascending:true});
+      var box=document.getElementById('cm-'+postId); if(box) box.innerHTML=commentsHTML(rr.data||[], postId);
+    }catch(e){ toast('Comment failed'); }
+  }
+  window.FEED={ post:feedPost, like:feedLike, comments:feedComments, addc:feedAddComment };
+  document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='feed') renderFeed(); });
+
+  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); });
+  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); renderFeed(); })();
 })();
 </script>
 </body>
