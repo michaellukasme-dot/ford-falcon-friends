@@ -229,10 +229,15 @@ footer .heart{color:var(--maroon)}
     <!-- GAMES -->
     <section class="panel" id="panel-games">
       <div class="section-eyebrow">Play</div>
-      <h2 class="section-title">Games</h2>
-      <div class="cs"><div class="cs-ico">🎲</div><h3>Name the Year</h3>
-        <p>Random angles of every Falcon — including the <b>Econoline</b> family — shuffled into a first-to-guess challenge, plus a small games suite.</p>
-        <span class="pill">Phase 6</span></div>
+      <h2 class="section-title">Name the Year</h2>
+      <div class="nty-card">
+        <div class="nty-cat" id="ntyCat"></div>
+        <div class="nty-clue" id="ntyClue"></div>
+        <div class="nty-opts" id="ntyOpts"></div>
+        <div class="nty-result" id="ntyResult"></div>
+        <div class="nty-foot"><span class="nty-stats" id="ntyStats"></span><button class="nty-next" id="ntyNext" onclick="ntyRound()" style="display:none">Next &rarr;</button></div>
+      </div>
+      <p class="nty-hint">Guess the model year from the clue &mdash; Falcon milestones &amp; Econoline spotting cues. Build your streak; your best is saved on this device.</p>
     </section>
 
     <!-- VIN -->
@@ -401,6 +406,53 @@ if('serviceWorker' in navigator){ window.addEventListener('load', function(){ na
 
 /* ===================== INIT ===================== */
 renderGarage(); renderStat();
+
+/* ===================== NAME-THE-YEAR (offline, client-only) ===================== */
+var NTY_Q=[
+ {cat:'\ud83e\udd85 Falcon',y:1960,clue:"The Falcon's debut model year \u2014 Ford's new compact."},
+ {cat:'\ud83e\udd85 Falcon',y:1961,clue:"The sporty Futura trim arrives mid-year, with bucket seats."},
+ {cat:'\ud83e\udd85 Falcon',y:1962,clue:"First year for the Futura Club Coupe and the Squire wagon."},
+ {cat:'\ud83e\udd85 Falcon',y:1963,clue:"Big year: the Convertible, the 2-Door Hardtop, and the V8 Sprint all debut."},
+ {cat:'\ud83e\udd85 Falcon',y:1964,clue:"The Falcon is fully restyled \u2014 the crisp second-generation look."},
+ {cat:'\ud83e\udd85 Falcon',y:1965,clue:"Last model year for the Ranchero built on the Falcon body."},
+ {cat:'\ud83e\udd85 Falcon',y:1966,clue:"Downsized onto the Fairlane body \u2014 no more hardtops or convertibles."},
+ {cat:'\ud83e\udd85 Falcon',y:1970,clue:"The final model year for the Falcon nameplate in the U.S."},
+ {cat:'\ud83d\ude90 Econoline',y:1961,clue:"Econoline's first year \u2014 cab-forward pickup, small bumpers, round park lamps."},
+ {cat:'\ud83d\ude90 Econoline',y:1962,clue:"Econoline: the \u201cClub Wagon\u201d name appears on the passenger van."},
+ {cat:'\ud83d\ude90 Econoline',y:1963,clue:"Econoline: an 8-door van (two extra driver-side doors) is added."},
+ {cat:'\ud83d\ude90 Econoline',y:1964,clue:"Econoline: the Panel Van (no side loading doors) is introduced."},
+ {cat:'\ud83d\ude90 Econoline',y:1965,clue:"Econoline: the extended Super Van arrives \u2014 18\u2033 behind the rear axle; 240 six optional."},
+ {cat:'\ud83d\ude90 Econoline',y:1966,clue:"Econoline: the Club Wagon family is broadened with better interior trim."},
+ {cat:'\ud83d\ude90 Econoline',y:1967,clue:"Econoline: final first-gen year \u2014 dual master cylinder, backup lamps, 2-speed wipers."},
+ {cat:'\ud83d\ude90 Econoline',y:1967,clue:"Econoline: the last year for the Econoline pickup."}
+];
+var ntyS={score:0,streak:0,plays:0,idx:-1,answered:false};
+function ntyBest(){ try{ return parseInt(localStorage.getItem('fff_nty_best')||'0',10)||0; }catch(e){ return 0; } }
+function ntySetBest(v){ try{ localStorage.setItem('fff_nty_best',String(v)); }catch(e){} }
+function ntyYears(correct){ var o=[correct]; while(o.length<4){ var y=1960+Math.floor(Math.random()*11); if(o.indexOf(y)<0) o.push(y); } return o.sort(function(a,b){return a-b;}); }
+function ntyStats(){ var el=document.getElementById('ntyStats'); if(el) el.innerHTML='Streak <b>'+ntyS.streak+'</b> &middot; Best <b>'+ntyBest()+'</b> &middot; '+ntyS.score+'/'+ntyS.plays; }
+function ntyRound(){
+  var i; do{ i=Math.floor(Math.random()*NTY_Q.length); }while(i===ntyS.idx && NTY_Q.length>1);
+  ntyS.idx=i; ntyS.answered=false; var q=NTY_Q[i];
+  document.getElementById('ntyCat').textContent=q.cat;
+  document.getElementById('ntyClue').textContent=q.clue;
+  document.getElementById('ntyOpts').innerHTML=ntyYears(q.y).map(function(y){ return '<button class="nty-opt" onclick="ntyGuess('+y+',this)">'+y+'</button>'; }).join('');
+  document.getElementById('ntyResult').textContent='';
+  document.getElementById('ntyNext').style.display='none';
+  ntyStats();
+}
+function ntyGuess(y,btn){
+  if(ntyS.answered) return; ntyS.answered=true; ntyS.plays++;
+  var q=NTY_Q[ntyS.idx];
+  var btns=document.querySelectorAll('#ntyOpts .nty-opt');
+  for(var k=0;k<btns.length;k++){ var by=parseInt(btns[k].textContent,10); if(by===q.y) btns[k].classList.add('right'); else if(btns[k]===btn) btns[k].classList.add('wrong'); btns[k].disabled=true; }
+  var res=document.getElementById('ntyResult');
+  if(y===q.y){ ntyS.score++; ntyS.streak++; if(ntyS.streak>ntyBest()) ntySetBest(ntyS.streak); res.innerHTML='<span class="nty-ok">\u2713 '+q.y+' \u2014 nailed it.</span>'; }
+  else { ntyS.streak=0; res.innerHTML='<span class="nty-no">\u2715 It was '+q.y+'.</span>'; }
+  document.getElementById('ntyNext').style.display='inline-block';
+  ntyStats();
+}
+ntyRound();
 setTimeout(maybeShowInstall, 1200);
 </script>
 <style>
@@ -453,6 +505,21 @@ setTimeout(maybeShowInstall, 1200);
 .comment-add input{flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--cream);color:var(--ink)}
 .comment-add button{background:var(--gold-deep);color:#fff;border:none;border-radius:9px;padding:7px 12px;font-weight:700;cursor:pointer}
 .feed-empty{text-align:center;color:var(--subtle);padding:24px;font-style:italic}
+.nty-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);max-width:560px}
+.nty-cat{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--gold-deep);margin-bottom:8px}
+.nty-clue{font-family:'Fraunces',serif;font-size:1.3rem;line-height:1.4;color:var(--ink);margin-bottom:18px;min-height:2.6em}
+.nty-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.nty-opt{font:inherit;font-weight:700;font-size:1.1rem;padding:12px;border:1.5px solid var(--line);border-radius:11px;background:var(--cream);color:var(--ink);cursor:pointer}
+.nty-opt:hover:not(:disabled){border-color:var(--gold)}
+.nty-opt:disabled{cursor:default}
+.nty-opt.right{background:#e7f0e3;border-color:#3f6b2e;color:#2e5320}
+.nty-opt.wrong{background:#f6e1e1;border-color:#a33;color:#7a1f1f}
+.nty-result{min-height:1.5em;font-weight:700;margin-bottom:10px}
+.nty-ok{color:#3f6b2e}.nty-no{color:#a33}
+.nty-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.nty-stats{font-size:.85rem;color:var(--subtle)}
+.nty-next{background:var(--maroon);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-weight:700;cursor:pointer}
+.nty-hint{color:var(--subtle);font-size:.85rem;margin-top:14px;max-width:560px}
 .post-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:10px}
 .post-imgs img{width:100%;height:150px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer}
 .cmp-photo{background:none;border:1px solid var(--line);border-radius:9px;padding:8px 14px;cursor:pointer;color:var(--maroon);font-weight:700;font:inherit}
