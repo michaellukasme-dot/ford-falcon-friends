@@ -158,14 +158,23 @@ footer .heart{color:var(--maroon)}
       <div class="garage-grid" id="garageGrid"></div>
 
       <div class="rarity-engine">
-        <div class="section-eyebrow">Add a Falcon</div>
+        <div class="section-eyebrow">Add a vehicle</div>
         <h2 class="section-title" style="font-size:1.2rem;margin-bottom:10px">How rare is yours?</h2>
-        <div class="re-grid">
+        <div class="series-toggle">
+          <button class="seg active" id="segFalcon" type="button" onclick="setSeries('falcon')">&#129413; Falcon</button>
+          <button class="seg" id="segEco" type="button" onclick="setSeries('econoline')">&#128656; Econoline</button>
+        </div>
+        <div class="re-grid" id="falconGrid">
           <div class="fld"><label>Generation</label><select id="reGen"></select></div>
           <div class="fld"><label>Year</label><select id="reYear" disabled></select></div>
           <div class="fld"><label>Body Style</label><select id="reBody" disabled></select></div>
           <div class="fld"><label>Trim</label><select id="reTrim" disabled></select></div>
           <div class="fld full"><label>Paint Color</label><select id="rePaint" disabled></select></div>
+        </div>
+        <div class="re-grid" id="ecoGrid" style="display:none">
+          <div class="fld"><label>Year</label><select id="ecoYear"></select></div>
+          <div class="fld"><label>Body Style</label><select id="ecoBody" disabled></select></div>
+          <div class="fld full"><label>Model</label><select id="ecoName" disabled></select></div>
         </div>
         <div class="rarity-readout empty" id="rarityReadout">Pick your car above to see how rare it is.</div>
         <div class="fld full" style="margin-top:12px"><label>Nickname (optional)</label><input id="reNick" placeholder="e.g. Red Precious" maxlength="40"></div>
@@ -347,15 +356,16 @@ function renderGarage(){
   var g=seedIfEmpty(), grid=document.getElementById('garageGrid');
   grid.innerHTML = g.map(function(c,i){
     var photo = c.photo ? '<img src="'+c.photo+'" alt="'+c.nick+'">' : '<div class="nofoto">&#128663;</div>';
-    var badge = c.qty ? '<div class="rarity-badge">1 of ~'+Number(c.qty).toLocaleString()+'</div>' : '';
+    var badge = c.qty ? '<div class="rarity-badge">1 of ~'+Number(c.qty).toLocaleString()+'</div>' : ((c.series==='econoline'||c.gen==='Econoline') ? '<div class="rarity-badge" style="background:var(--gold-deep)">Econoline</div>' : '');
     return '<div class="car-card" onclick="toast(\''+(c.nick||'Your Falcon').replace(/\'/g,"")+' — My Car build page lands in Phase 1.\')">'+
       '<div class="car-photo">'+photo+badge+'</div>'+
       '<div class="car-body"><div class="car-nick">'+(c.nick||'My Falcon')+'</div>'+
-      '<div class="car-spec">'+c.year+' '+c.trim+'<br>'+c.body+' &middot; '+c.paint+'</div>'+
+      '<div class="car-spec">'+c.year+' '+c.trim+'<br>'+c.body+(c.paint?(' &middot; '+c.paint):'')+'</div>'+
       '<span class="car-status">'+(c.status||'owned')+'</span></div></div>';
   }).join('') + '<div class="add-card" onclick="document.getElementById(\'reGen\').scrollIntoView({behavior:\'smooth\'})"><div class="plus">+</div>Add another<br>Falcon</div>';
 }
 addBtn.onclick=function(){
+  if(addMode==='econoline'){ ecoAdd(); return; }
   var r=currentLookup(); if(!r) return;
   var g=loadGarage();
   g.push({nick:(nick.value.trim()||r.trim), gen:r.gen, year:r.year, body:r.body, trim:r.trim, paint:r.paint, code:r.code, qty:r.qty, status:'owned', photo:'', note:''});
@@ -453,6 +463,47 @@ function ntyGuess(y,btn){
   ntyStats();
 }
 ntyRound();
+
+/* ===================== ECONOLINE add path (offline) ===================== */
+var ECONOLINE=[
+ {y:1961,b:'Pickup',n:'Econoline Pickup',e:'144 / 170 six',t:'First year; cab-forward pickup; small bumpers; round park lamps'},
+ {y:1961,b:'Cargo Van',n:'Econoline Delivery Van',e:'144 / 170 six',t:'First year; 6-door; small bumpers'},
+ {y:1961,b:'Station Bus',n:'Falcon Station Bus',e:'144 / 170 six',t:'First year passenger van; sold under the Falcon name'},
+ {y:1962,b:'Pickup',n:'Econoline Pickup',e:'144 / 170 six',t:'Station Bus reclassified as a passenger car (Falcon line)'},
+ {y:1962,b:'Station Bus',n:'Falcon Club Wagon',e:'144 / 170 six',t:'Club Wagon naming appears'},
+ {y:1963,b:'Cargo Van',n:'Econoline Heavy Duty Van (8-door)',e:'144 / 170 six',t:'8-door (two extra driver-side doors) added this year'},
+ {y:1963,b:'Pickup',n:'Econoline Pickup',e:'144 / 170 six',t:'Dagenham 4-speed offered'},
+ {y:1963,b:'Station Bus',n:'Falcon Club Wagon',e:'170 six',t:''},
+ {y:1964,b:'Panel Van',n:'Econoline Panel Van',e:'170 six',t:'Panel van (no side loading doors) introduced; 3-speed auto on the 170'},
+ {y:1964,b:'Cargo Van',n:'Econoline Delivery Van',e:'170 six',t:''},
+ {y:1964,b:'Station Bus',n:'Falcon Club Wagon',e:'170 six',t:''},
+ {y:1965,b:'Super Van',n:'Econoline Super Van',e:'170 / 240 six',t:'Extended body 18 in. behind the rear axle; bigger bumpers; lower seat'},
+ {y:1965,b:'Cargo Van',n:'Econoline Delivery Van',e:'170 / 240 six',t:'Rear license plate + lamp moved to the cargo door; 240 six optional'},
+ {y:1965,b:'Station Bus',n:'Falcon Club Wagon',e:'170 / 240 six',t:'Rear-door license plate bracket'},
+ {y:1966,b:'Cargo Van',n:'Econoline Delivery Van',e:'170 / 240 six',t:'Club Wagon family broadened; improved interior trim'},
+ {y:1966,b:'Station Bus',n:'Falcon Club Wagon (Deluxe)',e:'170 / 240 six',t:'Broadened Club Wagon lineup'},
+ {y:1966,b:'Super Van',n:'Econoline Super Van',e:'170 / 240 six',t:''},
+ {y:1967,b:'Cargo Van',n:'Econoline Delivery Van',e:'170 / 240 six',t:'Final first-gen year; dual master cylinder; backup lamps; 2-speed wipers'},
+ {y:1967,b:'Pickup',n:'Econoline Pickup',e:'170 / 240 six',t:'Final year for the Econoline pickup'},
+ {y:1967,b:'Station Bus',n:'Falcon Club Wagon',e:'170 / 240 six',t:'Final first-gen year; padded sun visors'}
+];
+var addMode='falcon';
+var ecoYear=document.getElementById('ecoYear'), ecoBody=document.getElementById('ecoBody'), ecoName=document.getElementById('ecoName');
+var ecoInited=false;
+function ecoInit(){ if(ecoInited) return; ecoInited=true; var ys=[]; ECONOLINE.forEach(function(r){ if(ys.indexOf(r.y)<0) ys.push(r.y); }); ys.sort(); ecoYear.innerHTML='<option value="">Choose year</option>'+ys.map(function(y){return '<option>'+y+'</option>';}).join(''); }
+function setSeries(m){ addMode=m;
+  document.getElementById('segFalcon').classList.toggle('active', m==='falcon');
+  document.getElementById('segEco').classList.toggle('active', m==='econoline');
+  document.getElementById('falconGrid').style.display=(m==='falcon'?'':'none');
+  document.getElementById('ecoGrid').style.display=(m==='econoline'?'':'none');
+  if(m==='falcon'){ setReadout(null); } else { try{ rePaint.value=''; }catch(_){ } setEcoReadout(null); ecoInit(); }
+}
+ecoYear.onchange=function(){ ecoName.innerHTML='<option value="">\u2014</option>'; ecoName.disabled=true; setEcoReadout(null); if(!ecoYear.value){ ecoBody.innerHTML='<option value="">\u2014</option>'; ecoBody.disabled=true; return; } var y=parseInt(ecoYear.value,10); var bs=[]; ECONOLINE.forEach(function(r){ if(r.y===y && bs.indexOf(r.b)<0) bs.push(r.b); }); ecoBody.innerHTML='<option value="">Choose body</option>'+bs.map(function(b){return '<option>'+b+'</option>';}).join(''); ecoBody.disabled=false; };
+ecoBody.onchange=function(){ setEcoReadout(null); if(!ecoBody.value){ ecoName.innerHTML='<option value="">\u2014</option>'; ecoName.disabled=true; return; } var y=parseInt(ecoYear.value,10); var ns=ECONOLINE.filter(function(r){return r.y===y && r.b===ecoBody.value;}); ecoName.innerHTML='<option value="">Choose model</option>'+ns.map(function(r){return '<option>'+r.n+'</option>';}).join(''); ecoName.disabled=false; };
+ecoName.onchange=function(){ setEcoReadout(ecoLookup()); };
+function ecoLookup(){ if(!ecoYear.value||!ecoBody.value||!ecoName.value) return null; var y=parseInt(ecoYear.value,10); var rec=ECONOLINE.filter(function(r){return r.y===y && r.b===ecoBody.value && r.n===ecoName.value;})[0]; return rec?{year:String(y),body:rec.b,name:rec.n,engine:rec.e,tell:rec.t}:null; }
+function setEcoReadout(e){ var readout=document.getElementById('rarityReadout'), addBtn=document.getElementById('addCarBtn'); if(!e){ readout.className='rarity-readout empty'; readout.textContent='Pick your Econoline above.'; addBtn.disabled=true; return; } readout.className='rarity-readout'; readout.innerHTML='<div class="ro-num">Estimate unavailable</div><div class="ro-sub">'+e.year+' '+e.name+'<br>'+e.body+' &middot; '+e.engine+'</div><div class="ro-est">'+(e.tell?('Spotting cue: '+e.tell):'Econoline production figures were never published \u2014 yours is genuinely uncounted.')+'</div>'; addBtn.disabled=false; }
+function ecoAdd(){ var e=ecoLookup(); if(!e) return; var car={nick:(nick.value.trim()||e.name), gen:'Econoline', year:e.year, body:e.body, trim:e.name, paint:'', code:'', qty:null, series:'econoline', status:'owned', photo:'', note:e.tell||''}; var g=loadGarage(); g.push(car); saveGarage(g); renderGarage(); if(window.__fffCloudAdd) window.__fffCloudAdd(car); toast('\u2605 Added \u2014 '+e.year+' '+e.name); nick.value=''; ecoName.value=''; setEcoReadout(null); document.getElementById('garageGrid').scrollIntoView({behavior:'smooth'}); }
 setTimeout(maybeShowInstall, 1200);
 </script>
 <style>
@@ -505,6 +556,9 @@ setTimeout(maybeShowInstall, 1200);
 .comment-add input{flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:7px 10px;background:var(--cream);color:var(--ink)}
 .comment-add button{background:var(--gold-deep);color:#fff;border:none;border-radius:9px;padding:7px 12px;font-weight:700;cursor:pointer}
 .feed-empty{text-align:center;color:var(--subtle);padding:24px;font-style:italic}
+.series-toggle{display:flex;gap:8px;margin-bottom:14px}
+.seg{flex:1;font:inherit;font-weight:700;padding:9px;border:1.5px solid var(--line);border-radius:10px;background:var(--cream);color:var(--subtle);cursor:pointer}
+.seg.active{background:var(--maroon);color:#fff;border-color:var(--maroon)}
 .nty-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:var(--shadow);max-width:560px}
 .nty-cat{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--gold-deep);margin-bottom:8px}
 .nty-clue{font-family:'Fraunces',serif;font-size:1.3rem;line-height:1.4;color:var(--ink);margin-bottom:18px;min-height:2.6em}
@@ -599,14 +653,15 @@ setTimeout(maybeShowInstall, 1200);
   }
   async function cloudInsert(c){
     if(!session) return;
-    try{ await sb.from('garage_cars').insert({owner_id:session.user.id, nickname:c.nick||c.trim||'My Falcon', generation:c.gen, year:parseInt(c.year,10)||null, body_style:c.body, trim_option:c.trim, paint_color:c.paint, body_style_code:c.code, estimated_quantity_sold:c.qty||null, story:c.note||null, is_public:true}); }catch(e){}
+    try{ await sb.from('garage_cars').insert({owner_id:session.user.id, nickname:c.nick||c.trim||'My Falcon', generation:c.gen, year:parseInt(c.year,10)||null, body_style:c.body, trim_option:c.trim, paint_color:c.paint, body_style_code:c.code, estimated_quantity_sold:c.qty||null, series:c.series||'falcon', story:c.note||null, is_public:true}); }catch(e){}
   }
+  window.__fffCloudAdd=function(c){ if(session) cloudInsert(c); };
   async function cloudSync(){
     if(!session || syncStarted) return; syncStarted=true;
     try{
       var r=await sb.from('garage_cars').select('*').eq('owner_id',session.user.id).order('created_at',{ascending:true}); var cars=r.data||[];
       if(cars.length===0){ var local=lget(); for(var i=0;i<local.length;i++){ await cloudInsert(local[i]); } var r2=await sb.from('garage_cars').select('*').eq('owner_id',session.user.id).order('created_at',{ascending:true}); cars=r2.data||[]; }
-      var mapped=cars.map(function(c){ return {nick:c.nickname, gen:c.generation, year:String(c.year||''), body:c.body_style, trim:c.trim_option, paint:c.paint_color, code:c.body_style_code, qty:c.estimated_quantity_sold, status:'owned', photo:'', note:c.story||''}; });
+      var mapped=cars.map(function(c){ return {nick:c.nickname, gen:c.generation, year:String(c.year||''), body:c.body_style, trim:c.trim_option, paint:c.paint_color, code:c.body_style_code, qty:c.estimated_quantity_sold, series:c.series||(c.generation==='Econoline'?'econoline':'falcon'), status:'owned', photo:'', note:c.story||''}; });
       lset(mapped); if(typeof renderGarage==='function') renderGarage();
     }catch(e){}
   }
