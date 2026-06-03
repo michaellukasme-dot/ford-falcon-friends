@@ -227,11 +227,11 @@ footer .heart{color:var(--maroon)}
 
     <!-- MAGAZINE -->
     <section class="panel" id="panel-magazine">
-      <div class="section-eyebrow">Read — the digital clubhouse</div>
+      <div class="section-eyebrow">Read — Member Spotlights</div>
       <h2 class="section-title">The Magazine</h2>
-      <div class="cs"><div class="cs-ico">📰</div><h3>A monthly, auto-assembled from the app</h3>
-        <p>In the spirit of <em>The National Falcon News</em> — member spotlights, a verified-owner cover car, Tech Corner DIY, and the annual member-car calendar.</p>
-        <span class="pill">Phase 5</span></div>
+      <p class="mkt-intro">Member car stories, in the spirit of <em>The National Falcon News</em>. Tell the tale of your Falcon — the find, the build, the road. Your first photo becomes the cover.</p>
+      <div id="magComposer"></div>
+      <div id="magList" class="mag-list"></div>
     </section>
 
     <!-- GAMES -->
@@ -591,6 +591,22 @@ textarea.evt-in{min-height:54px;resize:vertical}
 .mkt-seller{font-size:.75rem;color:var(--subtle);margin-top:auto;padding-top:6px}
 .mkt-owner{display:flex;gap:8px;margin-top:6px}
 .mkt-owner button{font-size:.72rem;padding:4px 9px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--maroon);cursor:pointer}
+.mag-list{display:flex;flex-direction:column;gap:26px;margin-top:8px;max-width:720px}
+.mag{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.mag-hero{width:100%;max-height:440px;object-fit:cover;display:block;cursor:pointer;background:var(--cream)}
+.mag-body-wrap{padding:20px 24px 22px}
+.mag-head{font-family:'Fraunces',Georgia,serif;font-size:1.7rem;line-height:1.12;color:var(--maroon);margin:0 0 5px}
+.mag-sub{font-style:italic;color:var(--ink);font-size:1.04rem;margin:0 0 9px}
+.mag-byline{font-size:.74rem;color:var(--subtle);text-transform:uppercase;letter-spacing:.6px;margin-bottom:13px}
+.mag-text{color:var(--ink);line-height:1.62;white-space:pre-wrap;font-size:.99rem}
+.mag-text.clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.mag-more{background:none;border:none;color:var(--maroon);font-weight:700;cursor:pointer;padding:8px 0 0;font-size:.9rem}
+.mag-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:16px}
+.mag-gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer}
+.mag-owner{display:flex;gap:8px;margin-top:14px}
+.mag-owner button{font-size:.72rem;padding:4px 9px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--maroon);cursor:pointer}
+.cmp-thumbs .t{position:relative}
+.cmp-thumbs .t-cover{position:absolute;left:4px;bottom:4px;background:var(--maroon);color:#fff;font-size:.58rem;padding:1px 6px;border-radius:6px;font-weight:700}
 .evt-desc{color:var(--ink);white-space:pre-wrap;line-height:1.45;margin-bottom:8px}
 .evt-join{display:inline-block;color:var(--gold-deep);font-weight:700;text-decoration:none;margin-bottom:8px}
 .evt-lineup{font-size:.86rem;color:var(--maroon);font-weight:700;border-top:1px solid var(--line);padding-top:9px;margin-bottom:9px}
@@ -937,6 +953,69 @@ textarea.evt-in{min-height:54px;resize:vertical}
   async function mktSold(id, status){ if(!session) return; try{ var r=await sb.from('listings').update({status:status}).eq('id',id); if(r.error) throw r.error; await renderMkt(); }catch(e){ toast('Could not update'); } }
   async function mktDel(id){ if(!session) return; try{ var r=await sb.from('listings').delete().eq('id',id); if(r.error) throw r.error; toast('Removed'); await renderMkt(); }catch(e){ toast('Could not delete'); } }
   window.MKT={ post:mktPost, sold:mktSold, del:mktDel, pickFiles:mktPickFiles, rmThumb:mktRmThumb };
+  /* ---------- MAGAZINE / SPOTLIGHTS ---------- */
+  var pendingMag=[];
+  function magRenderThumbs(){ var host=document.getElementById('magThumbs'); if(!host) return; host.innerHTML=pendingMag.map(function(f,i){ return '<div class="t"><img src="'+URL.createObjectURL(f)+'">'+(i===0?'<span class="t-cover">cover</span>':'')+'<button class="rm" onclick="MAG.rmThumb('+i+')">×</button></div>'; }).join(''); }
+  function magPickFiles(input){ var fs=input.files?Array.prototype.slice.call(input.files):[]; for(var i=0;i<fs.length && pendingMag.length<8;i++){ if(fs[i].type.indexOf('image/')===0) pendingMag.push(fs[i]); } input.value=''; magRenderThumbs(); }
+  function magRmThumb(i){ pendingMag.splice(i,1); magRenderThumbs(); }
+  async function renderMagComposer(){
+    var host=document.getElementById('magComposer'); if(!host) return;
+    if(!session){ host.innerHTML='<div class="signin-nudge">Sign in to write a spotlight on your Falcon.<br><button onclick="document.getElementById(\'avBtn\').click()">Sign in</button></div>'; return; }
+    var opts=await cruCarOpts();
+    host.innerHTML='<div class="composer">'+
+      '<input class="evt-in" id="magHead" placeholder="Headline — e.g. Buy me a Falcon">'+
+      '<input class="evt-in" id="magSub" placeholder="Subhead (optional)">'+
+      '<div class="composer-row"><select id="magCar">'+opts+'</select><input class="evt-in" id="magLoc" placeholder="City, state" style="flex:1"></div>'+
+      '<textarea class="evt-in" id="magBody" placeholder="Your story — the find, the build, the road…" style="min-height:170px"></textarea>'+
+      '<input type="file" accept="image/*" multiple id="magFiles" style="display:none" onchange="MAG.pickFiles(this)">'+
+      '<div style="display:flex;align-items:center;margin-top:8px"><button type="button" class="cmp-photo" onclick="document.getElementById(\'magFiles\').click()">📷 Photos (first = cover)</button><div id="magThumbs" class="cmp-thumbs"></div></div>'+
+      '<div style="text-align:right;margin-top:8px"><button class="btn-post" id="magPost" onclick="MAG.post()">Publish spotlight</button></div></div>';
+  }
+  function magCard(S, authorName){
+    var imgs=S.image_urls||[];
+    var hero=imgs.length?'<img class="mag-hero" src="'+esc(imgs[0])+'" onclick="window.open(this.src,\'_blank\')">':'';
+    var gallery=imgs.length>1?'<div class="mag-gallery">'+imgs.slice(1).map(function(u){return '<img src="'+esc(u)+'" onclick="window.open(this.src,\'_blank\')">';}).join('')+'</div>':'';
+    var by=['By '+esc(authorName||'a Falcon friend')]; if(S.car_label) by.push(esc(S.car_label)); if(S.location_text) by.push(esc(S.location_text)); by.push(ago(S.created_at));
+    var mine=session && S.author_id===session.user.id;
+    var owner=mine?'<div class="mag-owner"><button onclick="MAG.del(\''+S.id+'\')">Delete</button></div>':'';
+    var body=S.body?('<div class="mag-text clamp" id="magt-'+S.id+'">'+esc(S.body)+'</div><button class="mag-more" onclick="MAG.expand(\''+S.id+'\',this)">Read more</button>'):'';
+    return '<article class="mag">'+hero+'<div class="mag-body-wrap">'+
+      '<h3 class="mag-head">'+esc(S.headline)+'</h3>'+
+      (S.subhead?'<div class="mag-sub">'+esc(S.subhead)+'</div>':'')+
+      '<div class="mag-byline">'+by.join('  ·  ')+'</div>'+
+      body+gallery+owner+'</div></article>';
+  }
+  async function renderMag(){
+    renderMagComposer();
+    var host=document.getElementById('magList'); if(!host) return;
+    try{
+      var r=await sb.from('spotlights').select('id,author_id,car_label,headline,subhead,body,image_urls,location_text,created_at').order('created_at',{ascending:false});
+      if(r.error) throw r.error; var L=r.data||[];
+      if(!L.length){ host.innerHTML='<div class="feed-empty">No spotlights yet — be the first to tell your Falcon’s story.</div>'; return; }
+      var aids=[]; L.forEach(function(x){ if(x.author_id&&aids.indexOf(x.author_id)<0) aids.push(x.author_id); });
+      var nm={}; if(aids.length){ var ar=await sb.from('profiles').select('id,display_name').in('id',aids); (ar.data||[]).forEach(function(u){ nm[u.id]=u.display_name; }); }
+      host.innerHTML=L.map(function(x){ return magCard(x, nm[x.author_id]); }).join('');
+    }catch(e){ host.innerHTML='<div class="feed-empty">Magazine couldn\'t load: '+esc(e.message||e)+'</div>'; }
+  }
+  async function magPost(){
+    if(!session){ document.getElementById('avBtn').click(); return; }
+    var head=(document.getElementById('magHead').value||'').trim(); if(!head){ toast('Give it a headline'); return; }
+    var sub=(document.getElementById('magSub').value||'').trim();
+    var cs=document.getElementById('magCar'); var carLabel=cs.value?(cs.options[cs.selectedIndex].getAttribute('data-label')||cs.options[cs.selectedIndex].text):null;
+    var loc=(document.getElementById('magLoc').value||'').trim();
+    var body=(document.getElementById('magBody').value||'').trim();
+    var btn=document.getElementById('magPost'); btn.disabled=true; btn.textContent='Publishing…';
+    try{
+      var imageUrls=[];
+      for(var i=0;i<pendingMag.length;i++){ try{ var blob=await resizeImage(pendingMag[i],1600,0.85); var path='spotlights/'+session.user.id+'/'+Date.now()+'_'+i+'.jpg'; var up=await sb.storage.from('post-images').upload(path, blob, {contentType:'image/jpeg'}); if(up.error) throw up.error; var pub=sb.storage.from('post-images').getPublicUrl(path); if(pub&&pub.data&&pub.data.publicUrl) imageUrls.push(pub.data.publicUrl); }catch(ie){} }
+      var r=await sb.from('spotlights').insert({author_id:session.user.id, headline:head, subhead:sub||null, car_label:carLabel, location_text:loc||null, body:body||null, image_urls:imageUrls}); if(r.error) throw r.error;
+      pendingMag=[]; toast('✓ Published'); await renderMag();
+    }catch(e){ toast('Publish failed: '+(e.message||e)); }
+    btn.disabled=false; btn.textContent='Publish spotlight';
+  }
+  function magExpand(id, btn){ var t=document.getElementById('magt-'+id); if(!t) return; t.classList.toggle('clamp'); btn.textContent=t.classList.contains('clamp')?'Read more':'Show less'; }
+  async function magDel(id){ if(!session) return; try{ var r=await sb.from('spotlights').delete().eq('id',id); if(r.error) throw r.error; toast('Removed'); await renderMag(); }catch(e){ toast('Could not delete'); } }
+  window.MAG={ post:magPost, del:magDel, expand:magExpand, pickFiles:magPickFiles, rmThumb:magRmThumb };
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='feed') renderFeed(); });
 
   /* ---- Cruises & Meetups ---- */
@@ -1041,9 +1120,10 @@ textarea.evt-in{min-height:54px;resize:vertical}
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='games' && window.ntyRenderBoard) window.ntyRenderBoard(); });
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='cruises') renderCruises(); });
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='market') renderMkt(); });
+  document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='magazine') renderMag(); });
 
-  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); renderCruises(); renderMkt(); });
-  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); renderFeed(); renderCruises(); renderMkt(); if(window.ntyRenderBoard) window.ntyRenderBoard(); })();
+  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); renderCruises(); renderMkt(); renderMag(); });
+  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); renderFeed(); renderCruises(); renderMkt(); renderMag(); if(window.ntyRenderBoard) window.ntyRenderBoard(); })();
 })();
 </script>
 </body>
