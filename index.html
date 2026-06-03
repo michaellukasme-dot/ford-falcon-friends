@@ -218,11 +218,11 @@ footer .heart{color:var(--maroon)}
 
     <!-- MARKET -->
     <section class="panel" id="panel-market">
-      <div class="section-eyebrow">Transact — the only paid surface</div>
+      <div class="section-eyebrow">Buy · Sell · Swap</div>
       <h2 class="section-title">Marketplace</h2>
-      <div class="cs"><div class="cs-ico">🏷️</div><h3>Dues, tickets, swag</h3>
-        <p>The app is free. Money only moves here: club membership dues, event tickets, and club/seller swag. Order history and ticket codes included.</p>
-        <span class="pill">Phase 4 · Stripe</span></div>
+      <p class="mkt-intro">Falcons, parts &amp; literature &mdash; free to list. Buyers and sellers arrange payment and shipping between themselves. (Club dues, tickets &amp; swag come later.)</p>
+      <div id="mktComposer"></div>
+      <div id="mktList" class="mkt-list"></div>
     </section>
 
     <!-- MAGAZINE -->
@@ -574,6 +574,23 @@ textarea.evt-in{min-height:54px;resize:vertical}
 .evt-clubs-wrap{margin-top:4px}
 .evt-clubs-lbl{display:block;font-size:.72rem;color:var(--subtle);margin-bottom:4px}
 #evtClubs{height:auto;padding:6px;line-height:1.5}
+.mkt-intro{color:var(--subtle);font-size:.9rem;margin:6px 0 16px;max-width:640px}
+.mkt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px}
+.mkt{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.mkt.sold{opacity:.62}
+.mkt-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--cream);cursor:pointer;display:block}
+.mkt-noimg{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:2.4rem;background:var(--cream);color:var(--gold-deep)}
+.mkt-body{padding:12px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.mkt-badges{display:flex;gap:6px;margin-bottom:2px}
+.mkt-kind{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:var(--maroon);color:#fff;padding:2px 7px;border-radius:999px}
+.mkt-sold-badge{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:#444;color:#fff;padding:2px 7px;border-radius:999px}
+.mkt-title{font-weight:700;color:var(--ink);line-height:1.25}
+.mkt-price{color:var(--maroon);font-weight:800}
+.mkt-meta{font-size:.8rem;color:var(--subtle)}
+.mkt-desc{font-size:.85rem;color:var(--ink);white-space:pre-wrap;margin-top:2px}
+.mkt-seller{font-size:.75rem;color:var(--subtle);margin-top:auto;padding-top:6px}
+.mkt-owner{display:flex;gap:8px;margin-top:6px}
+.mkt-owner button{font-size:.72rem;padding:4px 9px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--maroon);cursor:pointer}
 .evt-desc{color:var(--ink);white-space:pre-wrap;line-height:1.45;margin-bottom:8px}
 .evt-join{display:inline-block;color:var(--gold-deep);font-weight:700;text-decoration:none;margin-bottom:8px}
 .evt-lineup{font-size:.86rem;color:var(--maroon);font-weight:700;border-top:1px solid var(--line);padding-top:9px;margin-bottom:9px}
@@ -851,6 +868,75 @@ textarea.evt-in{min-height:54px;resize:vertical}
   function feedPickFiles(input){ var fs=input.files?Array.prototype.slice.call(input.files):[]; for(var i=0;i<fs.length && pendingFiles.length<4;i++){ if(fs[i].type.indexOf('image/')===0) pendingFiles.push(fs[i]); } input.value=''; renderThumbs(); }
   function feedRmThumb(i){ pendingFiles.splice(i,1); renderThumbs(); }
   window.FEED={ post:feedPost, like:feedLike, comments:feedComments, addc:feedAddComment, pickFiles:feedPickFiles, rmThumb:feedRmThumb };
+  /* ---------- MARKET ---------- */
+  var pendingMkt=[];
+  var MKIND={car:'Car',part:'Part',literature:'Literature',other:'Other'};
+  function mktPriceLabel(c){ if(c==null||c==='') return 'Contact / make offer'; return '$'+Math.round(c/100).toLocaleString(); }
+  function mktRenderThumbs(){ var host=document.getElementById('mktThumbs'); if(!host) return; host.innerHTML=pendingMkt.map(function(f,i){ return '<div class="t"><img src="'+URL.createObjectURL(f)+'"><button class="rm" onclick="MKT.rmThumb('+i+')">\u00d7</button></div>'; }).join(''); }
+  function mktPickFiles(input){ var fs=input.files?Array.prototype.slice.call(input.files):[]; for(var i=0;i<fs.length && pendingMkt.length<4;i++){ if(fs[i].type.indexOf('image/')===0) pendingMkt.push(fs[i]); } input.value=''; mktRenderThumbs(); }
+  function mktRmThumb(i){ pendingMkt.splice(i,1); mktRenderThumbs(); }
+  function renderMktComposer(){
+    var host=document.getElementById('mktComposer'); if(!host) return;
+    if(!session){ host.innerHTML='<div class="signin-nudge">Sign in to list a Falcon, part, or piece of literature.<br><button onclick="document.getElementById(\'avBtn\').click()">Sign in</button></div>'; return; }
+    host.innerHTML='<div class="composer"><div class="composer-row">'+
+      '<select id="mktKind"><option value="car">Car</option><option value="part" selected>Part</option><option value="literature">Literature</option><option value="other">Other</option></select>'+
+      '<input class="evt-in" id="mktPrice" type="number" min="0" step="1" placeholder="Price $ (blank = make offer)">'+
+      '</div>'+
+      '<input class="evt-in" id="mktTitle" placeholder="Title \u2014 e.g. 1964 Futura, or 260 V8 intake">'+
+      '<input class="evt-in" id="mktCond" placeholder="Condition (optional) \u2014 used / NOS / project">'+
+      '<input class="evt-in" id="mktLoc" placeholder="Location (optional) \u2014 city, state">'+
+      '<textarea class="evt-in" id="mktDesc" placeholder="Details + how to reach you (email / phone / handle)"></textarea>'+
+      '<input type="file" accept="image/*" multiple id="mktFiles" style="display:none" onchange="MKT.pickFiles(this)">'+
+      '<div style="display:flex;align-items:center;margin-top:8px"><button type="button" class="cmp-photo" onclick="document.getElementById(\'mktFiles\').click()">\ud83d\udcf7 Photo</button><div id="mktThumbs" class="cmp-thumbs"></div></div>'+
+      '<div style="text-align:right;margin-top:8px"><button class="btn-post" id="mktPost" onclick="MKT.post()">Post listing</button></div></div>';
+  }
+  function mktCard(L, sellerName){
+    var imgs=L.image_urls||[]; var mine=session && L.seller_id===session.user.id;
+    var img=imgs.length?'<img class="mkt-img" src="'+esc(imgs[0])+'" onclick="window.open(this.src,\'_blank\')">':'<div class="mkt-noimg">\ud83d\ude97</div>';
+    var sold=L.status==='sold';
+    var owner=mine?('<div class="mkt-owner">'+(sold?'<button onclick="MKT.sold(\''+L.id+'\',\'active\')">Mark active</button>':'<button onclick="MKT.sold(\''+L.id+'\',\'sold\')">Mark sold</button>')+'<button onclick="MKT.del(\''+L.id+'\')">Delete</button></div>'):'';
+    return '<div class="mkt'+(sold?' sold':'')+'">'+img+'<div class="mkt-body">'+
+      '<div class="mkt-badges"><span class="mkt-kind">'+(MKIND[L.kind]||'Item')+'</span>'+(sold?'<span class="mkt-sold-badge">Sold</span>':'')+'</div>'+
+      '<div class="mkt-title">'+esc(L.title)+'</div>'+
+      '<div class="mkt-price">'+mktPriceLabel(L.price_cents)+'</div>'+
+      (L.condition?'<div class="mkt-meta">'+esc(L.condition)+'</div>':'')+
+      (L.location_text?'<div class="mkt-meta">\ud83d\udccd '+esc(L.location_text)+'</div>':'')+
+      (L.description?'<div class="mkt-desc">'+esc(L.description)+'</div>':'')+
+      '<div class="mkt-seller">Listed by '+esc(sellerName||'a Falcon friend')+' \u00b7 '+ago(L.created_at)+'</div>'+
+      owner+'</div></div>';
+  }
+  async function renderMkt(){
+    renderMktComposer();
+    var host=document.getElementById('mktList'); if(!host) return;
+    try{
+      var r=await sb.from('listings').select('id,seller_id,kind,title,description,price_cents,location_text,condition,image_urls,status,created_at').order('status',{ascending:true}).order('created_at',{ascending:false});
+      if(r.error) throw r.error; var L=r.data||[];
+      if(!L.length){ host.innerHTML='<div class="feed-empty">Nothing listed yet \u2014 be the first to post a Falcon or part.</div>'; return; }
+      var sids=[]; L.forEach(function(x){ if(x.seller_id&&sids.indexOf(x.seller_id)<0) sids.push(x.seller_id); });
+      var nm={}; if(sids.length){ var ar=await sb.from('profiles').select('id,display_name').in('id',sids); (ar.data||[]).forEach(function(u){ nm[u.id]=u.display_name; }); }
+      host.innerHTML=L.map(function(x){ return mktCard(x, nm[x.seller_id]); }).join('');
+    }catch(e){ host.innerHTML='<div class="feed-empty">Market couldn\'t load: '+esc(e.message||e)+'</div>'; }
+  }
+  async function mktPost(){
+    if(!session){ document.getElementById('avBtn').click(); return; }
+    var title=(document.getElementById('mktTitle').value||'').trim(); if(!title){ toast('Give the listing a title'); return; }
+    var kind=document.getElementById('mktKind').value||'part';
+    var pv=(document.getElementById('mktPrice').value||'').trim(); var cents=pv===''?null:Math.max(0,Math.round(parseFloat(pv)*100)); if(cents!==null&&isNaN(cents)) cents=null;
+    var cond=(document.getElementById('mktCond').value||'').trim();
+    var loc=(document.getElementById('mktLoc').value||'').trim();
+    var desc=(document.getElementById('mktDesc').value||'').trim();
+    var btn=document.getElementById('mktPost'); btn.disabled=true; btn.textContent='Posting\u2026';
+    try{
+      var imageUrls=[];
+      for(var i=0;i<pendingMkt.length;i++){ try{ var blob=await resizeImage(pendingMkt[i],1280,0.82); var path='listings/'+session.user.id+'/'+Date.now()+'_'+i+'.jpg'; var up=await sb.storage.from('post-images').upload(path, blob, {contentType:'image/jpeg'}); if(up.error) throw up.error; var pub=sb.storage.from('post-images').getPublicUrl(path); if(pub&&pub.data&&pub.data.publicUrl) imageUrls.push(pub.data.publicUrl); }catch(ie){} }
+      var r=await sb.from('listings').insert({seller_id:session.user.id, kind:kind, title:title, description:desc||null, price_cents:cents, location_text:loc||null, condition:cond||null, image_urls:imageUrls}); if(r.error) throw r.error;
+      pendingMkt=[]; toast('\u2713 Listed'); await renderMkt();
+    }catch(e){ toast('Listing failed: '+(e.message||e)); }
+    btn.disabled=false; btn.textContent='Post listing';
+  }
+  async function mktSold(id, status){ if(!session) return; try{ var r=await sb.from('listings').update({status:status}).eq('id',id); if(r.error) throw r.error; await renderMkt(); }catch(e){ toast('Could not update'); } }
+  async function mktDel(id){ if(!session) return; try{ var r=await sb.from('listings').delete().eq('id',id); if(r.error) throw r.error; toast('Removed'); await renderMkt(); }catch(e){ toast('Could not delete'); } }
+  window.MKT={ post:mktPost, sold:mktSold, del:mktDel, pickFiles:mktPickFiles, rmThumb:mktRmThumb };
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='feed') renderFeed(); });
 
   /* ---- Cruises & Meetups ---- */
@@ -946,9 +1032,10 @@ textarea.evt-in{min-height:54px;resize:vertical}
   window.__fffLeaderboard=async function(slug){ try{ var r=await sb.from('game_scores').select('user_id,best_streak').eq('game_slug',slug).order('best_streak',{ascending:false}).limit(10); var rows=r.data||[]; var ids=rows.map(function(x){return x.user_id;}); var nm={}; if(ids.length){ var ar=await sb.from('profiles').select('id,display_name').in('id',ids); (ar.data||[]).forEach(function(u){ nm[u.id]=u.display_name; }); } return rows.map(function(x){ return {name:nm[x.user_id]||'Falcon friend', best:x.best_streak}; }); }catch(e){ return []; } };
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='games' && window.ntyRenderBoard) window.ntyRenderBoard(); });
   document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='cruises') renderCruises(); });
+  document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='market') renderMkt(); });
 
-  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); renderCruises(); });
-  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); renderFeed(); renderCruises(); if(window.ntyRenderBoard) window.ntyRenderBoard(); })();
+  sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); renderCruises(); renderMkt(); });
+  (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); renderFeed(); renderCruises(); renderMkt(); if(window.ntyRenderBoard) window.ntyRenderBoard(); })();
 })();
 </script>
 </body>
