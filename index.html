@@ -255,9 +255,27 @@ footer .heart{color:var(--maroon)}
     <section class="panel" id="panel-vin">
       <div class="section-eyebrow">Identity — decode your VIN</div>
       <h2 class="section-title">VIN Decoder</h2>
-      <p class="mkt-intro">Type the warranty number from your title or driver's-door tag — a 1960–70½ Falcon VIN is 11 characters, like <b>3H02U110532</b>. Year and assembly plant decode for certain; body &amp; engine codes are year-specific, so those link out to the authoritative registry.</p>
+      <p class="mkt-intro">Snap the tag or type the number. A 1960&ndash;70&frac12; Falcon VIN is 11 characters, like <b>3H02U110532</b>; Econolines start <b>E1</b> and date themselves by serial range. Add your door-tag codes to unlock paint, trim, the birth date, DSO, axle &amp; transmission &mdash; every decoded line tells you how sure it is.</p>
       <div class="vin-tool">
-        <div class="vin-in-row"><input id="vinIn" maxlength="13" placeholder="e.g. 3H02U110532" autocapitalize="characters" spellcheck="false"><button class="btn-post" onclick="vinDecode()">Decode</button></div>
+        <div class="vin-in-row">
+          <input id="vinIn" maxlength="13" placeholder="e.g. 3H02U110532 or E14T339182" autocapitalize="characters" spellcheck="false">
+          <button class="btn-post vin-snap-btn" onclick="vinSnap()" title="Snap the tag with your camera">&#128247; Snap</button>
+          <button class="btn-post" onclick="vinDecode()">Decode</button>
+        </div>
+        <input type="file" id="vinPhoto" accept="image/*" capture="environment" style="display:none" onchange="vinPhotoPicked(this)">
+        <div id="vinOcr" class="vin-confirm" style="display:none"></div>
+        <details class="vin-plate-details" id="vinPlateBox">
+          <summary>Door-tag codes (optional) &mdash; unlock paint, trim &amp; the birth date</summary>
+          <div class="vin-plate-grid">
+            <div><label>Body</label><input id="vpBody" placeholder="62B" autocapitalize="characters" spellcheck="false"></div>
+            <div><label>Color</label><input id="vpColor" placeholder="DM" autocapitalize="characters" spellcheck="false"></div>
+            <div><label>Trim</label><input id="vpTrim" placeholder="27" autocapitalize="characters" spellcheck="false"></div>
+            <div><label>Date</label><input id="vpDate" placeholder="26H" autocapitalize="characters" spellcheck="false"></div>
+            <div><label>DSO</label><input id="vpDso" placeholder="33" autocapitalize="characters" spellcheck="false"></div>
+            <div><label>Axle</label><input id="vpAxle" placeholder="5" autocapitalize="characters" spellcheck="false"></div>
+            <div><label>Trans</label><input id="vpTrans" placeholder="3" autocapitalize="characters" spellcheck="false"></div>
+          </div>
+        </details>
         <div id="vinOut" class="vin-out" style="display:none"></div>
       </div>
     </section>
@@ -512,28 +530,696 @@ function ecoLookup(){ if(!ecoYear.value||!ecoBody.value||!ecoName.value) return 
 function setEcoReadout(e){ var readout=document.getElementById('rarityReadout'), addBtn=document.getElementById('addCarBtn'); if(!e){ readout.className='rarity-readout empty'; readout.textContent='Pick your Econoline above.'; addBtn.disabled=true; return; } readout.className='rarity-readout'; readout.innerHTML='<div class="ro-num">Estimate unavailable</div><div class="ro-sub">'+e.year+' '+e.name+'<br>'+e.body+' &middot; '+e.engine+'</div><div class="ro-est">'+(e.tell?('Spotting cue: '+e.tell):'Econoline production figures were never published \u2014 yours is genuinely uncounted.')+'</div>'; addBtn.disabled=false; }
 function ecoAdd(){ var e=ecoLookup(); if(!e) return; var car={nick:(nick.value.trim()||e.name), gen:'Econoline', year:e.year, body:e.body, trim:e.name, paint:'', code:'', qty:null, series:'econoline', status:'owned', photo:'', note:e.tell||''}; var g=loadGarage(); g.push(car); saveGarage(g); renderGarage(); if(window.__fffCloudAdd) window.__fffCloudAdd(car); toast('\u2605 Added \u2014 '+e.year+' '+e.name); nick.value=''; ecoName.value=''; setEcoReadout(null); document.getElementById('garageGrid').scrollIntoView({behavior:'smooth'}); }
 setTimeout(maybeShowInstall, 1200);
-/* ---------- VIN DECODER (offline, North American Falcon 1960-70.5) ---------- */
-var FFF_PLANTS={A:'Atlanta, GA',B:'Oakville, Ontario',D:'Dallas, TX',E:'Mahwah, NJ',F:'Dearborn, MI',G:'Chicago, IL',H:'Lorain, OH',J:'Los Angeles, CA',K:'Kansas City, KS',L:'Long Beach, CA',N:'Norfolk, VA',P:'Twin Cities, MN',R:'San Jose, CA',S:'Pilot Plant (Allen Park, MI)',T:'Metuchen, NJ',U:'Louisville, KY',W:'Wayne, MI',Y:'Wixom, MI',Z:'St. Louis, MO'};
-var FFF_ENGINES={S:'144 cu in I6 (1-bbl)',U:'170 cu in I6 (1-bbl)',T:'200 cu in I6 (1-bbl)',F:'260 cu in V8 (2-bbl)',C:'289 cu in V8 (2-bbl)',A:'289 cu in V8 (4-bbl)',K:'289 cu in V8 Hi-Po (4-bbl)',L:'250 cu in I6 (1-bbl)'};
-function vinYear(c){ return {'0':'1960 or 1970','1':'1961','2':'1962','3':'1963','4':'1964','5':'1965','6':'1966','7':'1967','8':'1968','9':'1969'}[c]||null; }
-function vinYearLink(c){ var b='https://www.falconregistry.com/dcode/'; var m={'1':'dcode_60-61.php','2':'dcode_62.php','3':'dcode_63-65.php','4':'dcode_63-65.php','5':'dcode_63-65.php','6':'dcode_66-69.php','7':'dcode_66-69.php','8':'dcode_66-69.php','9':'dcode_66-69.php','0':'dcode_vin.php'}; return b+(m[c]||'dcode_vin.php'); }
-function vinRow(k,v,note){ return '<div class="vin-k">'+k+'</div><div class="vin-v">'+v+(note?'<div class="vin-sub">'+note+'</div>':'')+'</div>'; }
+/* ---------- FFF_VIN2: comprehensive decoder, Falcon 1960-1970.5 + Econoline 1961-67 (Increment 2, replaces v15) ---------- */
+/* ============================================================================
+   FFF_VIN2 — Ford Falcon (1960–1970½) + Econoline (1961–1967) decode tables
+   ford_falcon_friends · Tag FFF · fff-v17 candidate · 2026-06-04
+   Sources: Michael's factory ID pages (falcon_vin_*.png), Econoline Data Sheet
+   (econoline.org), econoline.org VIN-location pages, Falcon Club references.
+   Every table carries a `src` (source page) so data verification is auditable
+   — see FFF_VIN2_DATA_VERIFY.md. Entries marked verify:true need Michael/Al
+   to confirm against factory literature before we claim "High" confidence.
+   ========================================================================== */
+window.FFF_VIN2 = (function(){
+
+/* ---------- Plate / VIN format eras (drives parsing + the UI's "where to look") ---------- */
+var FALCON_ERAS = [
+  {years:[1960,1961,1962,1963], plate:"Patent plate", vinName:"Serial Number",
+   where:"rear face of the left front door (1962–63: serial & data lines swapped positions)",
+   src:"falcon_vin_6062a/6063b"},
+  {years:[1964,1965,1966], plate:"Warranty plate", vinName:"Vehicle Warranty Number",
+   where:"rear face of the left front door (door-lock face)", src:"falcon_vin_64a/65a-d"},
+  {years:[1967], plate:"Warranty plate", vinName:"Vehicle Warranty Number",
+   where:"door-lock face of the left front door; official VIN also stamped atop the radiator/fender apron support",
+   src:"falcon_vin_67b-d"},
+  {years:[1968], plate:"Warranty plate", vinName:"Vehicle Warranty Number",
+   where:"left front door-lock face; VIN tab riveted to instrument panel, passenger side, visible through windshield",
+   src:"falcon_vin_68a-d"},
+  {years:[1969], plate:"Warranty plate", vinName:"Vehicle Warranty Number",
+   where:"left front door-lock face; VIN tab on instrument panel, driver side, visible through windshield",
+   src:"falcon_vin_69a-g"},
+  {years:[1970,1970.5], plate:"Vehicle Certification Label", vinName:"VEH. IDENT. NO.",
+   where:"rear face of the driver's door (printed label); VIN tab on instrument panel, driver side",
+   src:"falcon_vin_70a-g"}
+];
+
+/* ---------- Assembly plants (year-keyed: the list grew over the decade) ---------- */
+/* Falcons came mainly from Lorain, Kansas City & San Jose (+ Oakville for Canada),
+   but we decode the full Ford passenger-car list of each year's book. */
+var PLANTS = {
+  /* 1960–63 Falcon book */ "1960-63": {src:"falcon_vin_6062a",
+    A:"Atlanta, GA", H:"Lorain, OH", K:"Kansas City, MO", R:"San Jose, CA",
+    S:"Pilot Plant (Allen Park, MI)", T:"Metuchen, NJ"},
+  /* 1964 Falcon book */ "1964": {src:"falcon_vin_64a",
+    A:"Atlanta, GA", H:"Lorain, OH", K:"Kansas City, MO", R:"San Jose, CA",
+    S:"Pilot Plant (Allen Park, MI)", T:"Metuchen, NJ"},
+  /* 1965–67 books (full line) */ "1965-67": {src:"falcon_vin_65a",
+    A:"Atlanta, GA", D:"Dallas, TX", E:"Mahwah, NJ", F:"Dearborn, MI", G:"Chicago, IL",
+    H:"Lorain, OH", J:"Los Angeles, CA", K:"Kansas City, MO", L:"Michigan Truck (Wayne, MI)",
+    N:"Norfolk, VA", P:"Twin Cities, MN", R:"San Jose, CA", S:"Pilot Plant (Allen Park, MI)",
+    T:"Metuchen, NJ", U:"Louisville, KY", W:"Wayne, MI", Y:"Wixom, MI", Z:"St. Louis, MO"},
+  /* 1968–69 books */ "1968-69": {src:"falcon_vin_68b/69a",
+    A:"Atlanta, GA", B:"Oakville, Ontario (Canada)", C:"Ontario Truck (Canada)", D:"Dallas, TX",
+    E:"Mahwah, NJ", F:"Dearborn, MI", G:"Chicago, IL", H:"Lorain, OH", J:"Los Angeles, CA",
+    K:"Kansas City, MO", L:"Michigan Truck (Wayne, MI)", N:"Norfolk, VA", P:"Twin Cities, MN",
+    R:"San Jose, CA", S:"Allen Park (Pilot), MI", T:"Metuchen, NJ", U:"Louisville, KY",
+    W:"Wayne, MI", X:"St. Thomas, Ontario (Canada)", Y:"Wixom, MI", Z:"St. Louis, MO"},
+  /* 1970 book */ "1970": {src:"falcon_vin_70a",
+    A:"Atlanta, GA", B:"Oakville, Ontario (Canada)", D:"Dallas, TX", E:"Mahwah, NJ",
+    F:"Dearborn, MI", G:"Chicago, IL", H:"Lorain, OH", J:"Los Angeles, CA",
+    K:"Kansas City, MO", N:"Norfolk, VA", P:"Twin Cities, MN", R:"San Jose, CA",
+    S:"Allen Park (Pilot), MI", T:"Metuchen, NJ", U:"Louisville, KY", W:"Wayne, MI",
+    X:"St. Thomas, Ontario (Canada)", Y:"Wixom, MI"}
+};
+function plantsFor(y){
+  if(y<=1963) return PLANTS["1960-63"];
+  if(y===1964) return PLANTS["1964"];
+  if(y<=1967) return PLANTS["1965-67"];
+  if(y<=1969) return PLANTS["1968-69"];
+  return PLANTS["1970"];
+}
+
+/* ---------- Falcon body serial codes (digits 3-4 of VIN) + body style codes ---------- */
+/* Each year-group: serial -> {styles:[bodyStyleCode...], type, model} */
+var BODY = {
+  "1960-62": {src:"falcon_vin_6062a (Falcon Identification p.5)", years:[1960,1961,1962], rows:{
+    "11":{type:"2-Door Sedan", model:"Falcon", styles:["64A","64C"]},
+    "12":{type:"4-Door Sedan", model:"Falcon", styles:["58A"]},
+    "17":{type:"2-Door Futura", model:"Futura", styles:["64A","64C"], note:"64A (RPO) = 1961 Futura; 64C = 1962 Futura"},
+    "21":{type:"2-Door Station Wagon", model:"Falcon wagon", styles:["59A"]},
+    "22":{type:"4-Door Station Wagon", model:"Falcon wagon", styles:["71A"]},
+    "26":{type:"4-Door Country Squire Wagon", model:"Squire", styles:["71B"]},
+    "27":{type:"2-Door Ranchero", model:"Ranchero", styles:["66A"]},
+    "29":{type:"Sedan Delivery", model:"Sedan Delivery", styles:["78A"]}
+  }},
+  "1963": {src:"derived from 1960-62 + 1964 books (63-65 share the Registry decode page)", verify:true, years:[1963], rows:{
+    "11":{type:"2-Door Sedan", model:"Falcon", styles:["62A"]},
+    "12":{type:"4-Door Sedan", model:"Falcon", styles:["54A"]},
+    "17":{type:"2-Door Sedan", model:"Futura", styles:["62B"]},
+    "19":{type:"2-Door Hardtop", model:"Futura / Sprint", styles:["63A","63B","63C"], note:"1963½ hardtops; Sprint = V8 RPO"},
+    "15":{type:"2-Door Convertible", model:"Futura / Sprint", styles:["76A","76B"]},
+    "21":{type:"2-Door Station Wagon", model:"Falcon wagon", styles:["59A"]},
+    "22":{type:"4-Door Station Wagon", model:"Falcon wagon", styles:["71A","71B"]},
+    "26":{type:"4-Door Squire Wagon", model:"Squire", styles:["71C"]},
+    "27":{type:"2-Door Ranchero", model:"Ranchero", styles:["66A","66B"]},
+    "29":{type:"Sedan Delivery", model:"Sedan Delivery", styles:["78A","78B"]}
+  }},
+  "1964-65": {src:"falcon_vin_64a (Falcon Identification p.5, Model & Body Style Codes)", years:[1964,1965], rows:{
+    "01":{type:"2-Door Sedan", model:"Falcon Standard", styles:["62A","62D"], note:"62D = RPO bench"},
+    "02":{type:"4-Door Sedan", model:"Falcon Standard", styles:["54A","54D"], note:"54D = RPO"},
+    "16":{type:"4-Door Sedan", model:"Futura", styles:["54B"]},
+    "19":{type:"2-Door Sedan", model:"Futura", styles:["62B"]},
+    "17":{type:"2-Door Hardtop", model:"Futura", styles:["63B"], verify:true},
+    "13":{type:"2-Door Hardtop", model:"Futura / Sprint", styles:["63C","63D"], note:"RPO bucket; 63D = Sprint"},
+    "15":{type:"2-Door Convertible", model:"Futura", styles:["76A"], note:"bench"},
+    "12":{type:"2-Door Convertible", model:"Futura", styles:["76B"], note:"bucket"},
+    "14":{type:"2-Door Convertible", model:"Sprint", styles:["76D"], note:"RPO bucket"},
+    "21":{type:"2-Door Station Wagon", model:"Falcon wagon", styles:["59A"]},
+    "22":{type:"4-Door Station Wagon", model:"Falcon wagon", styles:["71A"]},
+    "24":{type:"4-Door Station Wagon Deluxe", model:"Futura wagon", styles:["71B"]},
+    "26":{type:"4-Door Squire", model:"Squire", styles:["71C"]},
+    "27":{type:"2-Door Ranchero", model:"Ranchero / Deluxe", styles:["66A","66B"]},
+    "29":{type:"Sedan Delivery", model:"Standard / Deluxe", styles:["78A","78B"]}
+  }},
+  "1966-67": {src:"1968 book pattern (falcon_vin_68a) — 1966 factory pages MISSING from source set", verify:true, years:[1966,1967], rows:{
+    "10":{type:"2-Door Club Coupe", model:"Falcon Standard", styles:["62A"]},
+    "11":{type:"4-Door Sedan", model:"Falcon Standard", styles:["54A"]},
+    "20":{type:"2-Door Club Coupe", model:"Futura", styles:["62B"]},
+    "21":{type:"4-Door Sedan", model:"Futura", styles:["54B"]},
+    "22":{type:"2-Door Sports Coupe", model:"Futura Sports Coupe", styles:["62C"]},
+    "12":{type:"4-Door Station Wagon", model:"Falcon wagon (Std)", styles:["71A"]},
+    "23":{type:"4-Door Station Wagon", model:"Falcon wagon (Deluxe)", styles:["71B"]}
+  }},
+  "1968": {src:"falcon_vin_68a (Group 1, 1-2)", years:[1968], rows:{
+    "10":{type:"2-Door Club Coupe", model:"Falcon Standard", styles:["62A"]},
+    "11":{type:"4-Door Sedan", model:"Falcon Standard", styles:["54A"]},
+    "20":{type:"2-Door Club Coupe", model:"Futura", styles:["62B"]},
+    "21":{type:"4-Door Sedan", model:"Futura", styles:["54B"]},
+    "22":{type:"2-Door Sports Coupe", model:"Futura", styles:["62C"]},
+    "12":{type:"4-Door Station Wagon", model:"Wagon (Std)", styles:["71A"]},
+    "23":{type:"4-Door Station Wagon", model:"Wagon (Deluxe)", styles:["71B"]}
+  }},
+  "1969": {src:"falcon_vin_69b (01-01-03)", years:[1969], rows:{
+    "10":{type:"2-Door Sedan", model:"Falcon Standard", styles:["62A"]},
+    "11":{type:"4-Door Sedan", model:"Falcon Standard", styles:["54A"]},
+    "20":{type:"2-Door Sedan", model:"Futura", styles:["62B"]},
+    "21":{type:"4-Door Sedan", model:"Futura", styles:["54B"]},
+    "22":{type:"2-Door Sports Coupe", model:"Futura Sports Coupe", styles:["62C"]},
+    "12":{type:"4-Door Station Wagon", model:"Wagon (Standard)", styles:["71A"]},
+    "23":{type:"4-Door Station Wagon", model:"Wagon (Futura)", styles:["71B"]}
+  }},
+  "1970": {src:"falcon_vin_70b (10-01-03)", years:[1970], rows:{
+    "10":{type:"2-Door Sedan", model:"Falcon Standard", styles:["62A"]},
+    "11":{type:"4-Door Sedan", model:"Falcon Standard", styles:["54A"]},
+    "20":{type:"2-Door Sedan", model:"Futura", styles:["62B"]},
+    "21":{type:"4-Door Sedan", model:"Futura", styles:["54B"]},
+    "12":{type:"4-Door Station Wagon", model:"Wagon (Standard)", styles:["71A"]},
+    "23":{type:"4-Door Station Wagon", model:"Wagon (Futura)", styles:["71B"]}
+  }},
+  "1970.5": {src:"Michael's 1970\u00bd reference, 2026-06-04 (Torino/Fairlane intermediate platform)", years:[1970.5], rows:{
+    "26":{type:"2-Door Sedan (6-passenger)", model:"Falcon (1970\u00bd, Torino platform)", styles:["62A"], note:"pillared post-sedan, NOT a hardtop", verify:true},
+    "27":{type:"4-Door Sedan (6-passenger)", model:"Falcon (1970\u00bd)", styles:["54A"], verify:true},
+    "40":{type:"4-Door Station Wagon (6-passenger)", model:"Falcon (1970\u00bd)", styles:["71D"], verify:true}
+  }, note:"Style codes 54A/62A/71D confirmed; the serial\u2192style digit pairing (26/27/40) still wants one real VIN + door-tag pair to flip to high confidence."}
+};
+function bodyFor(y){
+  if(y<=1962) return BODY["1960-62"];
+  if(y===1963) return BODY["1963"];
+  if(y<=1965) return BODY["1964-65"];
+  if(y<=1967) return BODY["1966-67"];
+  if(y===1968) return BODY["1968"];
+  if(y===1969) return BODY["1969"];
+  if(y===1970.5) return BODY["1970.5"];
+  return BODY["1970"];
+}
+
+/* ---------- Engine codes (the trap: same letter ≠ same engine across years) ---------- */
+var ENGINES = {
+  1960:{src:"falcon_vin_6062a", S:{d:"144 cid OHV six (90 hp)"}, D:{d:"144 cid six, low-compression (84-octane)"}},
+  1961:{src:"falcon_vin_6062a", S:{d:"144 cid OHV six"}, D:{d:"144 cid six, low-compression"}, U:{d:"170 cid OHV six"}, E:{d:"170 cid six, low-compression"}},
+  1962:{src:"falcon_vin_6062a", S:{d:"144 cid OHV six"}, D:{d:"144 cid six, low-compression"}, U:{d:"170 cid OHV six"}, E:{d:"170 cid six, low-compression"}},
+  1963:{src:"1964 Falcon book pattern", verify:true, S:{d:"144 cid six"}, U:{d:"170 cid six"}, T:{d:"200 cid six (late '63)", verify:true}, F:{d:"260 cid V8 (Sprint, 1963½)"}},
+  1964:{src:"falcon_vin_64a (Engine Identification Codes)", S:{d:"144 cid six"}, U:{d:"170 cid six"}, T:{d:"200 cid six", verify:true}, F:{d:"260 cid V8"}, K:{d:"289 cid V8 Hi-Po (rare)", verify:true}},
+  1965:{src:"falcon_vin_65b + standard '65 codes", U:{d:"170 cid six (1V)"}, T:{d:"200 cid six (1V)"}, C:{d:"289 cid V8 (2V)"}, A:{d:"289 cid V8 (4V)", verify:true}, K:{d:"289 cid V8 Hi-Po", verify:true}},
+  1966:{src:"PENDING — 1966 pages missing; pattern from '65/'67", verify:true, U:{d:"170 cid six (1V)"}, T:{d:"200 cid six (1V)"}, C:{d:"289 cid V8 (2V)"}},
+  1967:{src:"falcon_vin_67c", U:{d:"170 cid six (1V)"}, T:{d:"200 cid six (1V)"}, C:{d:"289 cid V8 (2V)"}},
+  1968:{src:"falcon_vin_68a (Engine Codes)", U:{d:"170 cid six (1V)"}, T:{d:"200 cid six (1V)"}, "2":{d:"200 cid six (1V), low-compression"}, C:{d:"289 cid V8 (2V)"}, F:{d:"302 cid V8 (2V)"}, "6":{d:"302 cid V8 (2V), low-compression"}, J:{d:"302 cid V8 (4V)"}, X:{d:"390 cid V8 (2V) Premium"}, Y:{d:"390 cid V8 (2V)"}, S:{d:"390 cid V8 (4V) GT"}, W:{d:"427 cid V8 (4V) Hi-Perf"}},
+  1969:{src:"falcon_vin_69c (01-01-04)", U:{d:"170 cid six (1V)"}, T:{d:"200 cid six (1V)"}, "2":{d:"200 cid six (1V), low-compression"}, L:{d:"250 cid six (1V)"}, V:{d:"240 cid six (1V)"}, "3":{d:"240 cid six (1V), low-compression"}, F:{d:"302 cid V8 (2V)"}, "6":{d:"302 cid V8 (2V), low-compression"}, D:{d:"302 cid V8 (2V) Police & Taxi"}, H:{d:"351 cid V8 (2V)"}, M:{d:"351 cid V8 (4V)"}, Y:{d:"390 cid V8 (2V)"}},
+  1970:{src:"falcon_vin_70d (10-01-04)", U:{d:"170 cid six (1V)"}, T:{d:"200 cid six (1V)"}, "2":{d:"200 cid six (1V), low-compression"}, L:{d:"250 cid six (1V)"}, "3":{d:"250 cid six (1V), low-compression"}, V:{d:"240 cid six (1V)"}, "5":{d:"240 cid six (1V), low-compression"}, F:{d:"302 cid V8 (2V)"}, "6":{d:"302 cid V8 (2V), low-compression"}, H:{d:"351 cid V8 (2V)"}, M:{d:"351 cid V8 (4V)"}, G:{d:"302 cid V8 (4V) Boss"}},
+  1970.5:{src:"1970 full-line table (falcon_vin_70d) + Michael's 1970\u00bd reference 2026-06-04", L:{d:"250 cid six (1V)"}, F:{d:"302 cid V8 (2V)"}, H:{d:"351 cid V8 (2V)"}, M:{d:"351 cid V8 (4V)"}, N:{d:"429 cid V8 (4V) Thunder Jet", verify:true}, C:{d:"429 cid V8 (4V) Cobra Jet"}, J:{d:"429 cid V8 (4V) CJ Ram Air"}, R:{d:"428 cid V8 (4V) CJ Ram Air \u2014 per the 1970 book; cross-check vs 429 hi-po", verify:true}}
+};
+
+/* ---------- Exterior paint codes (transcribed literally from each year's page) ---------- */
+/* name = the manual's wording; promo = common Ford promotional name where confident. */
+var COLORS = {
+  1960:{src:"falcon_vin_6063b (Color, M30J)", A:{name:"Black",promo:"Raven Black"}, E:{name:"Medium Blue Metallic",promo:"Belmont Blue"}, F:{name:"Light Blue",promo:"Sky Mist Blue"}, H:{name:"Beige Metallic",promo:"Beachwood Brown"}, J:{name:"Red",promo:"Monte Carlo Red"}, K:{name:"Turquoise Metallic",promo:"Sultana Turquoise"}, M:{name:"White",promo:"Corinthian White"}, T:{name:"Medium Green",promo:"Meadowvale Green"}, W:{name:"Light Green",promo:"Adriatic Green"}, Z:{name:"Light Gray Metallic",promo:"Platinum"}},
+  1961:{src:"falcon_vin_6063b", A:{name:"Black",promo:"Raven Black"}, C:{name:"Light Turquoise",promo:"Aquamarine"}, D:{name:"Light Blue",promo:"Starlight Blue"}, E:{name:"Medium Green Metallic",promo:"Laurel Green"}, H:{name:"Dark Blue Metallic",promo:"Chesapeake Blue"}, J:{name:"Red",promo:"Monte Carlo Red"}, K:{name:"Bronze Metallic",promo:"Algiers Bronze"}, M:{name:"White",promo:"Corinthian White"}, Q:{name:"Light Gray Metallic",promo:"Silver Gray"}, R:{name:"Medium Blue Metallic",promo:"Cambridge Blue"}, S:{name:"Light Green",promo:"Mint Green"}, W:{name:"Turquoise Metallic",promo:"Garden Turquoise"}},
+  1962:{src:"falcon_vin_6063b", A:{name:"Black",promo:"Raven Black"}, D:{name:"Medium Turquoise",promo:"Ming Green"}, E:{name:"Medium Blue Metallic",promo:"Viking Blue"}, F:{name:"Light Blue",promo:"Baffin Blue"}, H:{name:"Dark Blue Metallic",promo:"Oxford Blue"}, J:{name:"Red",promo:"Rangoon Red"}, M:{name:"White",promo:"Corinthian White"}, P:{name:"Medium Green Metallic",promo:"Silver Moss"}, Q:{name:"Light Gray Metallic",promo:"Silver Gray"}, R:{name:"Yellow",promo:"Dorado Gold"}, T:{name:"Honey Beige",promo:"Sandshell Tan"}, Z:{name:"Beige Metallic",promo:"Fieldstone Tan"}},
+  1963:{src:"PENDING — '63-specific color page not in source set", verify:true, A:{name:"Black",promo:"Raven Black"}, J:{name:"Red",promo:"Rangoon Red"}, M:{name:"White",promo:"Corinthian White"}},
+  1964:{src:"falcon_vin_64a (Color Codes)", A:{name:"Black",promo:"Raven Black"}, D:{name:"Medium Turquoise Metallic",promo:"Dynasty Green"}, F:{name:"Medium Blue Metallic",promo:"Guardsman Blue"}, I:{name:"Buff",promo:"Prairie Tan", verify:true}, J:{name:"Red",promo:"Rangoon Red"}, K:{name:"Silver Mink Metallic",promo:"Silversmoke Gray"}, M:{name:"White",promo:"Wimbledon White"}, X:{name:"Maroon Metallic",promo:"Vintage Burgundy"}, Y:{name:"Light Blue",promo:"Skylight Blue"}, Z:{name:"Medium Beige Metallic",promo:"Chantilly Beige"}},
+  1965:{src:"PENDING — '65 color page not in source set", verify:true, A:{name:"Black",promo:"Raven Black"}, J:{name:"Red",promo:"Rangoon Red"}, M:{name:"White",promo:"Wimbledon White"}, X:{name:"Maroon Metallic",promo:"Vintage Burgundy"}},
+  1966:{src:"PENDING — 1966 pages missing", verify:true, A:{name:"Black",promo:"Raven Black"}, M:{name:"White",promo:"Wimbledon White"}, T:{name:"Red",promo:"Candyapple Red"}},
+  1967:{src:"falcon_vin_67d (Exterior Paint Color Codes)", A:{name:"Black",promo:"Raven Black"}, B:{name:"Light Aqua",promo:"Frost Turquoise"}, E:{name:"Medium Beige Metallic"}, I:{name:"Lime Metallic",promo:"Lime Gold"}, K:{name:"Dark Blue Metallic",promo:"Nightmist Blue"}, M:{name:"White",promo:"Wimbledon White"}, Q:{name:"Medium Blue Metallic",promo:"Brittany Blue"}, T:{name:"Red",promo:"Candyapple Red"}, V:{name:"Bronze Metallic",promo:"Burnt Amber"}, W:{name:"Medium Aqua Metallic",promo:"Clearwater Aqua"}, X:{name:"Maroon Metallic",promo:"Vintage Burgundy"}, Y:{name:"Dark Green Metallic",promo:"Dark Moss Green"}, Z:{name:"Medium Gold Metallic",promo:"Sauterne Gold"}, "4":{name:"Medium Gray Metallic",promo:"Silver Frost"}, "6":{name:"Light Beige",promo:"Pebble Beige"}, "8":{name:"Yellow",promo:"Springtime Yellow"}},
+  1968:{src:"falcon_vin_68d (Group 1, 1-4)", A:{name:"Black",promo:"Raven Black"}, B:{name:"Maroon",promo:"Royal Maroon"}, D:{name:"Bright Blue Metallic",promo:"Acapulco Blue"}, F:{name:"Bright Aqua Metallic",promo:"Gulfstream Aqua"}, I:{name:"Lime Green Metallic",promo:"Lime Gold"}, M:{name:"White",promo:"Wimbledon White"}, N:{name:"Diamond Blue"}, O:{name:"Light Green",promo:"Seafoam Green"}, Q:{name:"Medium Blue Metallic",promo:"Brittany Blue"}, R:{name:"Dark Green Metallic",promo:"Highland Green"}, T:{name:"Red",promo:"Candyapple Red"}, U:{name:"Medium Aqua Metallic",promo:"Tahoe Turquoise"}, W:{name:"Yellow",promo:"Meadowlark Yellow"}, X:{name:"Dark Blue Metallic",promo:"Presidential Blue"}, Y:{name:"Gold Metallic",promo:"Sunlit Gold"}, "3":{name:"Vermillion",promo:"Calypso Coral", verify:true}, "5":{name:"Low-Gloss Black"}, "6":{name:"Light Beige",promo:"Pebble Beige"}},
+  1969:{src:"falcon_vin_69c (01-01-04)", A:{name:"Black",promo:"Raven Black"}, B:{name:"Maroon",promo:"Royal Maroon"}, C:{name:"Dark Ivy Green Metallic",promo:"Black Jade"}, D:{name:"Pastel Gray"}, E:{name:"Light Aqua",promo:"Aztec Aqua"}, F:{name:"Dark Aqua Metallic (Bright)",promo:"Gulfstream Aqua"}, G:{name:"Medium Orchid Metallic", verify:true}, H:{name:"Light Green"}, I:{name:"Medium Lime Metallic",promo:"Lime Gold"}, J:{name:"Dark Orchid Metallic", verify:true}, K:{name:"Dark Orchid Metallic", verify:true}, L:{name:"Light Gray Metallic", verify:true}, M:{name:"White",promo:"Wimbledon White"}, N:{name:"Platinum"}, P:{name:"Medium Blue Metallic"}, Q:{name:"Medium Blue Metallic", verify:true}, S:{name:"Medium Gold Metallic", verify:true}, T:{name:"Red",promo:"Candyapple Red"}, U:{name:"Medium Aqua Metallic"}, V:{name:"Light Aurora Copper Metallic", verify:true}, W:{name:"Yellow",promo:"Meadowlark Yellow"}, X:{name:"Dark Blue Metallic",promo:"Presidential Blue"}, Y:{name:"Dark Grey Metallic", verify:true}, Z:{name:"Burnt Orange Metallic", verify:true}, "2":{name:"Light Ivy Yellow", verify:true}, "4":{name:"Medium Emerald Metallic", verify:true}, "6":{name:"Light Beige"}, "8":{name:"Light Blue"}},
+  1970:{src:"falcon_vin_70d (10-01-04, M-32-J)", A:{name:"Black",promo:"Raven Black"}, B:{name:"Dark Maroon",promo:"Royal Maroon"}, C:{name:"Dark Ivy Green Metallic",promo:"Black Jade"}, D:{name:"Bright Yellow — Competition Yellow"}, E:{name:"Light Blue"}, F:{name:"Dark Aqua Metallic (Bright)"}, G:{name:"Medium Avocado Metallic — Medium Lime Metallic"}, H:{name:"Light Green"}, I:{name:"Dark Orchid Metallic", verify:true}, J:{name:"Bright Blue Metallic (Grabber Blue family)", verify:true}, K:{name:"Bright Gold Metallic"}, L:{name:"Light Gray Metallic"}, M:{name:"White",promo:"Wimbledon White"}, N:{name:"Platinum — Pastel Blue"}, O:{name:"Burnt Orange Metallic (Original Cinnamon)", verify:true}, P:{name:"Medium Ivy Green Metallic"}, Q:{name:"Medium Blue Metallic"}, R:{name:"Dark Brown Metallic", verify:true}, S:{name:"Nugget Gold Metallic — Medium Gold Metallic"}, T:{name:"Red",promo:"Candyapple Red"}, U:{name:"Medium Aqua Metallic"}, W:{name:"Yellow"}, X:{name:"Dark Blue"}, Y:{name:"Chestnut Bronze Metallic — Medium Bronze Metallic", verify:true}, Z:{name:"Dark Slate Gray Metallic — Dark Gray Metallic"}, "1":{name:"Calypso Coral — Vermillion — Competition Orange"}, "2":{name:"Light Ivy Yellow", verify:true, note:"page reads Lt Ivy Yellow; one reference says New Lime — pending"}, "5":{name:"Ginger Metallic — Medium Brown Metallic", verify:true}, "6":{name:"Medium Bright Blue Metallic", verify:true}, "8":{name:"Light Gold", verify:true}, "9":{name:"Yellow / Pastel Yellow"}}
+};
+COLORS[1970.5]=COLORS[1970];
+
+/* ---------- Date code: day number + month letter (1st yr A-M, 2nd yr N-Z) ---------- */
+var MONTHS = {src:"all books, identical scheme",
+  A:["January",1], B:["February",1], C:["March",1], D:["April",1], E:["May",1], F:["June",1],
+  G:["July",1], H:["August",1], J:["September",1], K:["October",1], L:["November",1], M:["December",1],
+  N:["January",2], P:["February",2], Q:["March",2], R:["April",2], S:["May",2], T:["June",2],
+  U:["July",2], V:["August",2], W:["September",2], X:["October",2], Y:["November",2], Z:["December",2]};
+
+/* ---------- Transmission codes per era ---------- */
+var TRANS = {
+  "1960-62":{src:"falcon_vin_6063b", "1":"3-speed manual", "3":"Fordomatic (2-speed automatic)"},
+  "1963-64":{src:"falcon_vin_64a", "1":"3-speed manual", "3":"2-speed automatic (Fordomatic)", "4":"Dual-range automatic", "5":"4-speed manual"},
+  "1965-67":{src:"falcon_vin_65b", "1":"3-speed manual", "2":"Overdrive", "4":"Cruise-O-Matic (Multi-Drive)", "5":"4-speed manual", "6":"C-4 automatic, dual range"},
+  "1968":{src:"falcon_vin_68b", "1":"3-speed manual", "5":"4-speed manual", W:"C-4 automatic", U:"C-6 automatic"},
+  "1969":{src:"falcon_vin_69c", "1":"3-speed manual", "5":"4-speed manual (wide ratio 2.78 1st)", "6":"4-speed manual (close ratio 2.32 1st)", W:"C-4 automatic (XP-3)", U:"C-6 automatic", X:"FMX automatic", Z:"C-6 Special automatic"},
+  "1970":{src:"falcon_vin_70d", "1":"3-speed manual", "5":"4-speed manual (wide ratio)", "6":"4-speed manual (close ratio)", V:"Semi-automatic stick shift", W:"C-4 automatic", U:"C-6 automatic", X:"FMX automatic", Z:"C-6 Special automatic"}
+};
+function transFor(y){ if(y<=1962)return TRANS["1960-62"]; if(y<=1964)return TRANS["1963-64"]; if(y<=1967)return TRANS["1965-67"]; if(y===1968)return TRANS["1968"]; if(y===1969)return TRANS["1969"]; return TRANS["1970"]; }
+
+/* ---------- Rear axle codes per era (number = conventional, letter = locking) ---------- */
+var AXLE = {
+  "1960-62":{src:"falcon_vin_6063b", "1":"3.56:1 ('60) / 3.10:1 ('61-62)", "3":"3.10:1 / 4.00:1", "4":"4.00:1", "5":"3.20:1", "6":"3.50:1", "9":"3.50:1"},
+  "1963-64":{src:"falcon_vin_64a", "1":"3.10:1 (B = locking)", "3":"3.20:1 (C)", "4":"3.25:1 (D)", "5":"3.50:1 (E)", "9":"4.00:1"},
+  "1965-67":{src:"falcon_vin_65b", "1":"3.00:1 (A = Equa-Lock)", "4":"3.25:1 (E)", "5":"3.50:1 (F)", "8":"3.89:1 (H)", "9":"4.11:1 (I)"},
+  "1968":{src:"falcon_vin_68b", "1":"2.75:1", "2":"2.79:1", "4":"2.83:1", "5":"3.00:1 (E)", "6":"3.20:1 (F)", "7":"3.25:1 (G)", "8":"3.50:1 (H)", "9":"3.10:1"},
+  "1969":{src:"falcon_vin_69c", "1":"2.50:1 (J)", "2":"2.75:1 (K)", "3":"2.79:1", "4":"2.80:1 (M)", "5":"2.83:1 (N)", "6":"3.00:1 (O)", "7":"3.10:1 (P)", "8":"3.20:1 (Q)", "9":"3.25:1 (R)", A:"3.50:1 (S)", B:"3.07:1", C:"3.08:1 (U)", D:"3.91:1 (V)", E:"4.30:1 (W)"},
+  "1970":{src:"falcon_vin_70d", "0":"2.50:1", "2":"2.75:1 (K)", "3":"2.79:1", "4":"2.80:1 (M)", "5":"2.83:1", "6":"3.00:1 (O)", "7":"3.10:1", "8":"3.20:1", "9":"3.25:1 (R)", A:"3.50:1 (S)", B:"3.07:1", C:"3.08:1", F:"2.33:1 (X)", V:"3.91:1", W:"4.30:1"}
+};
+function axleFor(y){ if(y<=1962)return AXLE["1960-62"]; if(y<=1964)return AXLE["1963-64"]; if(y<=1967)return AXLE["1965-67"]; if(y===1968)return AXLE["1968"]; if(y===1969)return AXLE["1969"]; return AXLE["1970"]; }
+
+/* ---------- DSO district codes (Ford passenger-car list, two epochs) ---------- */
+var DSO_EARLY = {src:"falcon_vin_64a (1960-65 epoch)",
+  "11":"Boston","12":"Buffalo","13":"New York","14":"Pittsburgh","15":"Newark","21":"Atlanta","22":"Charlotte",
+  "23":"Philadelphia","24":"Jacksonville","25":"Richmond","26":"Washington","27":"Cincinnati","28":"Louisville",
+  "31":"Cincinnati","32":"Cleveland","33":"Detroit","34":"Indianapolis","35":"Lansing","36":"Louisville",
+  "41":"Chicago","42":"Fargo","43":"Rockford","44":"Twin Cities","45":"Davenport","51":"Denver","52":"Des Moines",
+  "53":"Kansas City","54":"Omaha","55":"St. Louis","61":"Dallas","62":"Houston","63":"Memphis","64":"New Orleans",
+  "65":"Oklahoma City","71":"Los Angeles","72":"San Jose","73":"Salt Lake City","74":"Seattle",
+  "81":"Ford of Canada","83":"Government","84":"Home Office Reserve","85":"American Red Cross","89":"Transportation Services"};
+var DSO_LATE = {src:"falcon_vin_69g / 70f (1966-70 epoch)",
+  "11":"Boston","13":"New York","15":"Newark","16":"Philadelphia","17":"Washington","21":"Atlanta","22":"Charlotte",
+  "24":"Jacksonville","25":"Richmond","28":"Louisville","32":"Cleveland","33":"Detroit","34":"Indianapolis",
+  "35":"Lansing","37":"Buffalo","38":"Pittsburgh","41":"Chicago","42":"Fargo","43":"Milwaukee","44":"Twin Cities",
+  "45":"Davenport","46":"Indianapolis","47":"Cincinnati","51":"Denver","52":"Des Moines","53":"Kansas City",
+  "54":"Omaha","55":"St. Louis","56":"Davenport","61":"Dallas","62":"Houston","63":"Memphis","64":"New Orleans",
+  "65":"Oklahoma City","71":"Los Angeles","72":"San Jose","73":"Salt Lake City","74":"Seattle","75":"Phoenix",
+  "81":"Ford of Canada","83":"Government","84":"Home Office Reserve","85":"American Red Cross","89":"Transportation Services"};
+function dsoFor(y, code){
+  var t = (y<=1965)?DSO_EARLY:DSO_LATE;
+  if(/^9\d$/.test(code)) return "Export";
+  return t[code]||null;
+}
+
+/* ---------- Interior trim: best-known schemes, honest raw fallback ---------- */
+/* 1960-62: 2-digit numeric; 1964: numeric families; 1966-70: number+letter.   */
+var TRIM_6062_FIRST = {src:"falcon_vin_6063b (Trim)", "1":"Vinyl & body cloth","2":"Vinyl & body cloth","4":"Vinyl & tweed body cloth","5":"All vinyl","6":"Vinyl & woven plastic / body cloth","7":"Vinyl & vinyl","8":"Futura vinyl"};
+var TRIM_6062_SECOND = {"0":"Silver or White","1":"Gray","2":"Blue / Light Blue & Medium Blue","3":"Green","4":"Brown / Tan / Beige","5":"Red, or Red & White","6":"Black, or Black & White","7":"Turquoise"};
+var TRIM_64 = {src:"falcon_vin_64a (Trim Codes)",
+  "12":"Blue band fabric & light blue metallic crush vinyl","14":"Beige band fabric & light beige metallic crush vinyl","15":"Red band fabric & red crush vinyl",
+  "22":"Blue cord fabric & light blue metallic crush vinyl","24":"Beige cord fabric & light beige metallic crush vinyl","25":"Red cord fabric & red crush vinyl","27":"Turquoise cord fabric & light turquoise metallic crush vinyl",
+  "42":"Medium beige steerhead vinyl & light beige metallic",
+  "62":"Medium & light blue metallic crinkle crush vinyl (bench)","64":"Beige & light beige metallic crinkle crush vinyl (bench)","65":"Red crinkle crush vinyl (bench)","66":"Black crinkle crush vinyl (bench)","67":"Medium & light turquoise metallic crinkle crush vinyl (bench)","69":"Medium palomino crinkle crush vinyl (bench)",
+  "82":"Medium & light blue metallic crinkle crush vinyl (bucket)","85":"Red crinkle crush vinyl (bucket)","86":"Black crinkle crush vinyl (bucket)","87":"Medium & light turquoise metallic crinkle crush vinyl (bucket)","89":"Medium palomino crinkle crush vinyl (bucket)"};
+/* 1966-70 letter meanings (Falcon-relevant rows transcribed from 67d/68d/69d-e/70e) */
+var TRIM_LATE_COLOR = {"1":"Blue","2":"Black or Parchment","3":"Blue/Black/Ivy Gold/Aqua family","4":"Black/Blue/Red/Ivy Gold/Aqua/Parchment family","5":"Black/Blue/Aqua family","6":"Black/Dark Blue/Red/Saddle family","7":"Black/Blue/Red family","8":"Black/Blue/Red/Saddle family","9":"Black/Blue/Red family"};
+var TRIM_KNOWN = { /* exact rows the books tag for Falcon */
+  src:"falcon_vin_67d/68d/69d/69e/70e",
+  "1A":"Black vinyl (1969-70: Falcon)","1B":"Blue cloth & blue vinyl / Lt Blue vinyl (Falcon)","1Y":"Lt Nugget Gold cloth & vinyl (Falcon, '69)",
+  "2A":"Black vinyl","2B":"Blue vinyl","2D":"Red vinyl","2F":"Saddle vinyl","2G":"Ivy Gold vinyl","2K":"Aqua vinyl","2U":"Parchment vinyl",
+  "3B":"Medium Blue cloth & Lt Blue vinyl (Falcon, '69-70)","3U":"Lt Parchment cloth & pastel parchment vinyl (Falcon)",
+  "4A":"Black vinyl","4B":"Blue vinyl","4D":"Red vinyl","4G":"Ivy Gold vinyl","4K":"Aqua vinyl","4U":"Parchment vinyl",
+  "7A":"Black vinyl","7B":"Blue vinyl","7D":"Red vinyl ('69 Mustang/Falcon family)","8A":"Black vinyl","8B":"Blue vinyl","8D":"Red vinyl","8F":"Saddle vinyl"};
+function trimDecode(y, code){
+  code=(code||"").toUpperCase();
+  if(!code) return null;
+  if(y<=1962 && /^\d\d$/.test(code)){
+    var a=TRIM_6062_FIRST[code[0]], b=TRIM_6062_SECOND[code[1]];
+    return (a&&b)?{text:a+" — "+b, conf:"high"}:null;
+  }
+  if(y>=1963 && y<=1965 && TRIM_64[code]) return {text:TRIM_64[code], conf: y===1964?"high":"medium"};
+  if(y>=1966 && TRIM_KNOWN[code]) return {text:TRIM_KNOWN[code], conf:"medium"};
+  if(y>=1966 && /^[0-9][A-Z]$/.test(code) && TRIM_LATE_COLOR[code[0]])
+    return {text:"Scheme family: "+TRIM_LATE_COLOR[code[0]]+" (exact scheme pending verification)", conf:"low"};
+  return null;
+}
+
+/* ====================== ECONOLINE 1961–1967 ====================== */
+/* VIN grammar: E1[0-7] + engine letter + (H = Lorain, when present) + 6-char
+   consecutive number. MODEL YEAR IS NOT A CHARACTER — it derives from the
+   consecutive-number range. 1967 serials run A00000–B99999.
+   NOTE: Michael's Econoline.docx describes a 10-char number with H in pos 4
+   (no engine char); the econoline.org Data Sheet keys ENGINE to char 4.
+   Parser accepts both shapes; flagged in FFF_VIN2_DATA_VERIFY.md.            */
+var ECONO = {
+  serialYear: [ /* econoline.org Data Sheet — "Year Assembled" */
+    {start:100001,end:205000,year:1961},{start:205001,end:325000,year:1962},
+    {start:325001,end:445000,year:1963},{start:445001,end:579999,year:1964},
+    {start:580001,end:731999,year:1965},{start:732001,end:914000,year:1966},
+    {prefix:["A","B"],year:1967}
+  ],
+  series: { /* first three digits */
+    "E10":{y:"61: Pickup or Van · 62-67: Pickup"},
+    "E11":{y:"61: Station Bus · 62-65: Falcon Station Bus · 66-67: Falcon Club Wagon"},
+    "E12":{y:"61: Custom Station Bus · 62-65: Falcon Club Wagon (Custom) · 66-67: Falcon Custom Club Wagon"},
+    "E13":{y:"62-67: Falcon Deluxe Club Wagon"},
+    "E14":{y:"62-67: Van"},
+    "E15":{y:"63: Pickup (H.D. 4850 GVW) · 64-67: Panel Van"},
+    "E16":{y:"63-64: Van (H.D. 4850 GVW) · 65-67: SuperVan (extended)"},
+    "E17":{y:"63: Falcon Station Bus (H.D. 4850 GVW) · 65-67: Super Panel Van"}
+  },
+  seriesByYear:function(code,yr){
+    var m={
+      E10: yr===1961?"Pickup or Van":"Pickup",
+      E11: yr===1961?"Station Bus":(yr<=1965?"Falcon Station Bus (Standard)":"Falcon Club Wagon"),
+      E12: yr===1961?"Custom Station Bus":(yr<=1965?"Falcon Club Wagon (Custom Station Bus)":"Falcon Custom Club Wagon"),
+      E13:"Falcon Deluxe Club Wagon",
+      E14:"Van",
+      E15: yr===1963?"Pickup (H.D. 4850 GVW)":"Panel Van",
+      E16: yr<=1964?"Van (H.D. 4850 GVW)":"SuperVan (extended)",
+      E17: yr===1963?"Falcon Station Bus (H.D. 4850 GVW)":"Super Panel Van"};
+    return m[code]||null;
+  },
+  engines:function(code,yr){ /* Data Sheet "Engine (fourth digit)" */
+    var rows=[
+      ["S",1961,1961,"144 cid six — 74 hp @ 4000"],["S",1962,1964,"144 cid six — 79 hp @ 4000"],
+      ["T",1961,1961,"170 cid six — 79 hp @ 3600"],["T",1962,1964,"170 cid six — 85 hp @ 3600"],
+      ["T",1965,1965,"170 cid six — 85 hp @ 3800"],["F",1966,1967,"170 cid six — 89 hp @ 3800"],
+      ["G",1965,1967,"200 cid six — 95 hp @ 3600"],["J",1965,1965,"240 cid six — 129 hp @ 4000"],
+      ["A",1966,1967,"240 cid six — 129 hp @ 4000"]];
+    for(var i=0;i<rows.length;i++) if(rows[i][0]===code && yr>=rows[i][1] && yr<=rows[i][2]) return rows[i][3];
+    return null;
+  },
+  trans:function(code,yr){
+    var rows=[["A",1961,1962,"3-speed non-synchro manual"],["A",1963,1965,"3-speed 3.03 manual"],
+      ["C",1966,1967,"3-speed 3.03 manual"],["F",1963,1964,"4-speed manual"],
+      ["G",1964,1967,"3-speed C4 automatic"],["6",1964,1967,"3-speed C4 automatic"]];
+    for(var i=0;i<rows.length;i++) if(rows[i][0]===code && yr>=rows[i][1] && yr<=rows[i][2]) return rows[i][3];
+    return null;
+  },
+  axle:function(code,yr){
+    var R=[["01",3.50,"61-64",'7.25" integral, 2300 lb'],["01",3.00,"early 65",'9" removable, 2780 lb (A1 = lock)'],
+      ["01",3.50,"66-67",'7.25" integral, 2300 lb'],["02",4.00,"61-64 & 66-67",'7.25" integral, 2300 lb'],
+      ["03",4.11,"63-64",'9" removable, 2780 lb (A3)'],["03",3.50,"65",'7.25" integral, 2300 lb'],
+      ["04",4.57,"63-64",'9" removable, 2780 lb (A4)'],["04",3.50,"early 65",'9" removable (A4)'],
+      ["05",4.11,"early 65",'9" removable (A5)'],["06",4.57,"early 65",'9" removable (A6)'],
+      ["07",3.00,"66-67",'9" removable, 3050 lb (A7)'],["11",4.00,"65",'7.25" integral'],
+      ["11",3.50,"66-67",'9" removable, 3050 lb (B1)'],["12",4.11,"66-67",'9" removable (B2)'],
+      ["13",3.00,"late 65",'9" removable'],["13",4.57,"66-67",'9" removable (B3)'],
+      ["17",3.50,"late 65",'9" removable'],["18",4.11,"late 65",'9" removable'],["19",4.57,"late 65",'9" removable'],
+      ["A1",3.00,"early 65",'9" removable, locking'],["A3",4.11,"63-64",'9" removable, locking'],
+      ["A3",3.00,"late 65",'9" removable, locking'],["A4",4.57,"63-64",'9" removable, locking'],
+      ["A5",4.11,"early 65",'locking'],["A6",4.57,"early 65",'locking'],["A7",3.50,"late 65",'locking'],["A7",3.00,"66-67",'locking'],
+      ["A8",4.11,"late 65",'locking'],["A9",4.57,"late 65",'locking'],
+      ["B1",3.50,"66-67",'locking'],["B2",4.11,"66-67",'locking'],["B3",4.57,"66-67",'locking']];
+    var hits=R.filter(function(r){return r[0]===code;});
+    if(!hits.length) return null;
+    return hits.map(function(r){return r[1].toFixed(2)+":1 ("+r[2]+", "+r[3]+")";}).join(" · ");
+  },
+  dso:{ /* econoline.org Data Sheet — differs from passenger-car list */
+    "11":"Boston","12":"Buffalo","13":"New York","14":"Pittsburgh","15":"Newark","16":"Philadelphia ('64-67)",
+    "17":"Washington ('64-67)","21":"Atlanta","22":"Charlotte","23":"Philadelphia ('64-67)","24":"Jacksonville","25":"Richmond",
+    "26":"Washington ('64-67)","27":"Cincinnati ('64-67)","28":"Louisville ('64-67)","31":"Cincinnati","32":"Cleveland",
+    "33":"Detroit","34":"Indianapolis","35":"Lansing","36":"Louisville","37":"Buffalo ('64-67)","38":"Pittsburgh ('64-67)",
+    "41":"Chicago","42":"Fargo ('64-67)","43":"Milwaukee","44":"Twin Cities","45":"Davenport ('64-67)","46":"Indianapolis ('64-67)",
+    "47":"Cincinnati ('64-67)","48":"Detroit ('64-67)","51":"Denver","52":"Des Moines ('64-67)","53":"Kansas City",
+    "54":"Omaha","55":"St. Louis","56":"Davenport ('64-67)","57":"Houston ('64-67)","58":"Twin Cities ('64-67)",
+    "61":"Dallas","62":"Houston","63":"Memphis","64":"New Orleans","65":"Oklahoma City","71":"Los Angeles","72":"San Jose",
+    "73":"Salt Lake City","74":"Seattle","75":"Phoenix ('64-67)","76":"Denver ('64-67)","81":"Ford of Canada",
+    "83":"Government","84":"Home Office Reserve","85":"American Red Cross","86":"Diplomatic Service Comm. ('64-67)",
+    "87":"Body Company ('64-67)","89":"Transportation Services",
+    A1:"Ford of Canada — Central (Ford)",A2:"Ford of Canada — Eastern (Ford)",A3:"Ford of Canada — Atlantic (Ford)",
+    A4:"Ford of Canada — Midwestern (Ford)",A6:"Ford of Canada — Western (Ford)",A7:"Ford of Canada — Pacific (Ford)",
+    B1:"Ford of Canada — Central (Mercury)",B2:"Ford of Canada — Eastern (Mercury)",B3:"Ford of Canada — Atlantic (Mercury)",
+    B4:"Ford of Canada — Midwestern (Mercury)",B6:"Ford of Canada — Western (Mercury)",B7:"Ford of Canada — Pacific (Mercury)"},
+  serialToYear:function(serial){
+    var s=(serial||"").toUpperCase();
+    if(/^[AB]\d{5}$/.test(s)) return 1967;
+    var n=parseInt(s,10);
+    if(isNaN(n)) return null;
+    for(var i=0;i<this.serialYear.length;i++){
+      var r=this.serialYear[i];
+      if(r.start && n>=r.start && n<=r.end) return r.year;
+    }
+    return null;
+  },
+  plateNotes:{
+    1961:"'61–'62: plate riveted to the A-pillar between the driver-door hinges; labeled \"Serial Number\".",
+    1963:"'63–'67: plate riveted to the back edge of the driver's door near the striker; labeled \"Warranty Number\".",
+    stamped:"VIN also stamped: corner brace ahead of the right rear taillight ('61–early '65 + all pickups); floor under the doghouse lip (all years); top of the floor hump behind the doghouse (mid-'65 on)."
+  }
+};
+
+/* ---------- Consecutive unit number ground truth ---------- */
+var UNIT_NOTE = {
+  falcon:"Each plant, each model year, starts at 100001 and counts EVERY Ford line it builds (Falcons, Fairlanes, Mustangs shared plants) — so this is the plant's running unit count, not 'Nth Falcon built.'",
+  src1969:"falcon_vin_69c: 100,001 = Ford/Fairlane/Falcon/Mustang/T-bird; 500,001 = Mercury lines; 848,000 = Lincoln",
+  econoline:"Econoline serials ran as one national sequence — which is why the serial number alone dates the van."
+};
+
+/* ---------- Public API ---------- */
+return {
+  eras:FALCON_ERAS, plantsFor:plantsFor, bodyFor:bodyFor, engines:ENGINES, colors:COLORS,
+  months:MONTHS, transFor:transFor, axleFor:axleFor, dsoFor:dsoFor, trimDecode:trimDecode,
+  econo:ECONO, unitNote:UNIT_NOTE,
+  eraFor:function(y){ for(var i=0;i<FALCON_ERAS.length;i++){ if(FALCON_ERAS[i].years.indexOf(y)>=0) return FALCON_ERAS[i]; } return null; }
+};
+})();
+/* ============================================================================
+   FFF_VIN2 decoder — parse + decode 1960–1970½ Falcon VINs & door-plate data,
+   and 1961–67 Econoline serial/warranty numbers. Requires vin2_tables.js.
+   Design rules (FFF_VIN_DECODER.md): decode only what the codes truly say,
+   label every estimate, never fabricate. Confidence: high | medium | low.
+   ========================================================================== */
+window.FFF_VIN2_DECODE = (function(){
+var T = window.FFF_VIN2;
+
+function clean(s){ return (s||"").toUpperCase().replace(/[^A-Z0-9]/g,""); }
+
+/* ---------- OCR field corrector: fix look-alikes by what's LEGAL per position ---------- */
+/* digitize/letterize maps applied only where the grammar demands that class. */
+var TO_DIGIT={O:"0",Q:"0",D:"0",I:"1",L:"1",Z:"2",E:"3",A:"4",S:"5",G:"6",T:"7",B:"8"};
+var TO_ALPHA={"0":"O","1":"I","2":"Z","5":"S","8":"B","6":"G"};
+function forceDigit(c){ return /\d/.test(c)?c:(TO_DIGIT[c]||c); }
+function forceAlpha(c){ return /[A-Z]/.test(c)?c:(TO_ALPHA[c]||c); }
+function correctFalconVIN(raw){
+  var v=clean(raw); if(v.length!==11) return v;
+  var out=forceDigit(v[0]);                 // model year: digit
+  out+=forceAlpha(v[1]);                    // plant: letter
+  out+=forceDigit(v[2])+forceDigit(v[3]);   // body serial: 2 digits
+  out+=v[4];                                // engine: letter OR digit (2,3,5,6) — leave as read
+  for(var i=5;i<11;i++) out+=forceDigit(v[i]); // unit number: 6 digits
+  return out;
+}
+function correctEconoVIN(raw){
+  var v=clean(raw); if(v.length<10) return v;
+  var out="E"+forceDigit(v[1])+forceDigit(v[2]); // E1x
+  var rest=v.slice(3);
+  // optional engine letter, optional plant H, serial (first char may be A/B in '67)
+  return out+rest;
+}
+
+/* ---------- Falcon decode ---------- */
+function decodeFalcon(vinRaw, opts){
+  opts=opts||{};
+  var vin=correctFalconVIN(vinRaw);
+  var r={kind:"falcon", vin:vin, ok:false, fields:[], warnings:[], candidates:[]};
+  if(vin.length!==11){ r.error="A 1960–70½ Falcon VIN is 11 characters (you entered "+vin.length+"). Read it from the door plate or title."; return r; }
+
+  var yc=vin[0], pc=vin[1], bc=vin.substr(2,2), ec=vin[4], serial=vin.substr(5,6);
+  var years = yc==="0" ? [1960,1970,1970.5] : [1960+parseInt(yc,10)];
+  if(yc!=="0" && isNaN(parseInt(yc,10))){ r.error="First character should be the model-year digit (0–9)."; return r; }
+
+  // score candidate years by table agreement (settles 0 = 1960 vs 1970 when possible)
+  years.forEach(function(y){
+    var cand=buildFalconCandidate(y, pc, bc, ec, serial, opts);
+    r.candidates.push(cand);
+  });
+  r.candidates.sort(function(a,b){ return b.score-a.score; });
+  var best=r.candidates[0];
+  if(years.length>1){
+    var a=r.candidates[0], b=r.candidates[1];
+    if(a.score===b.score){
+      r.ambiguous=true;
+      r.warnings.push("Year code 0 = 1960, 1970 or 1970\u00bd and this VIN fits more than one rulebook. Tell them apart: a 1960 has a stamped metal PATENT PLATE that says \u201cSerial Number\u201d; a 1970/70\u00bd has a printed VEHICLE CERTIFICATION LABEL with the federal-safety wording. Round compact body = '60, compact long-body = '70, Torino-size intermediate = '70\u00bd.");
+    } else {
+      r.warnings.push("Year code 0 = 1960, 1970 or 1970\u00bd \u2014 decoded as "+String(a.year).replace(".5","\u00bd")+" because the body/engine/plant codes fit that year's book best. Confirm against the plate type ('60 = stamped patent plate, '70/'70\u00bd = printed certification label).");
+    }
+  }
+  r.ok=true; r.best=best;
+  return r;
+}
+
+function buildFalconCandidate(y, pc, bc, ec, serial, opts){
+  var c={year:y, score:0, fields:[]};
+  var plants=T.plantsFor(y), body=T.bodyFor(y), eng=T.engines[y]||{};
+  var era=T.eraFor(y);
+
+  var plant=plants[pc];
+  c.fields.push(F("Model year", String(y).replace(".5","\u00bd"), "high", "VIN character 1 ('"+(y%100===0.5?0:String(y).slice(-1))+"')"));
+  if(plant){ c.score+=2; c.fields.push(F("Built at", plant, "high", "plant code "+pc)); }
+  else c.fields.push(F("Built at", "\u2014 unknown plant code "+pc, "low", "not in the "+y+" book \u2014 double-check the character"));
+
+  var bRow=body.rows[bc];
+  if(bRow){
+    c.score+=3;
+    var conf=(body.verify||bRow.verify)?"medium":"high";
+    c.fields.push(F("Body", bRow.type+" \u2014 "+bRow.model, conf, "body serial "+bc+" \u2192 style "+bRow.styles.join(" / ")+(bRow.note?" \u00b7 "+bRow.note:"")+((body.verify||bRow.verify)?" \u00b7 table pending verification":"")));
+    c.bodyStyles=bRow.styles; c.bodyType=bRow.type; c.model=bRow.model;
+  } else {
+    c.fields.push(F("Body", "\u2014 serial "+bc+" not in the "+y+" Falcon table", "low", "could be a non-Falcon line from the same plant, or a misread digit"));
+  }
+
+  var e=eng[ec];
+  if(e){ c.score+=2; c.fields.push(F("Engine", e.d, e.verify?"medium":"high", "engine code "+ec+" ("+y+" book)"+(e.verify?" \u00b7 verify":""))); }
+  else c.fields.push(F("Engine", "\u2014 code "+ec+" not in the "+y+" table", "low", "verify the character; same letters mean different engines in other years"));
+
+  c.fields.push(F("Plant unit #", serial, "high", "the plant's running unit count for "+y+" (starts 100001, all car lines mixed) \u2014 not \u201cNth Falcon built\u201d"));
+  c.serial=serial;
+  if(era) c.plateNote=era.plate+" (\u201c"+era.vinName+"\u201d) \u2014 "+era.where;
+  return c;
+}
+
+/* ---------- Data plate (door tag) decode — the birth-date unlock ---------- */
+function decodePlate(y, plate){
+  // plate: {body,color,trim,date,dso,axle,trans} raw strings
+  var out=[], p={};
+  ["body","color","trim","date","dso","axle","trans"].forEach(function(k){ p[k]=clean(plate[k]); });
+
+  if(p.body) out.push(F("Body style", p.body, "high", "data-plate BODY code (cross-checks the VIN body serial)"));
+
+  if(p.color){
+    var ctab=T.colors[y]||{}, cc=ctab[p.color[0]]; // two letters = two-tone, lower color first
+    if(p.color.length===2){
+      var c1=ctab[p.color[0]], c2=ctab[p.color[1]];
+      if(c1&&c2) out.push(F("Paint", "Two-tone: "+disp(c1)+" over "+disp(c2), conf2(ctab,c1,c2), "codes "+p.color+" \u2014 first letter = lower color"));
+      else out.push(F("Paint", "Two-tone code "+p.color, "low", "one or both codes not in the "+y+" table \u2014 pending verification"));
+    } else if(cc){
+      out.push(F("Paint", disp(cc), (ctab.verify||cc.verify)?"medium":"high", "color code "+p.color+((ctab.verify||cc.verify)?" \u00b7 "+y+" color table pending verification":"")));
+    } else if(p.color){
+      out.push(F("Paint", "code "+p.color, "low", y+" color table "+(ctab.verify?"is pending verification":"doesn't list this code")+" \u2014 special-order paints left this blank or odd"));
+    }
+  }
+
+  if(p.trim){
+    var t=T.trimDecode(y,p.trim);
+    out.push(t?F("Interior trim", t.text, t.conf, "trim code "+p.trim)
+             :F("Interior trim", "code "+p.trim, "low", "scheme pending verification for "+y));
+  }
+
+  if(p.date){
+    var m=p.date.match(/^(\d{1,2})([A-Z])$/);
+    if(m && T.months[m[2]]){
+      var mo=T.months[m[2]];
+      var yrNote = mo[1]===2 ? " (second-year letter \u2014 production ran past 12 months)" : "";
+      out.push(F("Born on", mo[0]+" "+parseInt(m[1],10)+", "+modelToCalYear(y,mo)+yrNote, "high", "date code "+p.date+" \u2014 day + month letter. This is the build date; it lives only on the door tag."));
+    } else out.push(F("Born on", "date code "+p.date, "low", "expected day-number + month-letter (e.g. 26H = Aug 26)"));
+  }
+
+  if(p.dso){
+    if(p.dso.length>2) out.push(F("Ordered by", "Special order #"+p.dso, "high", "long DSO = Domestic/Foreign Special Order \u2014 a story worth chasing"));
+    else { var d=T.dsoFor(y,p.dso); out.push(d?F("Ordered through", d+" district", "high", "DSO "+p.dso):F("Ordered through", "district code "+p.dso, "low", "not in the "+(y<=1965?"1960-65":"1966-70")+" list")); }
+  }
+
+  if(p.axle){ var ax=(T.axleFor(y)||{})[p.axle]; out.push(ax?F("Rear axle", ax, "medium", "axle code "+p.axle+" \u2014 ratios shifted year-to-year; verify against your year's chart"):F("Rear axle", "code "+p.axle, "low", "not in the "+y+" era chart")); }
+  if(p.trans){ var tr=(T.transFor(y)||{})[p.trans]; out.push(tr?F("Transmission", tr, "high", "trans code "+p.trans):F("Transmission", "code "+p.trans, "low", "not in the "+y+" era chart")); }
+  return out;
+}
+function modelToCalYear(modelY, mo){
+  // model years started ~Aug-Oct of the prior calendar year
+  var base=Math.floor(modelY);
+  var monthIdx={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12}[mo[0]];
+  if(mo[1]===2) return base; // second-year letters = deep into the model year
+  return (monthIdx>=8)?base-1:base;
+}
+function disp(c){ return c.promo?c.promo+" ("+c.name+")":c.name; }
+function conf2(tab,c1,c2){ return (tab.verify||c1.verify||c2.verify)?"medium":"high"; }
+
+/* ---------- Econoline decode ---------- */
+function decodeEcono(vinRaw){
+  var vin=correctEconoVIN(vinRaw);
+  var r={kind:"econoline", vin:vin, ok:false, fields:[], warnings:[]};
+  var m=vin.match(/^(E1[0-7])([A-Z]?)(H?)([AB0-9]\d{5})$/);
+  if(!m){
+    // tolerate the docx 10-char shape: E1x H serial (no engine char)
+    m=vin.match(/^(E1[0-7])(H)([AB0-9]\d{5})$/);
+    if(m){ m=[m[0],m[1],"",m[2],m[3]]; r.warnings.push("No engine character found \u2014 this matches the 10-character plate shape; engine left unknown."); }
+  }
+  if(!m){ r.error="An Econoline number reads E1x + engine letter + serial, e.g. E14T339182 \u2014 11 characters with the H plant code, 10 without. Check the door/A-pillar plate."; return r; }
+  var series=m[1], engC=m[2], serial=m[4];
+  var yr=T.econo.serialToYear(serial);
+  if(!yr){ r.error="Serial "+serial+" falls outside the 1961\u201367 ranges \u2014 double-check the digits."; return r; }
+
+  r.fields.push(F("Model year", yr, "high", "derived from serial "+serial+" \u2014 Econoline years live in the serial-number ranges, not a year character"));
+  var sd=T.econo.seriesByYear(series,yr);
+  r.fields.push(sd?F("Series / body", sd, "high", "series "+series):F("Series / body", series, "low", "series not in the table"));
+  if(engC){ var ed=T.econo.engines(engC,yr); r.fields.push(ed?F("Engine", ed, "high", "engine code "+engC+" ("+yr+")"):F("Engine", "code "+engC, "low", "not valid for "+yr+" \u2014 check the character")); }
+  if(m[3]==="H"||vin.indexOf("H")>=3) r.fields.push(F("Built at", "Lorain, OH", "high", "plant code H \u2014 first-gen Econolines were Lorain-built"));
+  r.fields.push(F("Serial #", serial, "high", "one national sequence \u2014 this number IS the van's place in line"));
+  r.plateNote=(yr<=1962?T.econo.plateNotes[1961]:T.econo.plateNotes[1963])+" "+T.econo.plateNotes.stamped;
+  r.year=yr; r.ok=true;
+  return r;
+}
+function decodeEconoPlate(yr, plate){
+  var out=[], p={};
+  ["color","model","body","trans","axle","dso","wb","gvw"].forEach(function(k){ p[k]=clean(plate[k]); });
+  if(p.trans){ var t=T.econo.trans(p.trans,yr); out.push(t?F("Transmission",t,"high","code "+p.trans):F("Transmission","code "+p.trans,"low","not valid for "+yr)); }
+  if(p.axle){ var ratio=p.axle.length===3&&p.axle[2]==="1" ? p.axle.substr(0,2):p.axle;
+    var a=T.econo.axle(ratio,yr);
+    out.push(a?F("Rear axle",a+(p.axle.length===3?" \u00b7 Spring Special!":""),"high","code "+p.axle):F("Rear axle","code "+p.axle,"low","not in the chart")); }
+  if(p.dso){ if(p.dso.length>2) out.push(F("Ordered by","Special order #"+p.dso,"high","long DSO = special order"));
+    else if(/^9\d$/.test(p.dso)) out.push(F("Ordered through","Export","high","DSO "+p.dso+" — 90-99 are export codes"));
+    else { var d=T.econo.dso[p.dso]; out.push(d?F("Ordered through",d+" district","high","DSO "+p.dso):F("Ordered through","district "+p.dso,"low","not in the Econoline list")); } }
+  if(p.gvw) out.push(F("Max GVW", parseInt(p.gvw,10).toLocaleString()+" lbs","high","blank on passenger Club Wagons/Buses"));
+  if(p.color) out.push(F("Paint","code "+p.color,"low","Econoline paint tables pending \u2014 special orders left this blank"));
+  return out;
+}
+
+/* ---------- shared ---------- */
+function F(k,v,conf,note){ return {k:k,v:v,conf:conf,note:note||""}; }
+function route(vinRaw){
+  var v=clean(vinRaw);
+  return (/^E1/.test(v)) ? "econoline" : "falcon";
+}
+
+return { decodeFalcon:decodeFalcon, decodePlate:decodePlate, decodeEcono:decodeEcono,
+         decodeEconoPlate:decodeEconoPlate, route:route,
+         correctFalconVIN:correctFalconVIN, correctEconoVIN:correctEconoVIN, clean:clean };
+})();
+/* ---------- FFF_VIN2 UI glue: snap -> OCR -> confirm -> decode (Increment 2) ---------- */
+function vinPill(c){ return '<span class="vin-pill '+c+'">'+c+'</span>'; }
+function vinRow2(f){ return '<div class="vin-k">'+f.k+'</div><div class="vin-v">'+f.v+vinPill(f.conf)+(f.note?'<div class="vin-sub">'+f.note+'</div>':'')+'</div>'; }
+function vp(id){ return document.getElementById(id).value; }
+function vinPlateVals(){ return {body:vp('vpBody'),color:vp('vpColor'),trim:vp('vpTrim'),date:vp('vpDate'),dso:vp('vpDso'),axle:vp('vpAxle'),trans:vp('vpTrans')}; }
 function vinDecode(){
-  var out=document.getElementById('vinOut'); out.style.display='block';
-  var raw=(document.getElementById('vinIn').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(raw.length<11){ out.className='vin-out warn'; out.innerHTML="A 1960\u201370\u00bd Falcon VIN is 11 characters, like <b>3H02U110532</b>. Check the driver\u2019s door tag or your title \u2014 you entered "+raw.length+"."; return; }
-  var v=raw.slice(0,11), yc=v[0], pc=v[1], body=v.slice(2,4), ec=v[4], serial=v.slice(5,11);
-  var year=vinYear(yc), plant=FFF_PLANTS[pc], eng=FFF_ENGINES[ec], yl=vinYearLink(yc);
-  var rows='';
-  rows+=vinRow('Model year', year||('\u2014 (code '+yc+')'), yc==='0'?'code 0 = 1960 or 1970 \u2014 tell them apart by body & trim':(year?'':'unexpected first character'));
-  rows+=vinRow('Built at', plant||('\u2014 (code '+pc+')'), plant?('plant code '+pc):'unexpected plant code');
-  rows+=vinRow('Body style', body, '<a href="'+yl+'" target="_blank" rel="noopener">year-specific \u2014 look up '+body+' \u2192</a>');
-  rows+=vinRow('Engine', ec+(eng?(' \u2014 '+eng):''), eng?'typical Falcon code \u2014 confirm for your year':'<a href="'+yl+'" target="_blank" rel="noopener">year-specific \u2014 see decoder \u2192</a>');
-  rows+=vinRow('Unit number', serial, 'this car\u2019s consecutive build sequence');
-  out.className='vin-out';
-  out.innerHTML='<div class="vin-grid">'+rows+'</div>'+
-    '<div class="vin-note">Paint, interior trim, build date, DSO, axle ratio &amp; transmission live on the <b>door data plate</b>, not the VIN. For authoritative year-by-year codes and the full data-plate decode, see the <a href="https://www.falconregistry.com/dcode/dcode_vin.php" target="_blank" rel="noopener">Ford Falcon Registry</a>.</div>'+
-    '<div style="margin-top:14px"><button class="btn-post" onclick="document.querySelector(\'.tab[data-p=garage]\').click()">Add it to my Garage \u2192</button></div>';
+  var D=window.FFF_VIN2_DECODE, out=document.getElementById('vinOut'); out.style.display='block';
+  var vin=document.getElementById('vinIn').value, plate=vinPlateVals(), html='', r;
+  var foot='<div class="vin-note">Authoritative cross-check: year-by-year code charts at the <a href="https://www.falconregistry.com/dcode/dcode_vin.php" target="_blank" rel="noopener">Ford Falcon Registry</a>.</div>';
+  var addBtn='<div style="margin-top:14px"><button class="btn-post" onclick="document.querySelector(\'.tab[data-p=garage]\').click()">Add it to my Garage \u2192</button></div>';
+  if(D.route(vin)==='econoline'){
+    r=D.decodeEcono(vin);
+    if(!r.ok){ out.className='vin-out warn'; out.innerHTML=r.error; return; }
+    var fs=r.fields.concat(D.decodeEconoPlate(r.year,{trans:plate.trans,axle:plate.axle,dso:plate.dso,color:plate.color}));
+    html='<div class="vin-grid">'+fs.map(vinRow2).join('')+'</div>';
+    (r.warnings||[]).forEach(function(w){ html+='<div class="vin-warnbox">'+w+'</div>'; });
+    if(r.plateNote) html+='<div class="vin-note"><b>Where the numbers live:</b> '+r.plateNote+'</div>';
+  } else {
+    r=D.decodeFalcon(vin);
+    if(!r.ok){ out.className='vin-out warn'; out.innerHTML=r.error; return; }
+    var fs2=r.best.fields, hasPlate=Object.keys(plate).some(function(k){ return plate[k]; });
+    if(hasPlate) fs2=fs2.concat(D.decodePlate(r.best.year,plate));
+    html='<div class="vin-grid">'+fs2.map(vinRow2).join('')+'</div>';
+    (r.warnings||[]).forEach(function(w){ html+='<div class="vin-warnbox">'+w+'</div>'; });
+    if(r.best.plateNote) html+='<div class="vin-note"><b>Where the numbers live ('+String(r.best.year).replace('.5','&frac12;')+'):</b> '+r.best.plateNote+'<br><b>Unit # truth:</b> '+window.FFF_VIN2.unitNote.falcon+'</div>';
+  }
+  out.className='vin-out'; out.innerHTML=html+foot+addBtn;
+}
+/* Snap flow per FFF_VIN2_PLAN \u00a72: native camera -> canvas preprocess -> Tesseract.js
+   lazy-loaded from CDN ONLY on Snap tap -> grammar corrector -> mandatory confirm. */
+function vinSnap(){ document.getElementById('vinPhoto').click(); }
+function vinPhotoPicked(inp){
+  var f=inp.files&&inp.files[0]; if(!f) return;
+  var box=document.getElementById('vinOcr'); box.style.display='flex';
+  box.innerHTML='<div class="vin-ocr-msg">Reading the tag\u2026 the first snap downloads the reader (about 2 MB); the decode itself never needs a connection.</div>';
+  var url=URL.createObjectURL(f);
+  vinLoadTesseract().then(function(){
+    var img=new Image();
+    img.onload=function(){
+      box.innerHTML='<img class="vin-thumb" src="'+url+'" alt="your tag"><div class="vin-ocr-msg">Reading the characters\u2026</div>';
+      var cv=vinPreprocess(img);
+      window.Tesseract.recognize(cv,'eng',{tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'})
+        .then(function(res){ vinOcrDone(url,(res&&res.data&&res.data.text)||''); })
+        .catch(function(){ vinOcrFail(url); });
+    };
+    img.onerror=function(){ vinOcrFail(url); };
+    img.src=url;
+  }).catch(function(){ vinOcrFail(url); });
+  inp.value='';
+}
+function vinLoadTesseract(){
+  if(window.Tesseract) return Promise.resolve();
+  return new Promise(function(ok,no){
+    var s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload=ok; s.onerror=no; document.head.appendChild(s);
+  });
+}
+function vinPreprocess(img){
+  /* grayscale + contrast stretch + up-to-2x upscale \u2014 stamped metal hates glare */
+  var w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+  var scale=Math.max(1,Math.min(2,3200/Math.max(w,h)));
+  var cv=document.createElement('canvas'); cv.width=Math.round(w*scale); cv.height=Math.round(h*scale);
+  var cx=cv.getContext('2d'); cx.imageSmoothingEnabled=true; cx.drawImage(img,0,0,cv.width,cv.height);
+  var d=cx.getImageData(0,0,cv.width,cv.height), p=d.data, min=255, max=0, i, g;
+  for(i=0;i<p.length;i+=4){ g=(p[i]*299+p[i+1]*587+p[i+2]*114)/1000; p[i]=p[i+1]=p[i+2]=g; if(g<min)min=g; if(g>max)max=g; }
+  var range=Math.max(1,max-min);
+  for(i=0;i<p.length;i+=4){ g=(p[i]-min)*255/range; p[i]=p[i+1]=p[i+2]=g; }
+  cx.putImageData(d,0,0); return cv;
+}
+function vinOcrDone(url,text){
+  var D=window.FFF_VIN2_DECODE;
+  var runs=(text||'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').split(' ').filter(function(s){ return s.length>=9&&s.length<=13; });
+  var best='', bestScore=-1;
+  runs.forEach(function(s){
+    var v=(D.route(s)==='econoline')?D.correctEconoVIN(s):D.correctFalconVIN(s);
+    var r=(D.route(v)==='econoline')?D.decodeEcono(v):D.decodeFalcon(v);
+    var sc=r.ok?((r.best&&r.best.score?r.best.score:0)+5):0;
+    if(sc>bestScore){ bestScore=sc; best=v; }
+  });
+  if(best&&bestScore>0) document.getElementById('vinIn').value=best;
+  var msg=(best&&bestScore>0)?('The camera read <b>'+best+'</b> and filled it in above'):'The camera couldn\u2019t pick out a VIN-shaped number from this shot';
+  document.getElementById('vinOcr').innerHTML='<img class="vin-thumb" src="'+url+'" alt="your tag">'+
+    '<div class="vin-ocr-msg"><b>Looks right?</b> '+msg+' \u2014 check every character against the tag (stamped metal loves turning 0 into O), fix anything, then tap <b>Decode</b>. The camera assists; you decide.</div>';
+}
+function vinOcrFail(url){
+  document.getElementById('vinOcr').innerHTML='<img class="vin-thumb" src="'+url+'" alt="your tag"><div class="vin-ocr-msg">Couldn\u2019t run the reader \u2014 it needs a connection the very first time. Type the number straight from the tag; the decode itself works fully offline.</div>';
 }
 </script>
 <style>
@@ -646,6 +1332,19 @@ textarea.evt-in{min-height:54px;resize:vertical}
 .vin-sub{font-weight:400;font-size:.78rem;color:var(--subtle);margin-top:2px}
 .vin-sub a,.vin-note a{color:var(--maroon);font-weight:700}
 .vin-note{margin-top:16px;font-size:.82rem;color:var(--subtle);line-height:1.55;border-top:1px solid var(--line);padding-top:13px}
+.vin-snap-btn{white-space:nowrap}
+.vin-pill{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.5px;padding:2px 7px;border-radius:99px;margin-left:7px;vertical-align:middle;text-transform:uppercase}
+.vin-pill.high{background:#e6f3ea;color:#1d6b3a}.vin-pill.medium{background:#fdf3dd;color:#9a6b00}.vin-pill.low{background:#fbe9e0;color:#9c3a10}
+.vin-warnbox{background:#fff8ed;border:1px solid #ead9b0;border-radius:10px;padding:11px 14px;font-size:.85rem;line-height:1.5;margin-top:12px}
+.vin-plate-details{margin-top:12px;border:1px dashed var(--line);border-radius:12px;padding:10px 14px;background:#fff}
+.vin-plate-details summary{cursor:pointer;font-size:.85rem;font-weight:700;color:var(--maroon)}
+.vin-plate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px;margin-top:10px}
+.vin-plate-grid label{display:block;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--subtle);margin-bottom:3px}
+.vin-plate-grid input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;box-sizing:border-box}
+.vin-confirm{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.vin-thumb{width:92px;height:92px;object-fit:cover;border-radius:9px;border:1px solid var(--line);flex:none}
+.vin-ocr-msg{font-size:.85rem;color:var(--subtle);line-height:1.5}
+.vin-ocr-msg b{color:var(--ink)}
 .evt-desc{color:var(--ink);white-space:pre-wrap;line-height:1.45;margin-bottom:8px}
 .evt-join{display:inline-block;color:var(--gold-deep);font-weight:700;text-decoration:none;margin-bottom:8px}
 .evt-lineup{font-size:.86rem;color:var(--maroon);font-weight:700;border-top:1px solid var(--line);padding-top:9px;margin-bottom:9px}
