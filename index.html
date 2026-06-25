@@ -190,6 +190,7 @@ footer .heart{color:var(--maroon)}
     <section class="panel" id="panel-feed">
       <div class="section-eyebrow">Talk — post as your car</div>
       <h2 class="section-title">The Feed</h2>
+      <div id="fffVacuum"></div>
       <div id="feedComposer"></div>
       <div id="feedList"></div>
     </section>
@@ -1862,6 +1863,145 @@ textarea.evt-in{min-height:54px;resize:vertical}
 
   sb.auth.onAuthStateChange(function(_e,s){ session=s||null; if(session){ ensureProfile().then(cloudSync); } renderAvatar(); renderFeed(); renderCruises(); renderMkt(); renderMag(); });
   (async function(){ try{ var r=await sb.auth.getSession(); session=r.data.session||null; if(session){ await ensureProfile(); await cloudSync(); } }catch(e){} renderAvatar(); renderClubs(); renderFeed(); renderCruises(); renderMkt(); renderMag(); if(window.ntyRenderBoard) window.ntyRenderBoard(); })();
+})();
+</script>
+<script>
+/* ============================================================================
+ * FFF FB VACUUM + HYPERPOST — the SOC re-aggregation primitive, ported from
+ * dead_dance. Additive & honest-state: localStorage only, never touches the
+ * live Supabase feed. The compliant lane — USER shares in, USER posts out:
+ *   • VACUUM   : a member shares a post from any scattered FB Falcon group into
+ *                Ford-Falcon Friends (Web Share Target or pasted link). We keep
+ *                link + note + attribution — NEVER a scraped copy.
+ *   • RE-AGG   : many disparate Falcon groups map into ONE home feed.
+ *   • HYPERPOST: one thought → ready-to-paste drafts the MEMBER posts back out.
+ *                Nothing auto-posts. (FB Groups API was shut down Apr 2024;
+ *                user-initiated sharing is the only compliant way in.)
+ * Pattern doc: 00_House_Admin/social_surface/SOC_REAGGREGATION_FB_VACUUM_AND_HYPERPOST.
+ * ========================================================================== */
+(function(){
+  "use strict";
+  // The scattered FB Falcon universe → ONE Ford-Falcon Friends home.
+  var VAC_GROUPS = ["Falcon Club of America","Ranchero Club","Falcon Hardtops","Falcon Wagons",
+    "Falcon Sprint Owners","Sedan Delivery Club","Falcon Futura","Econoline Owners",
+    "NorCal Falcons","Falcon Parts Swap"];
+  function vesc(x){ return (x==null?"":String(x)).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m];}); }
+  function vurl(u){ u=String(u||"").trim(); return /^https?:\/\//i.test(u)?u:""; }
+  function load(){ try{ var s=localStorage.getItem("fff.shares"); if(s){ var a=JSON.parse(s); if(Array.isArray(a)) return a; } }catch(e){} return []; }
+  function save(a){ try{ localStorage.setItem("fff.shares",JSON.stringify(a.slice(0,200))); }catch(e){} }
+  var SHARES = load();
+
+  function host(){ return document.getElementById("fffVacuum"); }
+  function render(){
+    var h = host(); if(!h) return;
+    h.innerHTML =
+      '<div class="post" style="border-left:4px solid var(--gold)">'+
+        '<div class="post-head"><div class="post-av">📥</div>'+
+          '<div><div class="post-who">Bring a Falcon post in</div>'+
+          '<div class="post-meta">Share a post from any FB Falcon group into Ford-Falcon Friends — in &amp; out.</div></div></div>'+
+        '<div style="display:flex;gap:8px;margin-top:6px">'+
+          '<button class="btn-post" onclick="FFFVAC.openCapture()">📥 Share in</button>'+
+          '<button class="btn-post" style="background:var(--gold-deep)" onclick="FFFVAC.openHyper(\'\')">🚀 HyperPost</button>'+
+        '</div>'+
+      '</div>'+
+      '<div id="fffVacForm"></div>'+
+      feedHTML();
+  }
+  function feedHTML(){
+    if(!SHARES.length) return "";
+    var byG={}, order=[];
+    SHARES.slice(0,16).forEach(function(s){ if(!byG[s.group]){ byG[s.group]=[]; order.push(s.group); } byG[s.group].push(s); });
+    return '<div class="section-eyebrow" style="margin-top:14px">📥 From your Falcon groups — shared in</div>'+
+      order.map(function(g){
+        return '<div class="post"><div class="post-who" style="color:var(--maroon)">'+vesc(g)+'</div>'+
+          byG[g].map(function(s){
+            var link=vurl(s.url);
+            return '<div style="border-top:1px solid var(--line);margin-top:8px;padding-top:8px">'+
+              '<div class="post-body" style="font-size:.95rem">'+vesc(s.note||"(shared a post)")+'</div>'+
+              '<div class="post-meta" style="margin-top:4px">shared by '+vesc(s.by||"a Falcon friend")+
+                (link?' · <a href="'+vesc(link)+'" target="_blank" rel="noopener nofollow">view on Facebook ↗</a>':'')+'</div>'+
+              '<button class="btn-post" style="margin-top:8px;padding:6px 12px;font-size:.85rem" onclick="FFFVAC.openHyper('+JSON.stringify(s.id).replace(/"/g,'&quot;')+')">🚀 HyperPost this</button>'+
+            '</div>';
+          }).join("")+
+        '</div>';
+      }).join("");
+  }
+  function openCapture(pre){
+    pre = pre || {};
+    var f = document.getElementById("fffVacForm"); if(!f) return;
+    var opts = VAC_GROUPS.map(function(g){ return '<option'+(pre.group===g?' selected':'')+'>'+vesc(g)+'</option>'; }).join("");
+    f.innerHTML =
+      '<div class="post" style="background:var(--paper)">'+
+        '<div class="post-meta" style="margin-bottom:8px"><b>You’re sharing, not scraping.</b> We keep your link + note + credit — not a copy of anyone’s post. Private-group content stays private.</div>'+
+        '<label class="post-meta">Which group</label>'+
+        '<select id="vacGroup" style="width:100%;padding:8px;margin:4px 0 8px;border:1px solid var(--line);border-radius:8px">'+opts+'</select>'+
+        '<textarea id="vacNote" placeholder="A line about why this is worth seeing…" style="width:100%;min-height:64px;padding:8px;border:1px solid var(--line);border-radius:8px">'+vesc(pre.note||"")+'</textarea>'+
+        '<input id="vacUrl" placeholder="Paste the Facebook post link (optional)" value="'+vesc(pre.url||"")+'" style="width:100%;padding:8px;margin:8px 0;border:1px solid var(--line);border-radius:8px">'+
+        '<div style="display:flex;gap:8px">'+
+          '<button class="btn-post" onclick="FFFVAC.drop()">📥 Drop it in the group</button>'+
+          '<button class="btn-post" style="background:#888" onclick="FFFVAC.cancel()">Cancel</button>'+
+        '</div>'+
+        '<div class="post-meta" style="margin-top:8px">Honest-state: stored on this device (link + note + attribution). Production persists via the same backend as the feed.</div>'+
+      '</div>';
+    var n=document.getElementById("vacNote"); if(n) n.focus();
+  }
+  function drop(){
+    var g=(document.getElementById("vacGroup")||{}).value||VAC_GROUPS[0];
+    var note=((document.getElementById("vacNote")||{}).value||"").trim();
+    var url=vurl((document.getElementById("vacUrl")||{}).value||"");
+    if(!note && !url){ if(window.toast) toast("Add a note or a link"); return; }
+    SHARES.unshift({ id:"sh"+Date.now(), group:g, by:"You", note:note, url:url, ts:Date.now() });
+    save(SHARES); render();
+    if(window.toast) toast("📥 Dropped into "+g+" — the family will see it.");
+  }
+  function cancel(){ var f=document.getElementById("fffVacForm"); if(f) f.innerHTML=""; }
+  function openHyper(id){
+    var s = id ? SHARES.filter(function(x){return x.id===id;})[0] : null;
+    var seed = s ? (s.note ? s.note+" " : "") + "— from the "+s.group+" crew, now over at Ford-Falcon Friends." : "What’s happening with your Falcon today? Share it with the whole family.";
+    var f = document.getElementById("fffVacForm"); if(!f) return;
+    f.innerHTML =
+      '<div class="post" style="background:var(--paper)">'+
+        '<div class="post-who" style="color:var(--maroon)">🚀 HyperPost — one thought, everywhere</div>'+
+        '<div class="post-meta" style="margin:4px 0 8px">Write it once. We tailor a draft per network — <b>you</b> paste &amp; post (nothing auto-sends).</div>'+
+        '<textarea id="hpBody" style="width:100%;min-height:80px;padding:8px;border:1px solid var(--line);border-radius:8px">'+vesc(seed)+'</textarea>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+
+          '<button class="btn-post" onclick="FFFVAC.copy(\'fb\')">📘 Copy for Facebook</button>'+
+          '<button class="btn-post" onclick="FFFVAC.copy(\'ig\')">📷 Copy for Instagram</button>'+
+          '<button class="btn-post" onclick="FFFVAC.copy(\'x\')">✕ Copy for X</button>'+
+          '<button class="btn-post" style="background:#888" onclick="FFFVAC.cancel()">Done</button>'+
+        '</div>'+
+        '<div class="post-meta" style="margin-top:8px">Honest-state: real one-tap auto-posting needs each network’s sign-in &amp; rules (counsel-gated). For now you get a ready-to-paste draft.</div>'+
+      '</div>';
+  }
+  function copy(surface){
+    var body=((document.getElementById("hpBody")||{}).value||"").trim();
+    var tag = surface==="x" ? " #FordFalcon #Falcon" : surface==="ig" ? "\n\n#FordFalcon #FalconFriends #ClassicFord #Ranchero" : "";
+    var out = body + tag;
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(out); }
+    }catch(e){}
+    if(window.toast) toast("Copied — paste it into "+(surface==="fb"?"Facebook":surface==="ig"?"Instagram":"X")+".");
+  }
+  // Web Share Target intake: app opened via OS share sheet with ?st=&sx=&su=
+  function initShareTarget(){
+    try{
+      var q = new URLSearchParams(location.search);
+      var st=q.get("st"), sx=q.get("sx"), su=q.get("su");
+      if(st||sx||su){
+        var note=[st,sx].filter(Boolean).join(" — ");
+        var tab=document.querySelector('.tab[data-p="feed"]'); if(tab) tab.click();
+        openCapture({ note:note, url:vurl(su||"") });
+      }
+    }catch(e){}
+  }
+
+  window.FFFVAC = { openCapture:function(){ openCapture(); }, drop:drop, cancel:cancel, openHyper:openHyper, copy:copy };
+
+  function boot(){ render(); initShareTarget();
+    var tabs=document.getElementById("tabs");
+    if(tabs) tabs.addEventListener("click", function(e){ var b=e.target.closest&&e.target.closest(".tab"); if(b && b.dataset.p==="feed") render(); });
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
 </script>
 </body>

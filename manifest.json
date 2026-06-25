@@ -1,24 +1,20 @@
 {
-  "name": "Ford Falcon Friends",
+  "name": "Ford-Falcon Friends",
   "short_name": "Falcon Friends",
-  "description": "A free community for classic Ford Falcon (1960–1970) owners and fans. Register your car, see how rare it is, find clubs, cruises, and meetups.",
-  "start_url": "/",
-  "scope": "/",
+  "description": "The home for the whole Ford Falcon & Econoline world — your garage, the clubs, cruises, the market, and the feed that pulls the scattered Falcon groups together.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#5e1c21",
+  "orientation": "portrait",
+  "background_color": "#f4ece0",
   "theme_color": "#5e1c21",
-  "categories": ["social", "lifestyle"],
   "icons": [
-    { "src": "icons/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
-    { "src": "icons/icon-96.png",  "sizes": "96x96",   "type": "image/png" },
-    { "src": "icons/icon-128.png", "sizes": "128x128", "type": "image/png" },
-    { "src": "icons/icon-144.png", "sizes": "144x144", "type": "image/png" },
-    { "src": "icons/icon-152.png", "sizes": "152x152", "type": "image/png" },
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "params": { "title": "st", "text": "sx", "url": "su" }
+  }
 }

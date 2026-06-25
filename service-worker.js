@@ -1,6 +1,6 @@
 /* Ford Falcon Friends — service worker
    network-first for HTML (so updates land), cache-first for static assets. */
-const CACHE_VERSION = 'fff-v17';
+const CACHE_VERSION = 'fff-v18';
 const PRECACHE = [
   './',
   './index.html',
@@ -12,7 +12,13 @@ const PRECACHE = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  // best-effort precache: a single missing asset (e.g. an icon not yet added)
+  // must NOT abort the whole install (addAll is atomic; allSettled is not).
+  e.waitUntil(
+    caches.open(CACHE_VERSION)
+      .then((c) => Promise.allSettled(PRECACHE.map((u) => c.add(u))))
+      .then(() => self.skipWaiting())
+  );
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(
