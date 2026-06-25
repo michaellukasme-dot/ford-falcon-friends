@@ -196,10 +196,10 @@
   function renderGate(){
     var comp = document.getElementById("lc-comp"), gate = document.getElementById("lc-gate");
     if (!comp || !gate) return;
-    if (minorLocked()) { comp.style.display = "none"; gate.style.display = "";
+    if (minorLocked()) { comp.style.display = "none"; gate.style.display = "block";
       gate.innerHTML = '<div class="lc-tx">Chat is for 18+, so posting is off on this device. Reading is open to all.</div>'; return; }
     if (identity()) { gate.style.display = "none"; comp.style.display = ""; return; }
-    comp.style.display = "none"; gate.style.display = "";
+    comp.style.display = "none"; gate.style.display = "block";
     gate.innerHTML = '<button class="lc-btn" onclick="LukasChat._openAuth()">✉ Sign in to post (free, 18+)</button>' +
       '<div class="lc-tx" style="margin-top:6px">Reading is open — posting takes a 30-second magic-link sign-in.</div>';
   }
