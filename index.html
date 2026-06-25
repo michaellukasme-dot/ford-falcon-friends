@@ -157,6 +157,7 @@ footer .heart{color:var(--maroon)}
       <div class="section-eyebrow">Be someone — your car is your identity</div>
       <h2 class="section-title">My Garage</h2>
       <p class="lead">Register every Falcon you own. The registry tells you how rare your exact spec is — <em>1 of ~N ever built.</em></p>
+      <div style="margin:0 0 16px"><button class="btn" onclick="if(window.LukasBadge){LukasBadge.open();}else{(window.toast||function(){})('Open the chat first — the badge shares its sign-in.');}">🏅 My Badge — meets, cruises, cars &amp; awards your friends can see</button></div>
       <div class="garage-grid" id="garageGrid"></div>
 
       <div class="rarity-engine">
@@ -191,6 +192,7 @@ footer .heart{color:var(--maroon)}
       <div class="section-eyebrow">Talk — post as your car</div>
       <h2 class="section-title">The Feed</h2>
       <div id="fffVacuum"></div>
+      <div id="fffFriends"></div>
       <div id="feedComposer"></div>
       <div id="feedList"></div>
     </section>
@@ -1997,12 +1999,54 @@ textarea.evt-in{min-height:54px;resize:vertical}
 
   window.FFFVAC = { openCapture:function(){ openCapture(); }, drop:drop, cancel:cancel, openHyper:openHyper, copy:copy };
 
-  function boot(){ render(); initShareTarget();
+  // 👥 Friends — honest-state social graph + the mutual-friend gate that unlocks DMs.
+  // Real friends ride the magic-link identity (chat_friendships); are_friends() gates DMs.
+  var FRIEND_ROSTER=[{h:"ranchero_rod",n:"Rod — '63 Ranchero",sub:"Ranchero Club"},{h:"wagon_will",n:"Will — '64 Wagon",sub:"Falcon Wagons"},{h:"sprint_sue",n:"Sue — '64 Sprint",sub:"Sprint Owners"},{h:"norcal_nate",n:"Nate — Futura",sub:"NorCal Falcons"}];
+  var FRIENDS=(function(){try{var s=localStorage.getItem("fff.friends");if(s){var o=JSON.parse(s);if(o&&typeof o==="object")return o;}}catch(e){}return {wagon_will:"pending_in"};})();
+  function saveFriends(){try{localStorage.setItem("fff.friends",JSON.stringify(FRIENDS));}catch(e){}}
+  function fStat(h){return FRIENDS[h]||"none";}
+  function fCount(){var n=0;for(var h in FRIENDS)if(FRIENDS[h]==="friends")n++;return n;}
+  function fBtn(h){var s=fStat(h);
+   if(s==="friends")return '<button class="btn-post" style="padding:6px 12px;font-size:.82rem;background:var(--green)" onclick="FFFFR.act(\''+h+'\')">🤝 Friends</button>';
+   if(s==="pending_out")return '<button class="btn-post" style="padding:6px 12px;font-size:.82rem;background:#888" onclick="FFFFR.act(\''+h+'\')">⏳ Requested</button>';
+   if(s==="pending_in")return '<button class="btn-post" style="padding:6px 12px;font-size:.82rem;background:var(--gold-deep)" onclick="FFFFR.act(\''+h+'\')">✓ Accept</button>';
+   return '<button class="btn-post" style="padding:6px 12px;font-size:.82rem" onclick="FFFFR.act(\''+h+'\')">+ Add friend</button>';}
+  function fRender(){var h=document.getElementById("fffFriends");if(!h)return;
+   h.innerHTML='<div class="section-eyebrow" style="margin-top:6px">👥 Friends'+(fCount()?(' · '+fCount()):'')+'</div>'+
+    FRIEND_ROSTER.map(function(p){return '<div class="post" style="display:flex;align-items:center;gap:10px;padding:10px 14px"><div class="post-av">'+vesc(p.n.charAt(0))+'</div><div style="flex:1"><div class="post-who" style="font-size:.92rem">'+vesc(p.n)+'</div><div class="post-meta">'+vesc(p.sub)+'</div></div>'+fBtn(p.h)+'</div>';}).join("")+
+    '<div class="post-meta" style="padding:2px 4px 0">Honest-state: demo. Real friends ride the magic-link identity; mutual friends are the gate that unlocks DMs.</div>';}
+  function fAct(h){var s=fStat(h);
+   if(s==="none")FRIENDS[h]="pending_out";else if(s==="pending_in")FRIENDS[h]="friends";else delete FRIENDS[h];
+   saveFriends();fRender();
+   if(window.toast)toast(FRIENDS[h]==="friends"?"🤝 You’re friends now":FRIENDS[h]==="pending_out"?"Friend request sent":"Removed");}
+  window.FFFFR={act:fAct,render:fRender};
+
+  function boot(){ render(); fRender(); initShareTarget();
     var tabs=document.getElementById("tabs");
-    if(tabs) tabs.addEventListener("click", function(e){ var b=e.target.closest&&e.target.closest(".tab"); if(b && b.dataset.p==="feed") render(); });
+    if(tabs) tabs.addEventListener("click", function(e){ var b=e.target.closest&&e.target.closest(".tab"); if(b && b.dataset.p==="feed"){ render(); fRender(); } });
   }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
 </script>
+<!-- House Unified Social layer (lukas-social): chat + shared badge -->
+<script src="lukas_chat.js"></script>
+<script src="lukas_badge.js"></script>
+<script>
+  LukasChat.init({
+    app: "fff",
+    brand: { name: "Ford-Falcon Friends", accent: "#1b3a6b", icon: "🚗" }
+  });
+  LukasBadge.init({
+    app: "fff",
+    brand: { name: "Falcon", accent: "#1b3a6b", icon: "🏅" },
+    categories: [
+      { key: "meet",   label: "Meets",   icon: "📍", titleLabel: "Meet / venue", artistLabel: "Host club" },
+      { key: "cruise", label: "Cruises", icon: "🛣️", titleLabel: "Cruise / route", artistLabel: "Host club" },
+      { key: "car",    label: "My Cars", icon: "🚗", collection: true },
+      { key: "award",  label: "Awards",  icon: "🏆", titleLabel: "Award", artistLabel: "Won at (show/event)" }
+    ]
+  });
+</script>
+<script src="lukas_a2hs.js" defer></script>
 </body>
 </html>
