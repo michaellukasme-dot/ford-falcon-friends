@@ -152,6 +152,7 @@ footer .heart{color:var(--maroon)}
   </nav>
 
   <main>
+    <div id="fffHero" aria-label="Ford-Falcon Friends headline"></div>
     <!-- GARAGE -->
     <section class="panel active" id="panel-garage">
       <div class="section-eyebrow">Be someone — your car is your identity</div>
@@ -2031,6 +2032,18 @@ textarea.evt-in{min-height:54px;resize:vertical}
 <!-- House Unified Social layer (lukas-social): chat + shared badge -->
 <script src="lukas_chat.js"></script>
 <script src="lukas_badge.js"></script>
+<script src="fff_doodles.js"></script>
+<!-- The Gateway — licensed white-label SURFACE (additive, namespaced, honest-state; nothing auto-sends) -->
+<script src="lukas_gateway.js"></script>
+<script>
+  try{ if(window.LukasGateway && LukasGateway.launcher) LukasGateway.launcher({
+    brand:{ key:"fff", name:"🏁 Broadcast", accent:"#1b5e20" },
+    sig:"— Ford-Falcon Friends", tone:"warm",
+    fab:{ pos:{ bottom:"84px", left:"16px" } },
+    tags:{ fb:["falcons","classicford","carshow"], ig:["falcons","classicford","carsofinstagram"], tt:["fyp","classiccars"] },
+    placeholder:"Say it once — we'll write every voice…"
+  }); }catch(e){}
+</script>
 <script>
   LukasChat.init({
     app: "fff",
