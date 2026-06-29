@@ -240,25 +240,71 @@
                 '<button onclick="LukasChat._friend(\'' + esc(m[C.sender]) + "')\" title=\"Send a friend request\">⊕</button>" +
                 '<button onclick="LukasChat._report(\'' + esc(m[C.id]) + "')\" title=\"Report to the operator\">⚑</button>" +
                 '<button onclick="LukasChat._mute(\'' + esc(m[C.sender]) + "')\" title=\"Hide this person on this device\">⃠</button></span>") +
-              '</div><div class="lc-m-body">' + esc(m[C.body]) + "</div></div>";
+              '</div><div class="lc-m-body">' + bodyHtml(m) + "</div></div>";
           });
           box.innerHTML = html; box.scrollTop = box.scrollHeight;
           if (list.length) markRead(room[R.id], list[list.length - 1][C.created]);
         });
       });
   }
+  /* ---- attachments: shrink an image to a small JPEG dataURL, stage it, send inline ----
+     honest-state: prototype stores the image inline in the message; production puts
+     attachments in object storage and sends a URL. */
+  var _att = null;
+  function shrinkImg(file, cb){
+    if (!file) { cb(null); return; }
+    var rd = new FileReader();
+    rd.onload = function(){
+      var img = new Image();
+      img.onload = function(){
+        var max = 420, w = img.width, h = img.height;
+        if (w > h && w > max) { h = Math.round(h*max/w); w = max; }
+        else if (h >= w && h > max) { w = Math.round(w*max/h); h = max; }
+        var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+        cv.getContext("2d").drawImage(img, 0, 0, w, h);
+        try { cb(cv.toDataURL("image/jpeg", 0.6)); } catch(_) { cb(null); }
+      };
+      img.onerror = function(){ cb(null); };
+      img.src = rd.result;
+    };
+    rd.onerror = function(){ cb(null); };
+    rd.readAsDataURL(file);
+  }
+  function attach(input){
+    var f = input && input.files && input.files[0]; if (!f) return;
+    var bar = document.getElementById("lc-attbar");
+    if (bar) { bar.classList.add("on"); bar.innerHTML = '<span class="lc-att-lbl">Shrinking…</span>'; }
+    shrinkImg(f, function(d){
+      _att = d;
+      if (!bar) return;
+      if (d) { bar.classList.add("on"); bar.innerHTML = '<img src="' + d + '" alt=""><span class="lc-att-lbl">photo ready</span><button onclick="LukasChat._clearAtt()">remove</button>'; }
+      else { bar.classList.remove("on"); bar.innerHTML = ""; toast("Couldn’t read that image"); }
+    });
+    input.value = "";
+  }
+  function clearAtt(){ _att = null; var bar = document.getElementById("lc-attbar"); if (bar) { bar.classList.remove("on"); bar.innerHTML = ""; } }
+  function bodyHtml(m){
+    var C = COLS.msg;
+    if (m[C.kind] === "image") {
+      var im = null; try { im = JSON.parse(m[C.body]); } catch(e) { im = null; }
+      if (im && im.img) return '<img class="lc-m-img" src="' + esc(im.img) + '" alt="photo">' + (im.cap ? '<div class="lc-m-cap">' + esc(im.cap) + "</div>" : "");
+    }
+    return esc(m[C.body]);
+  }
   function send(){
     var inp = document.getElementById("lc-input"), txt = (inp.value || "").trim();
-    if (!txt) return;
+    if (!txt && !_att) return;
     var id = identity(); if (!id) { openAuth(); return; }
     if (minorLocked()) return;
     var c = client(), C = COLS.msg, R = COLS.room, row = {};
-    row[C.room] = room[R.id]; row[C.sender] = id.id; row[C.body] = txt; row[C.kind] = "text";
+    row[C.room] = room[R.id]; row[C.sender] = id.id;
+    if (_att) { row[C.body] = JSON.stringify({ img:_att, cap:txt }); row[C.kind] = "image"; }
+    else { row[C.body] = txt; row[C.kind] = "text"; }
     inp.disabled = true;
     c.from(C.table).insert([row]).then(function(r){
       inp.disabled = false;
       if (r.error) { toast("Didn’t send — " + (r.error.message || "try again")); return; }
-      inp.value = ""; loadMsgs();
+      inp.value = ""; clearAtt(); loadMsgs();
     });
   }
   function report(msgId){
@@ -392,6 +438,11 @@
       "#lc-comp{display:none;padding:9px;border-top:1px solid #eee;gap:7px}#lc-comp.row{display:flex}" +
       "#lc-input{flex:1;border:1px solid #ddd;border-radius:20px;padding:9px 13px;font-size:14px;outline:none}" +
       "#lc-comp button{background:" + ac + ";color:#fff;border:none;border-radius:20px;padding:0 16px;cursor:pointer;font-weight:600}" +
+      ".lc-attach{display:flex;align-items:center;justify-content:center;flex:0 0 38px;height:38px;background:#f0f0f2;border-radius:50%;cursor:pointer;font-size:17px}" +
+      "#lc-attbar{display:none;padding:8px 10px 0;align-items:center;gap:8px}#lc-attbar.on{display:flex}" +
+      "#lc-attbar img{height:42px;border-radius:7px}.lc-att-lbl{font-size:12px;color:#888}" +
+      "#lc-attbar button{background:#eee;color:#333;border:none;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:12px;font-weight:600;margin-left:auto}" +
+      ".lc-m-img{max-width:200px;max-height:220px;border-radius:9px;display:block}.lc-m-cap{margin-top:5px}" +
       "#lc-gate{display:none;padding:13px;border-top:1px solid #eee}" +
       ".lc-btn{background:" + ac + ";color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:600;font-size:14px}" +
       ".lc-btn.ghost{background:#eee;color:#333}.lc-tx{color:#777;font-size:13px}" +
@@ -416,7 +467,8 @@
       '<div id="lc-rooms"></div>' +
       '<div id="lc-msgs" style="display:none"></div>' +
       '<div id="lc-gate"></div>' +
-      '<div id="lc-comp" class="row"><input id="lc-input" placeholder="Message…" onkeydown="if(event.key===\'Enter\')LukasChat._send()"><button onclick="LukasChat._send()">Send</button></div>';
+      '<div id="lc-attbar"></div>' +
+      '<div id="lc-comp" class="row"><label class="lc-attach" title="Attach a photo">📎<input id="lc-file" type="file" accept="image/*" style="display:none" onchange="LukasChat._attach(this)"></label><input id="lc-input" placeholder="Message…" onkeydown="if(event.key===\'Enter\')LukasChat._send()"><button onclick="LukasChat._send()">Send</button></div>';
     document.body.appendChild(panel);
     var modal = document.createElement("div"); modal.id = "lc-modal";
     modal.innerHTML =
@@ -458,7 +510,7 @@
     getClient: client, app: function(){ return CFG.app; }, brand: function(){ return CFG.brand; },
     requireAuth: openAuth, toast: toast,
     // internal handlers referenced by injected markup:
-    _openRoom: openRoom, _openAuth: openAuth, _back: backToRooms, _send: send, _report: report, _mute: mute, _friend: friend,
+    _openRoom: openRoom, _openAuth: openAuth, _back: backToRooms, _send: send, _attach: attach, _clearAtt: clearAtt, _report: report, _mute: mute, _friend: friend,
     _badge: function(id, nm){ if (root.LukasBadge && root.LukasBadge.viewIdentity) root.LukasBadge.viewIdentity(id, nm); else toast("Badge isn’t available here"); },
     _attestYes: attestYes, _attestNo: attestNo, _sendLink: sendLink, _finish: finishIdentity, _hide: hideModal
   };

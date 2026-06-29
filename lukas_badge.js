@@ -107,6 +107,24 @@
     var sc = document.getElementById("lb-scope-wrap");
     if (sc) sc.style.display = viewing ? "none" : "";
   }
+  function paintList(key, items){
+    var list = document.getElementById("lb-list"); if (!list) return;
+    if (!items || !items.length) { list.innerHTML = '<div class="lb-empty">' + (viewing ? "Nothing here yet." : (cat(key).emptyHint || ("No " + esc(cat(key).label.toLowerCase()) + " yet — add your first below."))) + "</div>"; return; }
+    list.innerHTML = items.map(function(it){ return itemHtml(it); }).join("");
+  }
+  /* AUTO-POPULATE: import the owner's own app log (e.g. dead_dance "I was there") into
+     the shared badge. Each source item carries a stable ext_id (meta.ext_id) so we never
+     double-add on re-open. */
+  function importItems(key, list, cb){
+    var c = cat(key), cl = client();
+    if (!cl || !identity() || !list || !list.length) { cb && cb(); return; }
+    var rows = list.map(function(s){
+      return { app:CFG.app, identity_id:identity().id, category:key, title:s.title||"", subtitle:s.subtitle||null,
+        item_date:s.item_date||null, artist:s.artist||null, city:s.city||null, note:s.note||null,
+        photo_url:null, tier:computeTier(c, s.title, false), meta:{ ext_id:s.ext_id, auto:true } };
+    });
+    cl.from("chat_badge").insert(rows).then(function(){ cb && cb(); });
+  }
   function selectCat(key){
     document.querySelectorAll("#lb-tabs .lb-tab").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-k")===key); });
     var addWrap = document.getElementById("lb-addwrap");
@@ -119,8 +137,21 @@
     loadItems(key, owner, function(items, err){
       if (err) { list.innerHTML = '<div class="lb-empty">' + (err==="offline" ? "Offline — connect to see the badge." :
         (viewing ? "You can see this badge once you’re friends or share a chapter/club." : "Couldn’t load — " + esc(err))) + "</div>"; return; }
-      if (!items || !items.length) { list.innerHTML = '<div class="lb-empty">' + (viewing ? "Nothing here yet." : "No " + esc(cat(key).label.toLowerCase()) + " yet — add your first below.") + "</div>"; return; }
-      list.innerHTML = items.map(function(it){ return itemHtml(it); }).join("");
+      var c = cat(key);
+      if (!viewing && c.source && identity()){
+        try{
+          var src = c.source() || [];
+          var have = {};
+          (items||[]).forEach(function(it){ var e = it.meta && it.meta.ext_id; if (e) have[e] = 1; });
+          var missing = src.filter(function(s){ return s && s.ext_id && !have[s.ext_id]; });
+          if (missing.length){
+            list.innerHTML = '<div class="lb-empty">Syncing your shows…</div>';
+            importItems(key, missing, function(){ loadItems(key, owner, function(items2){ paintList(key, items2); }); });
+            return;
+          }
+        }catch(e){}
+      }
+      paintList(key, items);
     });
   }
   function itemHtml(it){
@@ -214,7 +245,7 @@
     if (document.getElementById("lb-css")) return;
     var ac = CFG.brand.accent || "#b8002e";
     var css = "" +
-      "#lb-panel{position:fixed;right:16px;bottom:80px;z-index:9997;width:min(400px,94vw);height:min(620px,80vh);background:#fff;color:#1a1a1a;border-radius:16px;box-shadow:0 14px 44px rgba(0,0,0,.34);display:none;flex-direction:column;overflow:hidden;font:14px/1.45 -apple-system,Segoe UI,Roboto,sans-serif}" +
+      "#lb-panel{position:fixed;right:16px;bottom:80px;z-index:10001;width:min(400px,94vw);height:min(620px,80vh);background:#fff;color:#1a1a1a;border-radius:16px;box-shadow:0 14px 44px rgba(0,0,0,.34);display:none;flex-direction:column;overflow:hidden;font:14px/1.45 -apple-system,Segoe UI,Roboto,sans-serif}" +
       "#lb-panel.open{display:flex}" +
       "#lb-hd{display:flex;align-items:center;gap:8px;padding:11px 13px;background:" + ac + ";color:#fff}" +
       "#lb-hd .lb-h-ttl{font-weight:700;flex:1;font-size:15px}#lb-hd button{background:rgba(255,255,255,.18);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px}" +
