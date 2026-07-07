@@ -131,12 +131,128 @@ footer .heart{color:var(--maroon)}
   background:var(--ink);color:#fff;padding:11px 18px;border-radius:24px;font-size:.85rem;z-index:80;transition:.25s;pointer-events:none;box-shadow:var(--shadow)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
+<style>
+/* ===== Calendar sidebar (ported from Shakedown .cal) ===== */
+.fff-side{position:fixed;top:0;left:0;bottom:0;width:290px;background:var(--paper);border-right:1px solid var(--line);
+  z-index:60;transform:translateX(-102%);transition:.25s;overflow-y:auto;padding:16px 14px 40px;box-shadow:6px 0 22px rgba(60,30,15,.12)}
+.fff-side.open{transform:none}
+.fff-side-bk{display:none;position:fixed;inset:0;background:rgba(20,10,5,.35);z-index:55}
+.fcal .eyebrow{font-family:'Fraunces',serif;font-style:italic;color:var(--gold-deep);font-size:.8rem;text-transform:uppercase;letter-spacing:.4px}
+.fcal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.fcal-add{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 10px;font-weight:700;font-size:.72rem;color:var(--maroon);cursor:pointer}
+.fcal-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.fcal-chip{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 9px;font-size:.72rem;font-weight:600;color:var(--maroon);cursor:pointer}
+.fcal-chip.on{background:var(--maroon);color:var(--cream);border-color:var(--maroon)}
+.fcal-card{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin-bottom:8px}
+.fcal-date{flex:0 0 42px;text-align:center;line-height:1}
+.fcal-date b{display:block;font-family:'Fraunces',serif;color:var(--maroon);font-size:.9rem}
+.fcal-date span{font-size:.62rem;color:var(--subtle);text-transform:uppercase}
+.fcal-meta{flex:1;min-width:0}
+.fcal-title{font-weight:700;font-size:.82rem;color:var(--ink);line-height:1.15}
+.fcal-where{font-size:.7rem;color:var(--subtle);margin-top:2px}
+.fcal-go{flex:0 0 auto;border:1px solid var(--gold-deep);background:#fff;color:var(--gold-deep);border-radius:16px;padding:5px 9px;font-size:.68rem;font-weight:700;cursor:pointer}
+.fcal-go.on{background:var(--green);color:#fff;border-color:var(--green)}
+.fcal-note,.fcal-empty{font-size:.68rem;color:var(--subtle);margin-top:10px;line-height:1.4}
+@media(min-width:960px){ .fff-side{transform:none;box-shadow:none} .fff-side-bk{display:none!important} .app>main,.app>header,.app>nav{margin-left:290px} #calBtn{display:none} }
+/* ===== shared overlay bits ===== */
+.fpov,.ffreeov,.asov{position:fixed;inset:0;background:rgba(20,10,5,.5);z-index:80;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px}
+.fpov.on,.ffreeov.on,.asov.on{display:flex}
+.fp-x{position:absolute;top:10px;right:12px;border:none;background:#0001;width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--ink)}
+.fp-btn{border:none;background:var(--maroon);color:var(--cream);border-radius:22px;padding:9px 16px;font-weight:700;font-size:.86rem;cursor:pointer}
+.fp-btn.ghost{background:#fff;color:var(--maroon);border:1px solid var(--line)}
+.fp-btn.sm{padding:7px 12px;font-size:.78rem}
+.fp-note{font-size:.68rem;color:var(--subtle);margin-top:12px;line-height:1.4}
+/* ===== profile ===== */
+.fp-card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:18px;max-width:440px;width:100%;padding:22px 18px;box-shadow:var(--shadow)}
+.fp-qr{width:150px;height:150px;margin:6px auto 12px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.fp-qr svg{width:100%;height:100%}
+.fp-qrfallback{text-align:center;color:var(--subtle);font-size:1.6rem;padding:8px}
+.fp-qrfallback small{font-size:.62rem}
+.fp-name{font-family:'Fraunces',serif;font-weight:900;font-size:1.4rem;color:var(--maroon);text-align:center}
+.fp-handle{text-align:center;color:var(--subtle);font-size:.82rem;margin-top:2px}
+.fp-story{text-align:center;font-size:.86rem;color:var(--ink);margin:10px 4px 0;line-height:1.4}
+.fp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0}
+.fp-st{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
+.fp-st .n{font-family:'Fraunces',serif;font-weight:900;color:var(--maroon);font-size:1.1rem}
+.fp-st .l{font-size:.58rem;color:var(--subtle);line-height:1.2;margin-top:2px}
+.fp-actions{display:flex;gap:8px;justify-content:center;margin:6px 0 4px}
+.fp-sect{font-family:'Fraunces',serif;font-weight:700;color:var(--maroon);font-size:.95rem;margin:16px 0 8px;border-top:1px solid var(--line);padding-top:12px}
+.fp-prov{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:8px}
+.fp-prov-h{display:flex;justify-content:space-between;align-items:center}
+.fp-tier{background:var(--gold);color:#3a2400;font-weight:700;font-size:.6rem;padding:2px 7px;border-radius:12px}
+.fp-prov-b{font-size:.76rem;color:var(--subtle);margin-top:3px}
+.fp-prov-vin{font-size:.72rem;color:var(--ink);margin-top:5px;font-family:ui-monospace,Menlo,monospace}
+.fp-prov-vin.muted,.muted{color:var(--subtle)}
+.fp-empty{font-size:.8rem;color:var(--subtle);padding:6px 0}
+.fp-vin{display:flex;gap:6px}
+.fp-vin input,.fp-l input,.fp-l textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86rem;font-family:inherit;background:#fff}
+.fp-vinout{margin-top:8px}
+.fp-vc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.78rem}
+.fp-formtitle{font-family:'Fraunces',serif;font-weight:900;font-size:1.3rem;color:var(--maroon);text-align:center;margin-bottom:12px}
+.fp-l{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--subtle);margin-bottom:10px}
+.fp-l input,.fp-l textarea{margin-top:4px;text-transform:none;font-weight:400;color:var(--ink)}
+/* ===== free stuff / miracle ticket ===== */
+.ffree-fab{position:fixed;right:16px;bottom:78px;z-index:70;width:56px;height:56px;border-radius:50%;border:none;background:var(--gold);color:#3a2400;font-size:1.5rem;cursor:pointer;box-shadow:0 6px 18px rgba(120,90,20,.4);animation:ffbounce 2.4s ease-in-out infinite}
+@keyframes ffbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.ffree-sheet,.as-sheet{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:18px;max-width:460px;width:100%;padding:20px 16px;box-shadow:var(--shadow)}
+.ffree-top,.as-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.ffree-title{font-family:'Fraunces',serif;font-weight:900;font-size:1.35rem;color:var(--maroon)}
+.ffree-sub{font-size:.76rem;color:var(--subtle)}
+.ffree-feat{background:linear-gradient(180deg,#fff8e8,#fff);border:1px solid var(--gold);border-radius:14px;padding:12px;margin-bottom:14px}
+.ffree-feat-h{font-weight:800;color:var(--gold-deep);font-size:.8rem;text-transform:uppercase;letter-spacing:.4px}
+.ffree-feat-who{margin:5px 0 8px;font-size:.86rem;color:var(--ink)}
+.ffree-feat-list{margin:0 0 10px;padding-left:18px;font-size:.8rem;color:var(--ink)}
+.ffree-feat-list span{color:var(--subtle);font-size:.72rem}
+.ffree-btn{border:none;background:var(--maroon);color:var(--cream);border-radius:20px;padding:8px 14px;font-weight:700;font-size:.8rem;cursor:pointer}
+.ffree-btn.ghost{background:#fff;color:var(--maroon);border:1px solid var(--line);width:100%;margin-top:10px}
+.ffree-sect{font-family:'Fraunces',serif;font-weight:700;color:var(--maroon);margin:6px 0 8px}
+.ffree-card{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin-bottom:8px}
+.ffree-kind{flex:0 0 auto;font-size:.72rem}
+.ffree-meta{flex:1;min-width:0}
+.ffree-meta b{font-size:.84rem;color:var(--ink)}
+.ffree-meta span{display:block;font-size:.7rem;color:var(--subtle)}
+.ffree-grab{flex:0 0 auto;border:1px solid var(--gold-deep);background:var(--gold);color:#3a2400;border-radius:16px;padding:6px 12px;font-weight:700;font-size:.72rem;cursor:pointer}
+.ffree-grab.got{background:var(--green);color:#fff;border-color:var(--green)}
+.ffree-karma{font-size:.72rem;color:var(--maroon);background:#fbeee0;border-radius:10px;padding:9px 11px;margin-top:10px;line-height:1.4}
+/* ===== ask steve ===== */
+.as-fab{position:fixed;right:16px;bottom:16px;z-index:70;height:48px;border-radius:24px;border:none;background:var(--maroon);color:var(--cream);font-size:.9rem;font-weight:700;cursor:pointer;padding:0 16px 0 12px;box-shadow:0 6px 18px rgba(60,20,15,.35)}
+.as-fab::after{content:' Ask Steve';font-family:'Fraunces',serif}
+.as-steve{display:flex;align-items:center;gap:9px}
+.as-face{font-size:1.6rem}
+.as-steve b{font-family:'Fraunces',serif;color:var(--maroon)}
+.as-steve span{display:block;font-size:.68rem;color:var(--subtle)}
+.as-thread{max-height:46vh;overflow-y:auto;margin-bottom:10px}
+.as-msg{margin-bottom:8px}
+.as-msg.me{text-align:right}.as-msg.me .as-title,.as-msg.me>*{}
+.as-msg.me{color:var(--maroon);font-weight:600;font-size:.86rem}
+.as-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;text-align:left}
+.as-conf{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.4px;padding:2px 7px;border-radius:10px;margin-bottom:6px}
+.as-conf.ok{background:#e8f0e9;color:var(--green)} .as-conf.est{background:#fbeece;color:var(--gold-deep)} .as-conf.gap{background:#f0e4e4;color:var(--maroon)}
+.as-title{font-family:'Fraunces',serif;font-weight:700;color:var(--maroon);font-size:.95rem}
+.as-lines{margin:6px 0 0;padding-left:18px;font-size:.82rem;color:var(--ink);line-height:1.4}
+.as-src{font-size:.66rem;color:var(--subtle);margin-top:7px;font-style:italic}
+.as-sug{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.as-chip{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 10px;font-size:.72rem;color:var(--maroon);cursor:pointer}
+.as-ask{display:flex;gap:6px}
+.as-ask input{flex:1;border:1px solid var(--line);border-radius:20px;padding:9px 13px;font-size:.86rem;font-family:inherit}
+/* ===== help test ===== */
+.fqa-fab{position:fixed;left:16px;bottom:16px;z-index:70;height:44px;border-radius:22px;border:none;background:#fff;color:var(--maroon);border:1px solid var(--line);font-size:.82rem;font-weight:700;cursor:pointer;padding:0 14px 0 11px;box-shadow:var(--shadow)}
+.fqa-fab::after{content:' Help Test';font-family:'Fraunces',serif}
+.fqa-list{max-height:46vh;overflow-y:auto}
+.fqa-con{margin-bottom:12px}
+.fqa-con-h{font-family:'Fraunces',serif;font-weight:700;color:var(--maroon);font-size:.9rem;margin-bottom:6px}
+.fqa-task{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:.8rem;color:var(--ink)}
+.fqa-btns{flex:0 0 auto;display:flex;gap:4px}
+.fqa-y,.fqa-n{border:1px solid var(--line);background:#fbf7ef;border-radius:14px;padding:4px 8px;font-size:.82rem;cursor:pointer;line-height:1}
+.fqa-y.on{background:#e8f0e9;border-color:var(--green)} .fqa-n.on{background:#f0e4e4;border-color:var(--maroon)}
+</style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="brand">Ford <span class="script">Falcon</span> <span class="friends">Friends</span></div>
     <div class="spacer"></div>
+    <button class="av-btn" id="calBtn" title="Calendar of events">&#128197;</button>
     <button class="av-btn" id="avBtn" title="Your profile">&#128100;</button>
   </header>
 
@@ -149,7 +265,11 @@ footer .heart{color:var(--maroon)}
     <button class="tab" data-p="magazine">📰 Magazine</button>
     <button class="tab" data-p="games">🎲 Games</button>
     <button class="tab" data-p="vin">🔎 VIN</button>
+    <button class="tab" data-p="verify">✅ Verify</button>
   </nav>
+
+  <aside class="fff-side" id="fffSidebar" aria-label="Calendar of events"><div id="fffCalMount"></div></aside>
+  <div class="fff-side-bk" id="fffSideBk"></div>
 
   <main>
     <div id="fffHero" aria-label="Ford-Falcon Friends headline"></div>
@@ -281,7 +401,12 @@ footer .heart{color:var(--maroon)}
           </div>
         </details>
         <div id="vinOut" class="vin-out" style="display:none"></div>
+        <div class="vin-note" style="margin-top:12px">Got a <b>1970&frac12; Falcon</b>? Its VIN plate isn&rsquo;t in our decoder yet &mdash; help us build it: <button class="btn-post" data-verify="A1" style="padding:5px 12px;font-size:13px">Help verify this &#9656;</button></div>
       </div>
+    </section>
+
+    <section class="panel" id="panel-verify">
+      <div id="verifyMount"></div>
     </section>
   </main>
 
@@ -321,6 +446,8 @@ document.getElementById('tabs').addEventListener('click', function(e){
   document.getElementById('panel-' + b.dataset.p).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 });
+/* programmatic panel switch (used by the Verify surface's inline "Help verify this" triggers) */
+window.showPanel=function(p){var t=document.querySelector('.tab[data-p="'+p+'"]'); if(t){ t.click(); return true; } return false; };
 
 /* ===================== RARITY ENGINE ===================== */
 var reGen=document.getElementById('reGen'), reYear=document.getElementById('reYear'),
@@ -436,7 +563,10 @@ document.getElementById('itYes').onclick=async function(){
   else { toast('No Install option here? You’re likely in a private/incognito window — reopen ford-falcon.com normally, then use the address-bar install icon. Steps in the Guide (footer).'); }
 };
 document.getElementById('itNo').onclick=function(){ localStorage.setItem('fff_install_dismissed','1'); document.getElementById('installToast').classList.remove('show'); };
-document.getElementById('avBtn').onclick=function(){ toast('Profile & sign-in arrive at Step 2 (magic-link).'); };
+document.getElementById('avBtn').onclick=function(){ if(window.FFFProfile) FFFProfile.open(); else toast('Profile loads in a moment…'); };
+(function(){ var cb=document.getElementById('calBtn'), sb=document.getElementById('fffSidebar'), bk=document.getElementById('fffSideBk');
+  function tog(){ var on=sb.classList.toggle('open'); if(bk) bk.style.display=on?'block':'none'; }
+  if(cb) cb.onclick=tog; if(bk) bk.onclick=tog; })();
 
 /* ===================== SERVICE WORKER ===================== */
 if('serviceWorker' in navigator){ window.addEventListener('load', function(){ navigator.serviceWorker.register('service-worker.js').catch(function(){}); }); }
@@ -2033,6 +2163,9 @@ textarea.evt-in{min-height:54px;resize:vertical}
 <script src="lukas_chat.js"></script>
 <script src="lukas_badge.js"></script>
 <script src="fff_doodles.js"></script>
+<!-- Ask-the-Community: "Help the Registry" — honest-state, human-ratified, consent-gated -->
+<script src="fff_verify.js"></script>
+<script>try{ if(window.FFFVerify) FFFVerify.mount('#verifyMount'); }catch(e){}</script>
 <!-- The Gateway — licensed white-label SURFACE (additive, namespaced, honest-state; nothing auto-sends) -->
 <script src="lukas_gateway.js"></script>
 <script>
@@ -2060,6 +2193,14 @@ textarea.evt-in{min-height:54px;resize:vertical}
     ]
   });
 </script>
+<script src="fff_calendar.js"></script>
+<script src="fff_profile.js"></script>
+<script src="fff_freestuff.js"></script>
+<script src="fff_ask_steve.js"></script>
+<script src="fff_helptest.js"></script>
+<script>try{ if(window.FFFCalendar) FFFCalendar.render(); }catch(e){}
+/* VIN tab → open the decoder inside the Profile (VIN now lives in provenance) */
+try{ document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='vin' && window.FFFProfile){ setTimeout(function(){ FFFProfile.open(); }, 30); } }); }catch(e){}</script>
 <script src="lukas_a2hs.js" defer></script>
 </body>
 </html>

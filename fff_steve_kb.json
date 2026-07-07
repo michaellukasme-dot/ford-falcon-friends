@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "title": "Ask Steve knowledge base — aggregates only (no owner PII)",
+    "source": "Falcon Registry owners harvest 2026-07-07 (aggregated) + 1960–65 primary-source specs/paint/VIN ingests",
+    "privacy": "Counts only. Owner names, VINs, and contact data are NOT shipped to the client; per-record and VIN-presence lookups are curator-gated / server-side.",
+    "note": "Survivor counts = records on file in the registry, NOT total production."
+  },
+  "survivors": {
+    "total": 3755,
+    "byModel": {"2dr Sedan":1060,"Hardtop":781,"Convertible":655,"4dr Sedan":482,"Ranchero":408,"Wagon":283,"Sedan Delivery":86},
+    "byYear": {"1960":170,"1961":239,"1962":337,"1963":954,"1964":848,"1965":696,"1966":165,"1967":112,"1968":96,"1969":88,"1970":50},
+    "byModelYear": {
+      "4dr Sedan": {"1960":46,"1961":54,"1962":82,"1963":74,"1964":51,"1965":80,"1966":27,"1967":19,"1968":27,"1969":16,"1970":6},
+      "2dr Sedan": {"1960":81,"1961":115,"1962":161,"1963":120,"1964":116,"1965":110,"1966":104,"1967":90,"1968":61,"1969":61,"1970":41},
+      "Hardtop": {"1963":265,"1964":307,"1965":209},
+      "Convertible": {"1963":334,"1964":235,"1965":86},
+      "Wagon": {"1960":15,"1961":35,"1962":49,"1963":50,"1964":44,"1965":62,"1966":3,"1967":3,"1968":8,"1969":11,"1970":3},
+      "Ranchero": {"1960":28,"1961":28,"1962":36,"1963":106,"1964":70,"1965":109,"1966":31},
+      "Sedan Delivery": {"1961":7,"1962":9,"1963":5,"1964":25,"1965":40}
+    },
+    "byEngine": {"144 six":439,"170 six":1078,"200 six":454,"260 V-8":919,"289 V-8":580,"other/blank":245}
+  }
+}
