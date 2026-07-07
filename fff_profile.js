@@ -30,7 +30,9 @@
   function me(){ try{ return JSON.parse(localStorage.getItem('fff.profile')||'null'); }catch(e){ return null; } }
   function setMe(p){ try{ localStorage.setItem('fff.profile', JSON.stringify(p)); }catch(e){}
     try{ var sb=window.fffSB; if(sb&&sb.auth){ /* Step-2: upsert into profiles when signed in */ } }catch(e){} }
-  function myCars(){ try{ return JSON.parse(localStorage.getItem('fff.garage')||'[]'); }catch(e){ return []; } }
+  function myCars(){ try{ return JSON.parse(localStorage.getItem('fff_garage')||'[]'); }catch(e){ return []; } }
+  function vins(){ try{ return JSON.parse(localStorage.getItem('fff.vins')||'{}'); }catch(e){ return {}; } }
+  function setVin(key,v){ try{ var m=vins(); m[key]=v; localStorage.setItem('fff.vins', JSON.stringify(m)); }catch(e){} }
 
   function shareURL(p){ var h=(p&&p.handle)||'me'; return location.origin+location.pathname+'#p/'+encodeURIComponent(h); }
   function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
@@ -69,11 +71,11 @@
   function viewHTML(p, cars){
     var stats = [
       ['🚗', cars.length, 'in the garage'],
-      ['🏅', bestRarity(cars), 'rarest tier'],
+      ['🏅', rarest(cars), 'rarest'],
       ['🔔', wantCount(), 'events on list'],
       ['✅', verifyCount(), 'verifs sent']
     ].map(function(s){ return '<div class="fp-st"><div class="n">'+s[1]+'</div><div class="l">'+s[0]+' '+s[2]+'</div></div>'; }).join('');
-    var prov = cars.length ? cars.map(provCard).join('') :
+    var prov = cars.length ? cars.map(function(c,i){return provCard(c,i);}).join('') :
       '<div class="fp-empty">No vehicles yet. Add one in My Garage and its provenance shows here.</div>';
     return ''+
       '<div class="fp-qr" id="fpQR">…</div>'+
@@ -90,13 +92,18 @@
       '<div id="fpVinOut" class="fp-vinout"></div>'+
       '<div class="fp-note">Year &amp; plant decode is high-confidence; engine letters shift by year — treat as an estimate until confirmed against your data plate. Nothing here is published without your say.</div>';
   }
-  function provCard(c){
-    var vin = c.vin||''; var dec = vin?decodeVIN(vin):null;
-    return '<div class="fp-prov">'+
-      '<div class="fp-prov-h"><b>'+esc(c.nickname||c.year+' Falcon')+'</b>'+(c.rarity?'<span class="fp-tier">'+esc(c.rarity)+'</span>':'')+'</div>'+
-      '<div class="fp-prov-b">'+[c.year,c.body_style,c.trim_option,c.paint_color].filter(Boolean).map(esc).join(' · ')+'</div>'+
+  function provCard(c, idx){
+    var key = c.nick || c.nickname || ('car'+idx);
+    var vin = (vins()[key]) || c.vin || '';
+    var dec = vin?decodeVIN(vin):null;
+    var name = c.nick || c.nickname || ((c.year||'')+' Falcon');
+    var tier = c.qty ? ('1 of ~'+Number(c.qty).toLocaleString()) : '';
+    var specs = [c.year, c.body, c.trim, c.paint].filter(Boolean).map(esc).join(' · ');
+    return '<div class="fp-prov" data-key="'+esc(key)+'">'+
+      '<div class="fp-prov-h"><b>'+esc(name)+'</b>'+(tier?'<span class="fp-tier">'+esc(tier)+'</span>':'')+'</div>'+
+      '<div class="fp-prov-b">'+specs+'</div>'+
       (dec&&dec.ok?'<div class="fp-prov-vin">VIN '+esc(dec.vin)+' → '+esc(dec.year)+', '+esc(dec.plant)+' plant, '+esc(dec.engine)+'</div>'
-        :'<div class="fp-prov-vin muted">Add this car’s VIN to build its provenance.</div>')+
+        :'<div class="fp-prov-vinrow"><input class="fp-provin" data-key="'+esc(key)+'" placeholder="Add this car’s VIN" value="'+esc(vin)+'"><button class="fp-btn sm fp-provgo" data-key="'+esc(key)+'">Decode</button></div>')+
     '</div>';
   }
   function formHTML(p){
@@ -121,6 +128,7 @@
        ' · seq '+esc(d.seq)+(d.note?'<div class="muted">'+esc(d.note)+'</div>':'')+'</div>')
       : '<div class="fp-vc muted">'+esc(d.msg)+'</div>'; }
     if(go) go.onclick=run; if(inp) inp.onkeydown=function(e){ if(e.key==='Enter') run(); };
+    document.querySelectorAll('.fp-provgo').forEach(function(b){ b.onclick=function(){ var box=b.closest('.fp-prov'); var i=box?box.querySelector('.fp-provin'):null; if(i){ setVin(b.dataset.key, i.value.trim()); open(); } }; });
   }
   function wireForm(p){
     document.getElementById('fpSave').onclick=function(){
@@ -131,12 +139,41 @@
   }
   function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
   function slug(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,20); }
-  function bestRarity(cars){ if(!cars.length) return '—'; var order=['Common','Uncommon','Scarce','Rare','Very Rare','Grail']; var best=0;
-    cars.forEach(function(c){ var i=order.indexOf(c.rarity); if(i>best) best=i; }); return order[best]||'—'; }
+  function rarest(cars){ var q=null; cars.forEach(function(c){ if(c.qty&&(q===null||c.qty<q)) q=c.qty; }); return q?('1/'+ (q>=1000?Math.round(q/1000)+'k':q)) : '—'; }
   function wantCount(){ try{ return Object.values(JSON.parse(localStorage.getItem('fff.cal.want')||'{}')).filter(Boolean).length; }catch(e){ return 0; } }
   function verifyCount(){ try{ return (JSON.parse(localStorage.getItem('fff.verify.sent')||'[]')).length; }catch(e){ return 0; } }
 
-  window.FFFProfile = { open:open, close:close, decodeVIN:decodeVIN };
+  /* ---------- edit a car (from a garage card) ---------- */
+  function editCar(idx){
+    var g=myCars(); var c=g[idx]; if(!c) return;
+    var key=c.nick||c.nickname||('car'+idx);
+    var ov=document.getElementById('fpov');
+    if(!ov){ ov=document.createElement('div'); ov.id='fpov'; ov.className='fpov'; document.body.appendChild(ov); }
+    var stat=c.status||'owned';
+    var opts=['driven','owned','project','sold'].map(function(o){return '<option'+(o===stat?' selected':'')+'>'+o+'</option>';}).join('');
+    ov.innerHTML='<div class="fp-card"><button class="fp-x" id="fpX">✕</button>'+
+      '<div class="fp-formtitle">Edit '+esc(c.nick||'your Falcon')+'</div>'+
+      '<div class="fp-prov-b" style="text-align:center;margin-bottom:10px">'+[c.year,c.body,c.trim].filter(Boolean).map(esc).join(' · ')+(c.qty?(' · 1 of ~'+Number(c.qty).toLocaleString()):'')+'</div>'+
+      '<label class="fp-l">Nickname<input id="ecNick" value="'+esc(c.nick||'')+'"></label>'+
+      '<label class="fp-l">Paint / color<input id="ecPaint" value="'+esc(c.paint||'')+'"></label>'+
+      '<label class="fp-l">Status<select id="ecStat">'+opts+'</select></label>'+
+      '<label class="fp-l">VIN (builds provenance)<input id="ecVin" value="'+esc((vins()[key])||c.vin||'')+'" placeholder="e.g. 3R01F100001"></label>'+
+      '<label class="fp-l">Notes / story<textarea id="ecNote" rows="2">'+esc(c.note||'')+'</textarea></label>'+
+      '<div class="fp-actions"><button class="fp-btn" id="ecSave">Save car</button><button class="fp-btn ghost" id="ecDel">Remove</button></div>'+
+      '<div class="fp-note">Saved to this device. Its VIN decode + provenance show on your profile.</div></div>';
+    ov.classList.add('on');
+    document.getElementById('fpX').onclick=close; ov.onclick=function(e){ if(e.target===ov) close(); };
+    document.getElementById('ecSave').onclick=function(){
+      c.nick=val('ecNick')||c.nick; c.paint=val('ecPaint'); c.status=document.getElementById('ecStat').value; c.note=val('ecNote');
+      var newVin=val('ecVin'); var newKey=c.nick||key; setVin(newKey,newVin); c.vin=newVin;
+      g[idx]=c; try{ localStorage.setItem('fff_garage', JSON.stringify(g)); }catch(e){}
+      close(); if(typeof window.renderGarage==='function') window.renderGarage(); if(window.toast) toast('✓ Car updated');
+    };
+    document.getElementById('ecDel').onclick=function(){ g.splice(idx,1); try{ localStorage.setItem('fff_garage', JSON.stringify(g)); }catch(e){}
+      close(); if(typeof window.renderGarage==='function') window.renderGarage(); if(window.toast) toast('Removed from your garage'); };
+  }
+
+  window.FFFProfile = { open:open, close:close, decodeVIN:decodeVIN, editCar:editCar };
   // Deep-link: opening #p/handle shows a profile.
   if(location.hash.indexOf('#p/')===0){ document.addEventListener('DOMContentLoaded', open); }
 })();

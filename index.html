@@ -49,15 +49,19 @@ header.topbar{
 .av-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--gold);background:#fff2;color:var(--cream);
   display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;padding:0;overflow:hidden}
 .av-btn img{width:100%;height:100%;object-fit:cover}
+.tb-pill{border:1.5px solid var(--gold);background:#fff2;color:var(--cream);border-radius:20px;padding:6px 12px;font-weight:700;font-size:.8rem;cursor:pointer;white-space:nowrap}
+.tb-pill:active{transform:scale(.97)}
 /* ---- tab strip ---- */
-nav.tabs{position:sticky;top:0;z-index:30;display:flex;gap:6px;overflow-x:auto;padding:10px 12px;
-  background:var(--paper);border-bottom:1px solid var(--line);scrollbar-width:none}
+/* ---- bottom icon bar (blog-style) ---- */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:65;display:flex;gap:5px;overflow-x:auto;
+  padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:var(--paper);border-top:1px solid var(--line);scrollbar-width:none;
+  box-shadow:0 -4px 16px rgba(60,30,15,.10)}
 nav.tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:22px;padding:7px 14px;
-  font-weight:600;font-size:.84rem;color:var(--maroon);cursor:pointer;white-space:nowrap;transition:.15s}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:16px;padding:6px 11px;
+  font-weight:600;font-size:.76rem;color:var(--maroon);cursor:pointer;white-space:nowrap;transition:.15s}
 .tab.active{background:var(--maroon);color:var(--cream);border-color:var(--maroon)}
 /* ---- panels ---- */
-main{padding:16px 16px 90px}
+main{padding:16px 16px 84px}
 .panel{display:none;animation:fade .25s ease}
 .panel.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -152,7 +156,23 @@ footer .heart{color:var(--maroon)}
 .fcal-where{font-size:.7rem;color:var(--subtle);margin-top:2px}
 .fcal-go{flex:0 0 auto;border:1px solid var(--gold-deep);background:#fff;color:var(--gold-deep);border-radius:16px;padding:5px 9px;font-size:.68rem;font-weight:700;cursor:pointer}
 .fcal-go.on{background:var(--green);color:#fff;border-color:var(--green)}
-.fcal-note,.fcal-empty{font-size:.68rem;color:var(--subtle);margin-top:10px;line-height:1.4}
+.fcal-note,.fcal-empty,.fcal-hint{font-size:.68rem;color:var(--subtle);margin-top:10px;line-height:1.4}
+.fcal-view{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 10px;font-weight:700;font-size:.72rem;color:var(--maroon);cursor:pointer}
+.fcal-scope{display:flex;gap:5px;margin-bottom:10px}
+.fcal-sc{flex:1;border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 8px;font-size:.72rem;font-weight:700;color:var(--maroon);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fcal-sc.on{background:var(--maroon);color:var(--cream);border-color:var(--maroon)}
+.fcal-monthbar{display:flex;align-items:center;justify-content:space-between;margin:4px 0 8px;font-family:'Fraunces',serif;color:var(--maroon)}
+.fcal-nav{border:1px solid var(--line);background:#fff;border-radius:8px;width:26px;height:26px;font-size:1rem;cursor:pointer;color:var(--maroon);line-height:1}
+.fcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.fcal-dow{text-align:center;font-size:.6rem;font-weight:700;color:var(--subtle);padding:2px 0}
+.fcal-cell{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.74rem;border-radius:8px;color:var(--ink);background:#fff;border:1px solid transparent}
+.fcal-cell.empty{background:transparent}
+.fcal-cell.has{cursor:pointer;font-weight:700;border-color:var(--line)}
+.fcal-cell.today{outline:2px solid var(--gold)}
+.fcal-cell.sel{background:var(--maroon);color:var(--cream)}
+.fcal-dot{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gold-deep)}
+.fcal-cell.sel .fcal-dot{background:var(--cream)}
+.fcal-selday{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
 @media(min-width:960px){ .fff-side{transform:none;box-shadow:none} .fff-side-bk{display:none!important} .app>main,.app>header,.app>nav{margin-left:290px} #calBtn{display:none} }
 /* ===== shared overlay bits ===== */
 .fpov,.ffreeov,.asov{position:fixed;inset:0;background:rgba(20,10,5,.5);z-index:80;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px}
@@ -192,7 +212,7 @@ footer .heart{color:var(--maroon)}
 .fp-l{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--subtle);margin-bottom:10px}
 .fp-l input,.fp-l textarea{margin-top:4px;text-transform:none;font-weight:400;color:var(--ink)}
 /* ===== free stuff / miracle ticket ===== */
-.ffree-fab{position:fixed;right:16px;bottom:78px;z-index:70;width:56px;height:56px;border-radius:50%;border:none;background:var(--gold);color:#3a2400;font-size:1.5rem;cursor:pointer;box-shadow:0 6px 18px rgba(120,90,20,.4);animation:ffbounce 2.4s ease-in-out infinite}
+.ffree-fab{position:fixed;right:16px;bottom:134px;z-index:70;width:52px;height:52px;border-radius:50%;border:none;background:var(--gold);color:#3a2400;font-size:1.4rem;cursor:pointer;box-shadow:0 6px 18px rgba(120,90,20,.4);animation:ffbounce 2.4s ease-in-out infinite}
 @keyframes ffbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 .ffree-sheet,.as-sheet{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:18px;max-width:460px;width:100%;padding:20px 16px;box-shadow:var(--shadow)}
 .ffree-top,.as-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
@@ -215,7 +235,7 @@ footer .heart{color:var(--maroon)}
 .ffree-grab.got{background:var(--green);color:#fff;border-color:var(--green)}
 .ffree-karma{font-size:.72rem;color:var(--maroon);background:#fbeee0;border-radius:10px;padding:9px 11px;margin-top:10px;line-height:1.4}
 /* ===== ask steve ===== */
-.as-fab{position:fixed;right:16px;bottom:16px;z-index:70;height:48px;border-radius:24px;border:none;background:var(--maroon);color:var(--cream);font-size:.9rem;font-weight:700;cursor:pointer;padding:0 16px 0 12px;box-shadow:0 6px 18px rgba(60,20,15,.35)}
+.as-fab{position:fixed;right:16px;bottom:74px;z-index:70;height:46px;border-radius:24px;border:none;background:var(--maroon);color:var(--cream);font-size:.9rem;font-weight:700;cursor:pointer;padding:0 16px 0 12px;box-shadow:0 6px 18px rgba(60,20,15,.35)}
 .as-fab::after{content:' Ask Steve';font-family:'Fraunces',serif}
 .as-steve{display:flex;align-items:center;gap:9px}
 .as-face{font-size:1.6rem}
@@ -236,7 +256,7 @@ footer .heart{color:var(--maroon)}
 .as-ask{display:flex;gap:6px}
 .as-ask input{flex:1;border:1px solid var(--line);border-radius:20px;padding:9px 13px;font-size:.86rem;font-family:inherit}
 /* ===== help test ===== */
-.fqa-fab{position:fixed;left:16px;bottom:16px;z-index:70;height:44px;border-radius:22px;border:none;background:#fff;color:var(--maroon);border:1px solid var(--line);font-size:.82rem;font-weight:700;cursor:pointer;padding:0 14px 0 11px;box-shadow:var(--shadow)}
+.fqa-fab{position:fixed;left:16px;bottom:74px;z-index:70;height:42px;border-radius:22px;border:none;background:#fff;color:var(--maroon);border:1px solid var(--line);font-size:.8rem;font-weight:700;cursor:pointer;padding:0 13px 0 10px;box-shadow:var(--shadow)}
 .fqa-fab::after{content:' Help Test';font-family:'Fraunces',serif}
 .fqa-list{max-height:46vh;overflow-y:auto}
 .fqa-con{margin-bottom:12px}
@@ -245,6 +265,34 @@ footer .heart{color:var(--maroon)}
 .fqa-btns{flex:0 0 auto;display:flex;gap:4px}
 .fqa-y,.fqa-n{border:1px solid var(--line);background:#fbf7ef;border-radius:14px;padding:4px 8px;font-size:.82rem;cursor:pointer;line-height:1}
 .fqa-y.on{background:#e8f0e9;border-color:var(--green)} .fqa-n.on{background:#f0e4e4;border-color:var(--maroon)}
+/* car edit hint + per-car VIN row + profile selects */
+.car-edit{display:inline-block;margin-top:7px;margin-left:6px;font-size:.62rem;font-weight:700;color:var(--gold-deep)}
+.fp-prov-vinrow{display:flex;gap:6px;margin-top:6px}
+.fp-provin{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:.76rem;font-family:ui-monospace,Menlo,monospace}
+.fp-l select{width:100%;margin-top:4px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86rem;font-family:inherit;background:#fff;text-transform:none;font-weight:400;color:var(--ink)}
+/* ===== FB-forward strip + Leader cockpit ===== */
+.fb-strip{background:#eef4ff;border:1px solid #cfe0ff;color:#1c3d66;border-radius:12px;padding:10px 13px;font-size:.8rem;line-height:1.45;margin:0 0 16px}
+.fb-strip b{color:#0f2a4d}
+.ld-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
+.ld-me-h{display:flex;justify-content:space-between;align-items:center}
+.ld-me-h b{font-family:'Fraunces',serif;color:var(--maroon);font-size:1.05rem}
+.ld-me-b{font-size:.78rem;color:var(--subtle);margin-top:4px}
+.ld-sect{font-family:'Fraunces',serif;font-weight:700;color:var(--maroon);font-size:1rem;margin:16px 0 8px}
+.ld-rung{border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;background:#fff}
+.ld-rung.on{border-color:var(--gold);background:linear-gradient(180deg,#fff8e8,#fff)}
+.ld-rung-h{display:flex;align-items:center;gap:6px;color:var(--ink)}
+.ld-rung-h b{font-size:.92rem}
+.ld-fee{margin-left:auto;font-size:.64rem;font-weight:700;color:var(--gold-deep);background:#fbf0d8;border-radius:10px;padding:2px 8px}
+.ld-rung-b{font-size:.78rem;color:var(--subtle);margin:5px 0 8px;line-height:1.4}
+.ld-cur{font-size:.64rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.4px}
+.ld-btn{border:none;background:var(--maroon);color:var(--cream);border-radius:20px;padding:9px 15px;font-weight:700;font-size:.84rem;cursor:pointer}
+.ld-btn.ghost{background:#fff;color:var(--maroon);border:1px solid var(--line)}
+.ld-btn.sm{padding:6px 12px;font-size:.76rem}
+.ld-tool{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:7px}
+.ld-tool-ic{font-size:1.2rem;flex:0 0 auto}
+.ld-tool b{font-size:.84rem;color:var(--ink)}
+.ld-tool span{display:block;font-size:.74rem;color:var(--subtle);margin-top:2px;line-height:1.35}
+.ld-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
 </style>
 </head>
 <body>
@@ -252,8 +300,8 @@ footer .heart{color:var(--maroon)}
   <header class="topbar">
     <div class="brand">Ford <span class="script">Falcon</span> <span class="friends">Friends</span></div>
     <div class="spacer"></div>
-    <button class="av-btn" id="calBtn" title="Calendar of events">&#128197;</button>
-    <button class="av-btn" id="avBtn" title="Your profile">&#128100;</button>
+    <button class="tb-pill" id="calBtn" title="Calendar of events">&#128197; Events</button>
+    <button class="tb-pill" id="avBtn" title="Your profile">&#128100; Profile</button>
   </header>
 
   <nav class="tabs" id="tabs">
@@ -266,6 +314,7 @@ footer .heart{color:var(--maroon)}
     <button class="tab" data-p="games">🎲 Games</button>
     <button class="tab" data-p="vin">🔎 VIN</button>
     <button class="tab" data-p="verify">✅ Verify</button>
+    <button class="tab" data-p="lead">👑 Lead</button>
   </nav>
 
   <aside class="fff-side" id="fffSidebar" aria-label="Calendar of events"><div id="fffCalMount"></div></aside>
@@ -273,6 +322,16 @@ footer .heart{color:var(--maroon)}
 
   <main>
     <div id="fffHero" aria-label="Ford-Falcon Friends headline"></div>
+    <div class="fb-strip">🅕 <b>A Facebook-gathered community.</b> Post your own words &amp; photos here, then send them straight to your Falcon groups — real human content, no bots. We sit in front of Facebook and just make it better.</div>
+
+    <!-- LEAD (Group-Leader monetization cockpit) -->
+    <section class="panel" id="panel-lead">
+      <div class="section-eyebrow">For Facebook group leaders</div>
+      <h2 class="section-title">Lead &amp; monetize your group</h2>
+      <p class="lead">You built the audience. Open a market for your members — start local, grow to national — while every post still flows back to Facebook.</p>
+      <div id="leadMount"></div>
+    </section>
+
     <!-- GARAGE -->
     <section class="panel active" id="panel-garage">
       <div class="section-eyebrow">Be someone — your car is your identity</div>
@@ -511,11 +570,11 @@ function renderGarage(){
   grid.innerHTML = g.map(function(c,i){
     var photo = c.photo ? '<img src="'+c.photo+'" alt="'+c.nick+'">' : '<div class="nofoto">&#128663;</div>';
     var badge = c.qty ? '<div class="rarity-badge">1 of ~'+Number(c.qty).toLocaleString()+'</div>' : ((c.series==='econoline'||c.gen==='Econoline') ? '<div class="rarity-badge" style="background:var(--gold-deep)">Econoline</div>' : '');
-    return '<div class="car-card" onclick="toast(\''+(c.nick||'Your Falcon').replace(/\'/g,"")+' — My Car build page lands in Phase 1.\')">'+
+    return '<div class="car-card" onclick="if(window.FFFProfile&&FFFProfile.editCar){FFFProfile.editCar('+i+')}else{toast(\'Editor loading…\')}">'+
       '<div class="car-photo">'+photo+badge+'</div>'+
       '<div class="car-body"><div class="car-nick">'+(c.nick||'My Falcon')+'</div>'+
       '<div class="car-spec">'+c.year+' '+c.trim+'<br>'+c.body+(c.paint?(' &middot; '+c.paint):'')+'</div>'+
-      '<span class="car-status">'+(c.status||'owned')+'</span></div></div>';
+      '<span class="car-status">'+(c.status||'owned')+'</span> <span class="car-edit">✎ edit</span></div></div>';
   }).join('') + '<div class="add-card" onclick="document.getElementById(\'reGen\').scrollIntoView({behavior:\'smooth\'})"><div class="plus">+</div>Add another<br>Falcon</div>';
 }
 addBtn.onclick=function(){
@@ -2198,6 +2257,7 @@ textarea.evt-in{min-height:54px;resize:vertical}
 <script src="fff_freestuff.js"></script>
 <script src="fff_ask_steve.js"></script>
 <script src="fff_helptest.js"></script>
+<script src="fff_leader.js"></script>
 <script>try{ if(window.FFFCalendar) FFFCalendar.render(); }catch(e){}
 /* VIN tab → open the decoder inside the Profile (VIN now lives in provenance) */
 try{ document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='vin' && window.FFFProfile){ setTimeout(function(){ FFFProfile.open(); }, 30); } }); }catch(e){}</script>
