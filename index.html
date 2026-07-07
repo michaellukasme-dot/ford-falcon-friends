@@ -310,6 +310,9 @@ footer .heart{color:var(--maroon)}
 .fp-carstrip{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:8px 0 2px}
 .fp-carthumb{width:44px;height:44px;border-radius:10px;border:2px solid var(--gold);background:#fff;overflow:hidden;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
 .fp-carthumb img{width:100%;height:100%;object-fit:cover}
+.fp-coms{display:flex;flex-wrap:wrap;gap:8px}
+.fp-com{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:7px 10px;font-size:.78rem;color:var(--ink);cursor:pointer}
+.ffsh-btn{border:none;background:var(--fb,#1877f2);color:#fff;border-radius:18px;padding:8px 14px;font-size:.82rem;font-weight:800;cursor:pointer}
 /* ===== calendar photo + directions + casual note ===== */
 .fcal-card{flex-wrap:wrap}
 .fcal-photo{width:100%;border-radius:10px;margin-bottom:8px;max-height:150px;object-fit:cover}
@@ -355,8 +358,8 @@ footer .heart{color:var(--maroon)}
   </header>
 
   <nav class="tabs" id="tabs">
-    <button class="tab active" data-p="garage">🅖 My Garage</button>
-    <button class="tab" data-p="feed">📣 Feed</button>
+    <button class="tab" data-p="garage">🅖 My Garage</button>
+    <button class="tab active" data-p="feed">📣 Blog</button>
     <button class="tab" data-p="clubs">🏁 Clubs</button>
     <button class="tab" data-p="cruises">🚗 Cruises</button>
     <button class="tab" data-p="market">🏷️ Market</button>
@@ -383,7 +386,7 @@ footer .heart{color:var(--maroon)}
     </section>
 
     <!-- GARAGE -->
-    <section class="panel active" id="panel-garage">
+    <section class="panel" id="panel-garage">
       <div class="section-eyebrow">Be someone — your car is your identity</div>
       <h2 class="section-title">My Garage</h2>
       <p class="lead">Register every Falcon you own. The registry tells you how rare your exact spec is — <em>1 of ~N ever built.</em></p>
@@ -418,7 +421,7 @@ footer .heart{color:var(--maroon)}
     </section>
 
     <!-- FEED -->
-    <section class="panel" id="panel-feed">
+    <section class="panel active" id="panel-feed">
       <div class="section-eyebrow">Talk — post as your car</div>
       <h2 class="section-title">The Feed</h2>
       <div id="fffVacuum"></div>
@@ -2310,6 +2313,7 @@ textarea.evt-in{min-height:54px;resize:vertical}
 <script src="fff_leader.js"></script>
 <script src="fff_composer.js"></script>
 <script src="fff_report.js"></script>
+<script src="fff_share.js"></script>
 <script>try{ if(window.FFFCalendar) FFFCalendar.render(); }catch(e){}
 /* VIN tab → open the decoder inside the Profile (VIN now lives in provenance) */
 try{ document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='vin' && window.FFFProfile){ setTimeout(function(){ FFFProfile.open(); }, 30); } }); }catch(e){}</script>

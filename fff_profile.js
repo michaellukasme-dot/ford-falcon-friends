@@ -32,6 +32,10 @@
     try{ var sb=window.fffSB; if(sb&&sb.auth){ /* Step-2: upsert into profiles when signed in */ } }catch(e){} }
   function myCars(){ try{ return JSON.parse(localStorage.getItem('fff_garage')||'[]'); }catch(e){ return []; } }
   function vins(){ try{ return JSON.parse(localStorage.getItem('fff.vins')||'{}'); }catch(e){ return {}; } }
+  function getComs(){ try{ return JSON.parse(localStorage.getItem('fff.coms')||'null') || {native:true,facebook:true,email:true,sms:false,x:false,whatsapp:false}; }catch(e){ return {native:true,facebook:true}; } }
+  function setComs(o){ try{ localStorage.setItem('fff.coms', JSON.stringify(o)); }catch(e){} }
+  var COMS=[['native','📲 Phone share sheet'],['facebook','🅕 Facebook'],['x','✖ X'],['whatsapp','🟢 WhatsApp'],['email','✉️ Email'],['sms','💬 Text']];
+  function comsHTML(){ var c=getComs(); return '<div class="fp-coms">'+COMS.map(function(n){ return '<label class="fp-com"><input type="checkbox" data-com="'+n[0]+'"'+(c[n[0]]?' checked':'')+'> '+n[1]+'</label>'; }).join('')+'</div><div class="fp-note" style="margin-top:4px">Set once — every ↗ Share fires these in one tap. Not per post.</div>'; }
   function setVin(key,v){ try{ var m=vins(); m[key]=v; localStorage.setItem('fff.vins', JSON.stringify(m)); }catch(e){} }
 
   function shareURL(p){ var h=(p&&p.handle)||'me'; return location.origin+location.pathname+'#p/'+encodeURIComponent(h); }
@@ -93,6 +97,7 @@
       '<div class="fp-sect">Friends</div>'+ friendsHTML() +
       '<button class="fp-btn ghost" id="fpNearby" style="width:100%;margin-top:8px">📡 Who’s parked nearby?</button>'+
       '<div id="fpNearOut"></div>'+
+      '<div class="fp-sect">Coms — your share networks</div>'+ comsHTML() +
       '<div class="fp-sect">Vehicle provenance</div>'+ prov +
       '<div class="fp-sect">VIN decoder</div>'+
       '<div class="fp-vin"><input id="fpVinIn" placeholder="Enter a Falcon VIN (e.g. 3R01F100001)" autocomplete="off">'+
@@ -142,6 +147,7 @@
     document.querySelectorAll('.fp-fr').forEach(function(b){ b.onclick=function(){ friendView(+b.dataset.i); }; });
     document.querySelectorAll('.fp-carthumb').forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); carBadge(+b.dataset.i); }; });
     var nb=document.getElementById('fpNearby'); if(nb) nb.onclick=nearby;
+    document.querySelectorAll('input[data-com]').forEach(function(cb){ cb.onchange=function(){ var c=getComs(); c[cb.dataset.com]=cb.checked; setComs(c); if(window.toast) toast('✓ Coms updated'); }; });
   }
   function wireForm(p){
     document.getElementById('fpSave').onclick=function(){
