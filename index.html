@@ -271,7 +271,8 @@ footer .heart{color:var(--maroon)}
 .fp-provin{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:.76rem;font-family:ui-monospace,Menlo,monospace}
 .fp-l select{width:100%;margin-top:4px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86rem;font-family:inherit;background:#fff;text-transform:none;font-weight:400;color:var(--ink)}
 /* ===== FB-forward strip + Leader cockpit ===== */
-.fb-strip{background:#eef4ff;border:1px solid #cfe0ff;color:#1c3d66;border-radius:12px;padding:10px 13px;font-size:.8rem;line-height:1.45;margin:0 0 16px}
+.fb-strip{position:relative;background:#eef4ff;border:1px solid #cfe0ff;color:#1c3d66;border-radius:12px;padding:10px 30px 10px 13px;font-size:.8rem;line-height:1.45;margin:0 0 16px}
+.fb-x{position:absolute;top:6px;right:7px;border:none;background:#1c3d6614;color:#1c3d66;width:22px;height:22px;border-radius:50%;font-size:12px;line-height:1;cursor:pointer;padding:0}
 .fb-strip b{color:#0f2a4d}
 .ld-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
 .ld-me-h{display:flex;justify-content:space-between;align-items:center}
@@ -375,7 +376,8 @@ footer .heart{color:var(--maroon)}
 
   <main>
     <div id="fffHero" aria-label="Ford-Falcon Friends headline"></div>
-    <div class="fb-strip">🅕 <b>A Facebook enhancement — not a replacement.</b> It’s still Facebook: your words &amp; photos originate here, click by click, then flow to your group. We just add the communication + marketplace tools that huge groups — the ones fragmented by their own chatter — don’t get on their own. Real human content, no bots.</div>
+    <div class="fb-strip" id="fbStrip">🅕 <b>A Facebook enhancement — not a replacement.</b> It’s still Facebook: your words &amp; photos originate here, click by click, then flow to your group. We just add the communication + marketplace tools that huge groups — the ones fragmented by their own chatter — don’t get on their own. Real human content, no bots.<button class="fb-x" aria-label="Close" onclick="this.closest('.fb-strip').style.display='none';try{localStorage.setItem('fff.fbstrip','1')}catch(e){}">✕</button></div>
+    <script>try{if(localStorage.getItem('fff.fbstrip')){var _s=document.getElementById('fbStrip');if(_s)_s.style.display='none';}}catch(e){}</script>
 
     <!-- LEAD (Group-Leader monetization cockpit) -->
     <section class="panel" id="panel-lead">
