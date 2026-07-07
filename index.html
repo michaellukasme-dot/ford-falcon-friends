@@ -293,6 +293,48 @@ footer .heart{color:var(--maroon)}
 .ld-tool b{font-size:.84rem;color:var(--ink)}
 .ld-tool span{display:block;font-size:.74rem;color:var(--subtle);margin-top:2px;line-height:1.35}
 .ld-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+/* ===== badge bubble + friends + proximity ===== */
+.fp-badge{position:relative;width:150px;margin:6px auto 12px}
+.fp-carbub{position:absolute;top:-8px;right:-8px;background:var(--maroon);color:var(--cream);font-weight:800;font-size:.72rem;border-radius:14px;padding:3px 9px;border:2px solid var(--paper);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.fp-friends{display:flex;gap:10px;flex-wrap:wrap}
+.fp-fr{border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:60px}
+.fp-fr-av{position:relative;width:46px;height:46px;border-radius:50%;background:var(--maroon);color:var(--cream);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:900;font-size:1.1rem}
+.fp-fr-av b{position:absolute;bottom:-3px;right:-4px;background:var(--gold);color:#3a2400;font-size:.58rem;font-weight:800;border-radius:10px;padding:1px 5px;border:1.5px solid var(--paper)}
+.fp-fr-n{font-size:.68rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px}
+.fp-near{margin-top:8px}
+/* ===== calendar photo + directions + casual note ===== */
+.fcal-card{flex-wrap:wrap}
+.fcal-photo{width:100%;border-radius:10px;margin-bottom:8px;max-height:150px;object-fit:cover}
+.fcal-prev{width:100%;border-radius:10px;margin-top:6px;max-height:150px;object-fit:cover}
+.fcal-say{font-size:.72rem;color:var(--maroon);background:#fbf0d8;border-radius:8px;padding:6px 8px;margin-top:5px;line-height:1.35}
+.fcal-mine{font-size:.56rem;font-weight:800;color:var(--gold-deep);background:#fbf0d8;border-radius:8px;padding:1px 6px;vertical-align:middle}
+.fcal-btns{flex:0 0 auto;display:flex;gap:5px;align-items:center}
+.fcal-dir{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line);border-radius:16px;text-decoration:none;font-size:.95rem;background:#fff}
+/* ===== composer (just like FB) ===== */
+.fco-launch{margin-bottom:14px}
+.fco-launch .fp-btn{width:100%}
+.fco-text{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;font-family:inherit;font-size:.95rem;resize:vertical}
+.fco-prev{margin:8px 0}
+.fco-img{width:100%;border-radius:10px;max-height:280px;object-fit:cover;margin-bottom:6px}
+.fco-chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px 10px;font-size:.76rem;margin:2px 4px 2px 0}
+.fco-attach{display:flex;gap:8px;margin:6px 0 4px}
+.fco-att{flex:1;text-align:center;border:1px dashed var(--gold);border-radius:12px;padding:9px;font-size:.8rem;font-weight:700;color:var(--maroon);cursor:pointer;background:#fffdf7}
+.fco-feed{display:flex;flex-direction:column;gap:12px}
+.fco-post{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 13px;box-shadow:var(--shadow)}
+.fco-post-h{display:flex;justify-content:space-between;align-items:baseline}
+.fco-post-h b{font-family:'Fraunces',serif;color:var(--maroon)}
+.fco-post-h span{font-size:.68rem;color:var(--subtle)}
+.fco-post-t{margin:7px 0;font-size:.92rem;color:var(--ink);line-height:1.45;white-space:pre-wrap}
+.fco-post-img{width:100%;border-radius:10px;max-height:340px;object-fit:cover;margin-top:4px}
+.fco-post-act{margin-top:9px}
+.fco-mini{border:1px solid var(--line);background:#fff;border-radius:16px;padding:6px 12px;font-size:.76rem;font-weight:700;color:var(--fb,#1877f2);cursor:pointer}
+/* ===== report ingress ===== */
+.fr-link{margin-top:8px;font-size:.76rem;color:#1c3d66}
+.fr-link button{border:none;background:none;color:#0f2a4d;font-weight:800;text-decoration:underline;cursor:pointer;font-size:.76rem}
+.fr-banner{position:fixed;left:12px;right:12px;bottom:132px;z-index:85;background:var(--maroon);color:var(--cream);border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 8px 24px rgba(40,15,10,.4);font-size:.82rem}
+.fr-b-act{display:flex;gap:6px;flex:0 0 auto}
+.fr-b-act button{border:none;border-radius:16px;padding:6px 12px;font-weight:700;font-size:.76rem;cursor:pointer;background:var(--gold);color:#3a2400}
+.fr-b-act button.ghost{background:#ffffff22;color:var(--cream);border:1px solid #ffffff55}
 </style>
 </head>
 <body>
@@ -322,7 +364,7 @@ footer .heart{color:var(--maroon)}
 
   <main>
     <div id="fffHero" aria-label="Ford-Falcon Friends headline"></div>
-    <div class="fb-strip">🅕 <b>A Facebook-gathered community.</b> Post your own words &amp; photos here, then send them straight to your Falcon groups — real human content, no bots. We sit in front of Facebook and just make it better.</div>
+    <div class="fb-strip">🅕 <b>A Facebook enhancement — not a replacement.</b> It’s still Facebook: your words &amp; photos originate here, click by click, then flow to your group. We just add the communication + marketplace tools that huge groups — the ones fragmented by their own chatter — don’t get on their own. Real human content, no bots.</div>
 
     <!-- LEAD (Group-Leader monetization cockpit) -->
     <section class="panel" id="panel-lead">
@@ -2258,6 +2300,8 @@ textarea.evt-in{min-height:54px;resize:vertical}
 <script src="fff_ask_steve.js"></script>
 <script src="fff_helptest.js"></script>
 <script src="fff_leader.js"></script>
+<script src="fff_composer.js"></script>
+<script src="fff_report.js"></script>
 <script>try{ if(window.FFFCalendar) FFFCalendar.render(); }catch(e){}
 /* VIN tab → open the decoder inside the Profile (VIN now lives in provenance) */
 try{ document.getElementById('tabs').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b&&b.dataset.p==='vin' && window.FFFProfile){ setTimeout(function(){ FFFProfile.open(); }, 30); } }); }catch(e){}</script>

@@ -78,13 +78,17 @@
     var prov = cars.length ? cars.map(function(c,i){return provCard(c,i);}).join('') :
       '<div class="fp-empty">No vehicles yet. Add one in My Garage and its provenance shows here.</div>';
     return ''+
-      '<div class="fp-qr" id="fpQR">…</div>'+
+      '<div class="fp-badge"><div class="fp-qr" id="fpQR">…</div>'+
+        (cars.length?'<span class="fp-carbub" title="cars in your garage">'+cars.length+'🚗</span>':'')+'</div>'+
       '<div class="fp-name">'+esc(p.name||'Your name')+'</div>'+
       '<div class="fp-handle">@'+esc(p.handle||'handle')+(p.chapter?(' · 📍 '+esc(p.chapter)):'')+'</div>'+
       (p.story?'<div class="fp-story">'+esc(p.story)+'</div>':'')+
       '<div class="fp-stats">'+stats+'</div>'+
-      '<div class="fp-actions"><button class="fp-btn" id="fpShare">↗ Share my code</button>'+
+      '<div class="fp-actions"><button class="fp-btn" id="fpShare">↗ Share my badge</button>'+
         '<button class="fp-btn ghost" id="fpEdit">✎ Edit</button></div>'+
+      '<div class="fp-sect">Friends</div>'+ friendsHTML() +
+      '<button class="fp-btn ghost" id="fpNearby" style="width:100%;margin-top:8px">📡 Who’s parked nearby?</button>'+
+      '<div id="fpNearOut"></div>'+
       '<div class="fp-sect">Vehicle provenance</div>'+ prov +
       '<div class="fp-sect">VIN decoder</div>'+
       '<div class="fp-vin"><input id="fpVinIn" placeholder="Enter a Falcon VIN (e.g. 3R01F100001)" autocomplete="off">'+
@@ -129,6 +133,8 @@
       : '<div class="fp-vc muted">'+esc(d.msg)+'</div>'; }
     if(go) go.onclick=run; if(inp) inp.onkeydown=function(e){ if(e.key==='Enter') run(); };
     document.querySelectorAll('.fp-provgo').forEach(function(b){ b.onclick=function(){ var box=b.closest('.fp-prov'); var i=box?box.querySelector('.fp-provin'):null; if(i){ setVin(b.dataset.key, i.value.trim()); open(); } }; });
+    document.querySelectorAll('.fp-fr').forEach(function(b){ b.onclick=function(){ friendView(+b.dataset.i); }; });
+    var nb=document.getElementById('fpNearby'); if(nb) nb.onclick=nearby;
   }
   function wireForm(p){
     document.getElementById('fpSave').onclick=function(){
@@ -142,6 +148,30 @@
   function rarest(cars){ var q=null; cars.forEach(function(c){ if(c.qty&&(q===null||c.qty<q)) q=c.qty; }); return q?('1/'+ (q>=1000?Math.round(q/1000)+'k':q)) : '—'; }
   function wantCount(){ try{ return Object.values(JSON.parse(localStorage.getItem('fff.cal.want')||'{}')).filter(Boolean).length; }catch(e){ return 0; } }
   function verifyCount(){ try{ return (JSON.parse(localStorage.getItem('fff.verify.sent')||'[]')).length; }catch(e){ return 0; } }
+
+  /* ---------- friends + proximity ---------- */
+  var FRIENDS=[{name:'Al Aiello',handle:'ala',chapter:'Northern CA',cars:2},{name:'Rene Corona',handle:'renec',chapter:'Arkansas',cars:1},{name:'Benjy Hardy',handle:'benjyh',chapter:'Georgia',cars:3}];
+  function friendsHTML(){ if(!FRIENDS.length) return '<div class="fp-empty">Meet folks at events or nearby — their badges show here.</div>';
+    return '<div class="fp-friends">'+FRIENDS.map(function(f,i){ return '<button class="fp-fr" data-i="'+i+'"><span class="fp-fr-av">'+esc(f.name[0]||'?')+'<b>'+f.cars+'</b></span><span class="fp-fr-n">'+esc(f.name.split(' ')[0])+'</span></button>'; }).join('')+'</div>'; }
+  function friendView(i){ var f=FRIENDS[i]; if(!f) return; var ov=document.getElementById('fpov'); if(!ov) return;
+    ov.querySelector('.fp-card').innerHTML='<button class="fp-x" id="fpX">✕</button>'+
+      '<div class="fp-badge"><div class="fp-qr" id="fpQR">…</div><span class="fp-carbub">'+f.cars+'🚗</span></div>'+
+      '<div class="fp-name">'+esc(f.name)+'</div><div class="fp-handle">@'+esc(f.handle)+' · 📍 '+esc(f.chapter)+'</div>'+
+      '<div class="fp-actions"><button class="fp-btn" id="fpAddFr">＋ Add friend</button><button class="fp-btn ghost" id="fpBack">‹ Back</button></div>'+
+      '<div class="fp-note">Demo friend badge. Real friends connect at events, by scanning a QR, or nearby — you approve every add.</div>';
+    document.getElementById('fpX').onclick=close; document.getElementById('fpBack').onclick=open;
+    document.getElementById('fpAddFr').onclick=function(){ if(window.toast) toast('👋 Friend request sent to '+f.name.split(' ')[0]+' (goes live at Step 2).'); };
+    loadQR(function(){ var b=document.getElementById('fpQR'); if(b) b.innerHTML=qrHTML(location.origin+location.pathname+'#p/'+f.handle); });
+  }
+  function nearby(){ var out=document.getElementById('fpNearOut'); if(!out) return;
+    out.innerHTML='<div class="fp-vc muted">Asking your device for location (used only right now)…</div>';
+    if(!navigator.geolocation){ out.innerHTML='<div class="fp-vc muted">Location isn’t available on this device.</div>'; return; }
+    navigator.geolocation.getCurrentPosition(function(){
+      out.innerHTML='<div class="fp-vc"><b>2 Falcon folks near you right now</b> — like pulling into a Cars &amp; Coffee. Wave hi; they see only your badge, never your exact spot.</div>'+
+        '<div class="fp-friends">'+FRIENDS.slice(0,2).map(function(f,i){ return '<button class="fp-fr" data-i="'+i+'"><span class="fp-fr-av">'+esc(f.name[0])+'<b>'+f.cars+'</b></span><span class="fp-fr-n">'+esc(f.name.split(' ')[0])+' 👋</span></button>'; }).join('')+'</div>';
+      out.querySelectorAll('.fp-fr').forEach(function(b){ b.onclick=function(){ friendView(+b.dataset.i); }; });
+    }, function(){ out.innerHTML='<div class="fp-vc muted">Location stayed off — no problem. You can still meet friends by QR or at events.</div>'; }, {enableHighAccuracy:false, timeout:8000, maximumAge:60000});
+  }
 
   /* ---------- edit a car (from a garage card) ---------- */
   function editCar(idx){
