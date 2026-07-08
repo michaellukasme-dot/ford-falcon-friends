@@ -1,0 +1,2008 @@
+{
+"Convertible": {
+"car": {
+"nick": "Convertible",
+"body": "Convertible"
+},
+"projects": [
+{
+"title": "Restoration parts & spend",
+"items": [
+{
+"text": "Labor Hours · Parts Cost",
+"cost": "",
+"link": ""
+},
+{
+"text": "Under Car",
+"cost": "",
+"link": ""
+},
+{
+"text": "5 · $0 · Shelby Drop",
+"cost": "$0",
+"link": ""
+},
+{
+"text": "10 · $500 · 65’ Steering Conversion = 65’ Center Link/tie rod ends/pitman/idler arms",
+"cost": "$500",
+"link": ""
+},
+{
+"text": "6 · $300 · Upper & Lower Control arms",
+"cost": "$300",
+"link": ""
+},
+{
+"text": "2 · $200 · Front Springs",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "2 · $200 · Front Struts",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "2 · $400 · Roller Perches",
+"cost": "$400",
+"link": ""
+},
+{
+"text": "3 · $80 · Under Engine Brace",
+"cost": "$80",
+"link": ""
+},
+{
+"text": "3 · $60 · Monte Carlo Bar",
+"cost": "$60",
+"link": ""
+},
+{
+"text": "2 · $115 · Export Brace",
+"cost": "$115",
+"link": ""
+},
+{
+"text": "5 · $900 · Front Disc Brakes",
+"cost": "$900",
+"link": ""
+},
+{
+"text": "7 · $600 · Power Assist Brakes & Dual Bowl Master",
+"cost": "$600",
+"link": ""
+},
+{
+"text": "7 · $200 · 5 Leaf Springs",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "2 · $110 · Rear Shocks",
+"cost": "$110",
+"link": ""
+},
+{
+"text": "3 · $150 · Rebuilt rear drum brakes",
+"cost": "$150",
+"link": ""
+},
+{
+"text": "5 · $600 · New Scott Drake integral steering gear",
+"cost": "$600",
+"link": ""
+},
+{
+"text": "2 · $70 · New Parking Brake Front Cable",
+"cost": "$70",
+"link": ""
+},
+{
+"text": "2 · $800 · New Legendary Wheels",
+"cost": "$800",
+"link": ""
+},
+{
+"text": "2 · $900 · New BF Goodrich Tires",
+"cost": "$900",
+"link": ""
+},
+{
+"text": "Under Hood",
+"cost": "",
+"link": ""
+},
+{
+"text": "4 · $300 · New Under Hood electrical Harness",
+"cost": "$300",
+"link": ""
+},
+{
+"text": "4 · $100 · Backup light harness, T-10 transmission switch, lenses",
+"cost": "$100",
+"link": ""
+},
+{
+"text": "4 · $100 · New Clutch Equalizing Bar",
+"cost": "$100",
+"link": ""
+},
+{
+"text": "7 · $500 · New Clutch",
+"cost": "$500",
+"link": ""
+},
+{
+"text": "19 · $450 · Master Transmission Rebuild with Locking Synchros",
+"cost": "$450",
+"link": ""
+},
+{
+"text": "10 · $400 · Motor rebuild well tuned",
+"cost": "$400",
+"link": ""
+},
+{
+"text": "Inside Car",
+"cost": "",
+"link": ""
+},
+{
+"text": "4 · $450 · New Under Dash electrical Harness",
+"cost": "$450",
+"link": ""
+},
+{
+"text": "4 · $250 · Sealed bearing powder coated Pedal Assembly",
+"cost": "$250",
+"link": ""
+},
+{
+"text": "4 · $100 · Sound Deadening",
+"cost": "$100",
+"link": ""
+},
+{
+"text": "3 · $200 · New carpet and Floor mats",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "3 · $300 · New Door and quarter panels",
+"cost": "$300",
+"link": ""
+},
+{
+"text": "2 · $200 · Working AM radio / speaker, and convertible courtesy light",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "6 · $300 · Hideaway 3500 watt bluetooth audio",
+"cost": "$300",
+"link": ""
+},
+{
+"text": "Rangoon Red RGB 210, 34, 28 HSL 2°, 76%, 47%",
+"cost": "",
+"link": ""
+},
+{
+"text": "Outside Car · DW635",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 300 · Backup Lights · Windshield",
+"cost": "",
+"link": ""
+},
+{
+"text": "4 · 600 · Windshield · DW635GBN · DW635CLR · DW635CLN",
+"cost": "",
+"link": ""
+},
+{
+"text": "Category: FALCON",
+"cost": "",
+"link": ""
+},
+{
+"text": "Description Reviews (0)",
+"cost": "",
+"link": ""
+},
+{
+"text": "Convertible Top and Trunk · 63-65 Ford Falcon, Comet 2D hard top, convertible (clear available).",
+"cost": "",
+"link": ""
+},
+{
+"text": "18 · $600 · New Convertible Top",
+"cost": "$600",
+"link": ""
+},
+{
+"text": "1 · $55 · Rebuilt hydraulic motor/lines · FOR WINDSHIELD–",
+"cost": "$55",
+"link": ""
+},
+{
+"text": "1 · $100 · Plaid Trunk, wheel, and boot liner · CLN– All clear",
+"cost": "$100",
+"link": ""
+},
+{
+"text": "GTN– All green tint",
+"cost": "",
+"link": ""
+},
+{
+"text": "170 · $11,490 · Total parts Spend · GBN– Solar green tint glass with blue shade on top",
+"cost": "$11,490",
+"link": ""
+},
+{
+"text": "$30 · per hour · YTN– Lite grey tint (lite smoke tint with 78% VLT ratio)",
+"cost": "$30",
+"link": ""
+},
+{
+"text": "$5,100 · YYN– Lite smoke tint glass with darker smoke shade on top (78% VLT ratio)",
+"cost": "$5,100",
+"link": ""
+},
+{
+"text": "$16,590 · Total parts and Labor",
+"cost": "$16,590",
+"link": ""
+},
+{
+"text": "Needed Parts",
+"cost": "",
+"link": ""
+},
+{
+"text": "75 · Day Nite Mirror · C4SZ17700A",
+"cost": "",
+"link": "https://www.fabulousfords.com/detail/39118/Ford_Rear_View_Mirror_Interior_Chrome_Twist_Type_DayNight_Mirror.html"
+},
+{
+"text": "110 · Other Day Nite · C1SZ-17700 · Lincoln Land, Inc. · (727) 446-2193",
+"cost": "",
+"link": ""
+}
+]
+},
+{
+"title": "Kelsey-Hayes Front Disc Brakes",
+"items": [
+{
+"text": "Part · Description · $$$",
+"cost": "",
+"link": ""
+},
+{
+"text": "4 piston Bracket · 50",
+"cost": "",
+"link": "https://www.ebay.com/itm/272340734893"
+},
+{
+"text": "- HW (6 -2\", 2 -4\")",
+"cost": "",
+"link": ""
+},
+{
+"text": "Timken Bearings · 50 · 118 · Raybestos · FRC4047 · right",
+"cost": "",
+"link": ""
+},
+{
+"text": "- Outer,Inner, Seal · 118 · Raybestos · FRC4048 · left",
+"cost": "",
+"link": ""
+},
+{
+"text": "Dust Shields · 49 · 110 · A1 Cardone · 18-4400 · left",
+"cost": "",
+"link": ""
+},
+{
+"text": "Rotor Caps · 12 · 110 · A1 Cardone · 18-4401 · right",
+"cost": "",
+"link": ""
+},
+{
+"text": "Calipers · 220 · 160 · Centric · 141.61004 · left",
+"cost": "",
+"link": ""
+},
+{
+"text": "Rotors · 75 · 160 · Centric · 141.61005 · right",
+"cost": "",
+"link": ""
+},
+{
+"text": "SSBC Proportioning Valve · Stainless Steel Brake Co.    SSBC · Factory 11 19/64\" rotors, 4 Piston Caliper",
+"cost": "",
+"link": ""
+},
+{
+"text": "SSBC Brackets · Raybestos Brakes Rotors Drums · (64-67) were all 4 Piston K/H Style , Hard Bolted Calipers.",
+"cost": "",
+"link": ""
+},
+{
+"text": "Raybestos Hoses · Edelmann Power Steering · All Rotors are 11 19/64\" from Factory",
+"cost": "",
+"link": ""
+},
+{
+"text": "Bolt Kit · Parts Craft",
+"cost": "",
+"link": ""
+},
+{
+"text": "Dorman Dusr Caps · All Pro",
+"cost": "",
+"link": ""
+},
+{
+"text": "Inner Bearings · Classic Mustang",
+"cost": "",
+"link": ""
+},
+{
+"text": "Outer Bearings · Affina · 1964-1966 · 6 cylinder spindles are all the same. Disc brakes were not offered on the 6 cylinders.",
+"cost": "",
+"link": ""
+},
+{
+"text": "Grease seals · BW Brake · 1964-1966 · V8 drum and disc brake spindles are all the same.",
+"cost": "",
+"link": ""
+},
+{
+"text": "Instructions · Fenco",
+"cost": "",
+"link": ""
+},
+{
+"text": "CD · Mid Illinois Caliper   MIC · Will fit perfectly on all Factory 4 Piston systems.",
+"cost": "",
+"link": ""
+},
+{
+"text": "Falcon · You will need to put a note in with your order as to year.  1965-1966 had a 3/8\" Port, the 67's had a 7/16\" Port---Please tell us which you want.",
+"cost": "",
+"link": ""
+},
+{
+"text": "rotors · 110 · Mc Quay Norris",
+"cost": "",
+"link": ""
+},
+{
+"text": "calipers",
+"cost": "",
+"link": ""
+},
+{
+"text": "caliper brackets · 50 · bk1023L & R · walmart",
+"cost": "",
+"link": ""
+},
+{
+"text": "hoses",
+"cost": "",
+"link": ""
+},
+{
+"text": "inner bearing dust seal",
+"cost": "",
+"link": ""
+},
+{
+"text": "inner bearings · 15",
+"cost": "",
+"link": ""
+},
+{
+"text": "outer bearings · 15",
+"cost": "",
+"link": ""
+},
+{
+"text": "dust caps · 7",
+"cost": "",
+"link": ""
+},
+{
+"text": "castle nuts",
+"cost": "",
+"link": ""
+},
+{
+"text": "spindle washers",
+"cost": "",
+"link": ""
+},
+{
+"text": "cotter pins",
+"cost": "",
+"link": ""
+}
+]
+},
+{
+"title": "T5 5-Speed Conversion",
+"items": [
+{
+"text": "Modern Driveline",
+"cost": "",
+"link": "https://www.moderndriveline.com/shop/transmissions/5-speed-transmissions/t5-5-speed-front-shift-rear-socket/"
+},
+{
+"text": "63 Conv T5",
+"cost": "",
+"link": "https://bobs1963fordfalconconvertible.jimdofree.com/t5-conversion-2017/"
+},
+{
+"text": "Spacer Block",
+"cost": "",
+"link": "https://www.moderndriveline.com/shop/cross-members-mounts/ford-crossmembers/falcon/spacer-block-falcon-crossmember/"
+},
+{
+"text": "Shifter",
+"cost": "",
+"link": "https://www.moderndriveline.com/shop/cross-members-mounts/ford-crossmembers/falcon/crossmember-1961-65-falcon-comet-front-shift-t-5/"
+},
+{
+"text": "Falcon Package",
+"cost": "",
+"link": "https://www.moderndriveline.com/shop/solutions/ford-conversion-solutions/61-65-falcon-package/"
+},
+{
+"text": "Front Shift rear socket",
+"cost": "",
+"link": "https://www.moderndriveline.com/shop/transmissions/5-speed-transmissions/t5-5-speed-front-shift-rear-socket/"
+},
+{
+"text": "Tires · Tires",
+"cost": "",
+"link": ""
+},
+{
+"text": "205/60-15 BF GOODRICH BFG RADIAL T/A 60R R15",
+"cost": "",
+"link": ""
+},
+{
+"text": "",
+"cost": "",
+"link": "https://www.ebay.com/itm/4-NEW-205-60-15-BF-GOODRICH-BFG-RADIAL-T-A-60R-R15-TIRES/361585353510?fits=Aspect+Ratio%3A60%7CSection+Width%3A205%7CRim+Diameter%3A15&epid=1217848376&hash=item54302aa326:g:ll0AAOSwS0peZogA"
+},
+{
+"text": "Tremec MD-552-0251-FS-R · $2,895.00 · Tremec T5 5-Speed-Front Shift/Rear Socket MD-552-0251-FS-R",
+"cost": "$2,895.00",
+"link": ""
+},
+{
+"text": "Crossmember · 175",
+"cost": "",
+"link": "https://www.moderndriveline.com/shop/cross-members-mounts/ford-crossmembers/falcon/crossmember-1961-65-falcon-comet-front-shift-t-5/"
+},
+{
+"text": "The Falcon Package",
+"cost": "",
+"link": ""
+},
+{
+"text": "347 Small Block Stroker",
+"cost": "",
+"link": ""
+}
+]
+},
+{
+"title": "Steering Conversion",
+"items": [
+{
+"text": "1964 Convertible v8 260 w/64 Manual Steering, Manual 4 speed, v8 spindles  1 1/8 inch OEM Sector Shaft",
+"cost": "",
+"link": ""
+},
+{
+"text": "1965 · 1964",
+"cost": "",
+"link": ""
+},
+{
+"text": "1\" inch sector shaft · 1 1/8\"  inch sector shaft",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1964-1965-STEERING-BOX-1-1-8-INCH-SECTOR-SHAFT-117p687.htm"
+},
+{
+"text": "C4DZ-3504A · Steering box · C4DZ-3504B · 600",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1964-1965-STEERING-BOX-1-INCH-SECTOR-SHAFT-1p686.htm"
+},
+{
+"text": "68 · C5ZZ-3590-A · Pitman Arm · C3DZ-3590-C, C7ZZ-3590-A, C9ZZ-3590-C",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1965-V-8-PITMAN-ARMS-1-INCH-17p814.htm"
+},
+{
+"text": "45 · C5ZZ-3352-A · Idler Arm",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1965-V-8-IDLER-ARMS-17p811.htm"
+},
+{
+"text": "36 · C3DZ-3351-A · Idler Arm Bracket",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1965-V-8-IDLER-ARM-BRACKETS-17p522.htm"
+},
+{
+"text": "Manual Steering · Manual Steering",
+"cost": "",
+"link": ""
+},
+{
+"text": "140 · C5DZ-3304A · Center-link · C5DZ-3304A · 140",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1965-V-8-MANUAL-STEERING-CENTER-LINK-17p769.htm"
+},
+{
+"text": "Manual Steering",
+"cost": "",
+"link": ""
+},
+{
+"text": "Outer tie rod ends x2 · 56 · C5ZZ-3A130-D · Outer tie rod ends · C3DZ-3A130-G · 112",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1963-1964-V-8-MANUAL-STEERING-OUTER-TIE-ROD-ENDS-p533.htm"
+},
+{
+"text": "Inner tie rod ends x2 · 46 · C5ZZ-3A131-D · Inner tie rod ends · C3DZ-3A131-H · 94",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1963-1964-V-8-MANUAL-STEERING-INNER-TIE-ROD-ENDS-17p534.htm"
+},
+{
+"text": "tie rod end to 64 v8 Spindles · ES 445RL - 74-79 Granada · 25",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1974-1979-GRANADA-OUTER-TIE-ROD-ENDS-197p984.htm"
+},
+{
+"text": "Tie rod adjust sleeve x2 · 20 · C2AA-3310-B · Tie rod adjusting sleeve · C2AA-3310-B · 10",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1963-1965-V-8-TIE-ROD-ADJUSTING-SLEEVES-197p402.htm"
+},
+{
+"text": "411 · C3DZ-3A130-G · 115",
+"cost": "",
+"link": ""
+},
+{
+"text": "C3DZ-3A131-H",
+"cost": "",
+"link": ""
+},
+{
+"text": "Power Steering · Power Steering",
+"cost": "",
+"link": ""
+},
+{
+"text": "23 · C5ZZ-3A131-D · Inner tie rod end · C3DZ-3A131-F (1x left side) · 88",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1963-1964-V-8-POWER-STEERING-LEFT-HAND-INNER-TIE-ROD-ENDS-197p538.htm"
+},
+{
+"text": "28 · C5ZZ-3A130-D",
+"cost": "",
+"link": ""
+},
+{
+"text": "Inner tie rod ends",
+"cost": "",
+"link": ""
+},
+{
+"text": "Outer tie rod ends",
+"cost": "",
+"link": ""
+}
+]
+}
+]
+},
+"63 Hardtop Dream": {
+"car": {
+"nick": "63 Hardtop Dream",
+"year": "1963",
+"body": "Hardtop"
+},
+"projects": [
+{
+"title": "Build budget & plan",
+"items": [
+{
+"text": "in 1000's · Car - foundation",
+"cost": "",
+"link": ""
+},
+{
+"text": "$3.0 · 63' Original v8 HT",
+"cost": "$3.0",
+"link": ""
+},
+{
+"text": "$2.0 · Tubing Under car support",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "$2.0 · Metal / Rust abatement",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "$2.0 · Powder Coat",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "$6.0 · Paint",
+"cost": "$6.0",
+"link": ""
+},
+{
+"text": "$1.0 · Pinstriping",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$16.0",
+"cost": "$16.0",
+"link": ""
+},
+{
+"text": "Suspension",
+"cost": "",
+"link": ""
+},
+{
+"text": "$3.0 · -Great Western Front",
+"cost": "$3.0",
+"link": ""
+},
+{
+"text": "$1.0 · -4 Point Rear",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$1.0 · -leefs and traction",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$5.0",
+"cost": "$5.0",
+"link": ""
+},
+{
+"text": "Steering",
+"cost": "",
+"link": ""
+},
+{
+"text": "$0.6 · Scott Drake Integral NEW",
+"cost": "$0.6",
+"link": ""
+},
+{
+"text": "$1.0 · Borgeson",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$1.0 · Chrome Tilt Column",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$2.0",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "Clutch",
+"cost": "",
+"link": ""
+},
+{
+"text": "$1.0 · McLeod Master and Slave",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$1.0 · Pedal Modifications",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$2.0",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "Brakes",
+"cost": "",
+"link": ""
+},
+{
+"text": "$2.0 · Booster 4 x Disc",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "$2.0",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "Driveline",
+"cost": "",
+"link": ""
+},
+{
+"text": "$4.0 · - Crate 347 Stroker",
+"cost": "$4.0",
+"link": ""
+},
+{
+"text": "3,5 · -T56 crate married to motor",
+"cost": "",
+"link": ""
+},
+{
+"text": "$1.5 · 9\" Posi Rear end",
+"cost": "$1.5",
+"link": ""
+},
+{
+"text": "$5.5",
+"cost": "$5.5",
+"link": ""
+},
+{
+"text": "Wheels /Tires /Interior / electrical",
+"cost": "",
+"link": ""
+},
+{
+"text": "$2.0 · Magnum 500 Legendary",
+"cost": "$2.0",
+"link": ""
+},
+{
+"text": "$3.0 · Interior",
+"cost": "$3.0",
+"link": ""
+},
+{
+"text": "$1.0 · electrical",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$0.5 · Tires",
+"cost": "$0.5",
+"link": ""
+},
+{
+"text": "$1.0 · Misc",
+"cost": "$1.0",
+"link": ""
+},
+{
+"text": "$7.5",
+"cost": "$7.5",
+"link": ""
+},
+{
+"text": "$40.6 · Total",
+"cost": "$40.6",
+"link": ""
+}
+]
+}
+]
+},
+"_shared": {
+"projects": [
+{
+"title": "Spend log (all years)",
+"items": [
+{
+"text": "2020 Projects and spend",
+"cost": "",
+"link": ""
+},
+{
+"text": "Convertible · QTY",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · x · Brakes · $323 · X",
+"cost": "$323",
+"link": "https://www.ebay.com/itm/1964-1965-1966-1967-FORD-MUSTANG-FRONT-DISC-BRAKE-KIT-V-8-ENGINE-AND-SPINDLE-NEW/222373781335"
+},
+{
+"text": "2 · x · LW50-50754A · $340 · 2 · Legendary Wheels",
+"cost": "$340",
+"link": "https://legendarywheel.com/product/lw50/"
+},
+{
+"text": "2 · x · $40 · 1 · Lug Nuts",
+"cost": "$40",
+"link": "https://legendarywheel.com/product/lug-nut-ln003-20-kit/#iLightbox[]/0"
+},
+{
+"text": "3 · x · $140 · 4 · Spinner Cap",
+"cost": "$140",
+"link": "https://legendarywheel.com/product/alloy-rim-spinners-with-emblems/"
+},
+{
+"text": "4 · x · BFGoodrich Radial T/A 205/60-15 90S · $463 · 4 · Tires",
+"cost": "$463",
+"link": "https://www.ebay.com/itm/BFGOODRICH-Radial-T-A-P205-60R15-90S-RWL-Quantity-of-4/192292581434?_trkparms=aid%3D111001%26algo%3DREC.SEED%26ao%3D1%26asc%3D20160908105057%26meid%3Dd6ce7cd808af402384618600db596d3d%26pid%3D100675%26rk%3D3%26rkt%3D15%26mehot%3Dnone%26sd%3D143352341303%26itm%3D192292581434%26pmt%3D1%26noa%3D1%26pg%3D2380057&_trksid=p2380057.c100675.m4236&_trkparms=pageci%3Abd294301-405f-11ea-912b-74dbd1802af9%7Cparentrq%3Ae2dbcaa116f0a99c67fefa02fffc4aaa%7Ciid%3A1"
+},
+{
+"text": "5 · Windshield · $200 · 1 · DW00635GBN or CLR or CLN",
+"cost": "$200",
+"link": "https://bmwglass.com/details/f/automotive-glass-markings-c7c68e478f63"
+},
+{
+"text": "6 · Day Night Mirror · $65 · 1 · C1SZ-17700-A",
+"cost": "$65",
+"link": "https://cgfordparts.com/ufolder/fordpart.php?number=C1SZ-17700"
+},
+{
+"text": "7 · Bumpers - $800",
+"cost": "$800",
+"link": ""
+},
+{
+"text": "8 · Rocker Panel Molding $175",
+"cost": "$175",
+"link": ""
+},
+{
+"text": "9 · C1SZ-6361696-D · $60 · Bucket seat Hinge Cover",
+"cost": "$60",
+"link": "https://cgfordparts.com/ufolder/fordpart.php?number=C1SZ-6361696-D"
+},
+{
+"text": "10 · x · Booster · $250 · #2502-793 booster Only",
+"cost": "$250",
+"link": ""
+},
+{
+"text": "$1307 more totasl wheels tires brakes",
+"cost": "$1307",
+"link": ""
+},
+{
+"text": "$2,331 · total toal",
+"cost": "$2,331",
+"link": ""
+},
+{
+"text": "x · Center Link · C5DZ-3304-A · 1965 Price · Qty · 1965 Part Number · Part Description",
+"cost": "",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/6-Cylinder-to-V8-Steering-Conversion-d19.htm"
+},
+{
+"text": "x · Inner Tie Rod · C5ZZ-3A131-D · $ 22.95 Each Times 2 · $139.95 · $139.95 · 1 · C5DZ-3304-A · Center Link",
+"cost": "$22.95",
+"link": ""
+},
+{
+"text": "x · Outer Tie Rod · C5ZZ-3A130-D · $ 28.00 Each Times 2 · $45.90 · $22.95 · 2 · C5ZZ-3A131-D · Inner Tie Rod",
+"cost": "$28.00",
+"link": ""
+},
+{
+"text": "x · Idler Arm · C5ZZ-3352-A · $47.75 · $56.00 · $28.00 · 2 · C5ZZ-3A130-D · Outer Tie Rod",
+"cost": "$47.75",
+"link": ""
+},
+{
+"text": "x · Idler Arm Bracket · C3DZ-3351-A · $34.95 · $47.75 · $47.75 · 1 · C5ZZ-3352-A · Idler Arm",
+"cost": "$34.95",
+"link": ""
+},
+{
+"text": "x · Tie Rod Adjusting Sleeve · C2AA-3310-B · $ 9.50 Each Times 2 · $34.95 · $34.95 · 1 · C3DZ-3351-A · Idler Arm Bracket",
+"cost": "$9.50",
+"link": ""
+},
+{
+"text": "x · Pitman Arm · C5ZZ-3590-A · $67.95 · $19.00 · $9.50 · 2 · C2AA-3310-B · Tie Rod Adjusting Sleeve",
+"cost": "$67.95",
+"link": ""
+},
+{
+"text": "Total Price to Convert · $450 · $411.50 · $67.95 · $67.95 · 1 · C5ZZ-3590-A · Pitman Arm",
+"cost": "$450",
+"link": ""
+},
+{
+"text": "$599.95 · $599.95 · 1 · C4DZ-3504-B · 1 1/8\" sector shaft",
+"cost": "$599.95",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1964-1965-STEERING-BOX-1-1-8-INCH-SECTOR-SHAFT-1p687.htm"
+},
+{
+"text": "$599.95 · 1 · C4DZ-3504-A · 1\" sector shaft",
+"cost": "$599.95",
+"link": "https://www.falconparts.com/ford-falcon-auto-parts/pc/1964-1965-STEERING-BOX-1-INCH-SECTOR-SHAFT-1p686.htm"
+},
+{
+"text": "$1,011.45",
+"cost": "$1,011.45",
+"link": ""
+},
+{
+"text": "Hardtop",
+"cost": "",
+"link": ""
+},
+{
+"text": "Power Steering",
+"cost": "",
+"link": "http://borgeson.com/imageCD/800111DIM.pdf"
+},
+{
+"text": "C4DZ-5560-HD · x · Leaf Springs · # C4DZ-5560-HDME · 90-846791-1",
+"cost": "",
+"link": ""
+},
+{
+"text": "External hydraulic clutch · x",
+"cost": "",
+"link": "https://americanpowertrain.com/shop/fields/billet-reservoir/ford-hydramax-hydraulic-clutch-actuator-system-for-ford-street-rods-trucks-with-tko-small-input-toploader-ford-t10-magnum-t45-3650-012-t56-and-floor-mounted-pedals/"
+},
+{
+"text": "chockostangclassicmustang.com",
+"cost": "",
+"link": "http://www.chockostangclassicmustang.com/discbrakepowersteering/discbrakeconversions.html"
+},
+{
+"text": "stangersite.com",
+"cost": "",
+"link": ""
+},
+{
+"text": "novak-adapt.com",
+"cost": "",
+"link": ""
+},
+{
+"text": "rosehillperformanceparts.com",
+"cost": "",
+"link": ""
+},
+{
+"text": "mustangtek.com",
+"cost": "",
+"link": ""
+},
+{
+"text": "classiccardatabase.com",
+"cost": "",
+"link": ""
+},
+{
+"text": "classicmustang.com",
+"cost": "",
+"link": ""
+},
+{
+"text": "hydramax hydraulic clutch · HMFO02501G",
+"cost": "",
+"link": ""
+},
+{
+"text": "2018 Projects and spend",
+"cost": "",
+"link": ""
+},
+{
+"text": "AMK Products",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Hood hinge H/W",
+"cost": "",
+"link": ""
+},
+{
+"text": "F-3834 · $19",
+"cost": "$19",
+"link": "http://www.amkproducts.com/shopping_cart/view_cart0.asp"
+},
+{
+"text": "x · Monte Carlo Bar H/W",
+"cost": "",
+"link": ""
+},
+{
+"text": "F-1650 · $6",
+"cost": "$6",
+"link": ""
+},
+{
+"text": "x · Seat to Body H/W",
+"cost": "",
+"link": ""
+},
+{
+"text": "F-1192 · $8",
+"cost": "$8",
+"link": ""
+},
+{
+"text": "x · 1 x Brake Booster · $200 · #2502-793 booster Only",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "9782 PB2i",
+"cost": "",
+"link": "http://www.abspowerbrake.com/maincatalog_frameset012.html"
+},
+{
+"text": "x · DMTRB700 · $60",
+"cost": "$60",
+"link": "https://www.google.com/search?q=DMTRB700&client=firefox-b-1-ab&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjOgYa_2P_YAhUB8GMKHWtjDkUQ_AUIDCgD&biw=1425&bih=1167"
+},
+{
+"text": "x · 1 x Dual Bowl MC · $90",
+"cost": "$90",
+"link": "https://www.ebay.com/itm/GM-Billet-Aluminum-Power-Brake-Delco-Master-Cylinder-Finned-Disc-Brakes-Chevy-1/162606158213?hash=item25dc151185:g:kGkAAOSwuxFYyJE4&vxp=mtr"
+},
+{
+"text": "x · 1 x Prop Valve · $40",
+"cost": "$40",
+"link": ""
+},
+{
+"text": "1 x Disc Brake Kit",
+"cost": "",
+"link": ""
+},
+{
+"text": "Wilwood 140-13476-DR · $675",
+"cost": "$675",
+"link": "https://www.cjponyparts.com/wilwood-front-disc-brake-kit-dynalite-4-piston-drilled-and-slotted-11-3-v8-spindles-1965-1966-1967-1969/p/DBF200D-V/?gclid=Cj0KCQiAtJbTBRDkARIsAIA0a5PaIdhoomMf5OakLDOtroDbb7f17jVwTVgEo049cEvoIFeTGuerGG8aAiA8EALw_wcB"
+},
+{
+"text": "Cheap Brakes · $400",
+"cost": "$400",
+"link": "http://www.discbrakeswap.com/Mustang%20Disc%20Brake%20Conversion%20Kits%20SWAP1.html"
+},
+{
+"text": "Total Brakes Wilwood · $865",
+"cost": "$865",
+"link": "https://www.ebay.com/itm/1964-1965-1966-FORD-MUSTANG-LARGE-11-3-FRONT-DISC-BRAKES/201385261964?hash=item2ee37f3b8c:g:FF4AAOxyTyBSXbNa&vxp=mtr"
+},
+{
+"text": "Total Brakes Cheap · $590 · Chocko Stang for Brakes Cheap",
+"cost": "$590",
+"link": "http://www.chockostangclassicmustang.com/discbrakefacts.html"
+},
+{
+"text": "$160 · Rocker Panel Molding",
+"cost": "$160",
+"link": ""
+},
+{
+"text": "x · LW50-50754B · $900 · Magnum 500 Wheels Legendary Wheel Corp.",
+"cost": "$900",
+"link": "http://www.mustangsunlimited.com/Mustang/Wheels-Tires/Wheels/Magnum-500-Style/Magnum-500-Wheel-Kit-with-Spinners-15-x-7.axd"
+},
+{
+"text": "x · D1ZZ-1141-A · $130 · Spinners",
+"cost": "$130",
+"link": ""
+},
+{
+"text": "-4-1/4\" backspace",
+"cost": "",
+"link": ""
+},
+{
+"text": "-2-1/8\" center cap hole",
+"cost": "",
+"link": ""
+},
+{
+"text": "#MW157 · (4x) 15\" x 7\" Wheels,",
+"cost": "",
+"link": "https://www.cjponyparts.com/scott-drake-wheel-cap-spinner-magnum-500-center-set-1969-1973/p/MAGCS/"
+},
+{
+"text": "#1130MS · (4x) Spinner Center Caps,",
+"cost": "",
+"link": "https://www.cjponyparts.com/legendary-wheel-co-wheel-installation-kit-for-alloy-wheels/p/WHLLN19/"
+},
+{
+"text": "#186N · (1x) Lug Nut Set,",
+"cost": "",
+"link": "https://www.cjponyparts.com/wheel-vintiques-wheel-15x7-magnum-500-1965-1973/p/W12SB64R/"
+},
+{
+"text": "Radial T/A RWL 225/60/15 · $450 · Tires",
+"cost": "$450",
+"link": ""
+},
+{
+"text": "Total Wheels · $1,480",
+"cost": "$1,480",
+"link": ""
+},
+{
+"text": "Bucket Seats",
+"cost": "",
+"link": ""
+},
+{
+"text": "41-33924-1 · $149 · Bucket Seat Skirts Red Convertible",
+"cost": "$149",
+"link": "http://www.ebay.com/itm/111879406651?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "41-35590-1 · $58 · - Chrome Seat Hinge Cover · GMK3020935642",
+"cost": "$58",
+"link": "http://www.ebay.com/itm/111956610912?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "C1SZ-6361696-D · $60 · Bucket Seat Outer Hinge Pin Cove",
+"cost": "$60",
+"link": ""
+},
+{
+"text": "Conv. Top Install · 31% · 35% · 35% · -1%",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · $30 · 1/2\" Tack Strip · Q1 · Q2 · Q3 · Q4",
+"cost": "$30",
+"link": ""
+},
+{
+"text": "x · $30 · 3/8\" Tack Strip · $650.07 · $733.95 · $733.95 · -$20.97",
+"cost": "$30",
+"link": ""
+},
+{
+"text": "Interior Door and 1/4 Panel Install · - Booster ($125)",
+"cost": "$125",
+"link": ""
+},
+{
+"text": "$225 · Windshield · - Prop Valve",
+"cost": "$225",
+"link": ""
+},
+{
+"text": "C1SZ-17700-A · $65 · Day Night Mirror",
+"cost": "$65",
+"link": ""
+},
+{
+"text": "Total 2018 Spend · $2,097",
+"cost": "$2,097",
+"link": ""
+},
+{
+"text": "D130800 · Door Hinge Pin · 41-34433-2",
+"cost": "",
+"link": ""
+},
+{
+"text": "2017 Projects and spend",
+"cost": "",
+"link": ""
+},
+{
+"text": "Item # · Purchased",
+"cost": "",
+"link": ""
+},
+{
+"text": "Part # · Price · Hardtop",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · D909005 or D130800 · $40 · Vacuum Advance · 41-33796-2 · CTR100 · C2OZ-13A821-A",
+"cost": "$40",
+"link": ""
+},
+{
+"text": "2 · x · Horn",
+"cost": "",
+"link": ""
+},
+{
+"text": "3 · x · 41-33796-2 · $11 · Glue Mirror – New Plug",
+"cost": "$11",
+"link": ""
+},
+{
+"text": "4 · x · Courtesy lights troubleshoot",
+"cost": "",
+"link": ""
+},
+{
+"text": "5 · x · Carburetor · C5ZZ-6561828/83",
+"cost": "",
+"link": ""
+},
+{
+"text": "6 · x · Timing · GT20-64FP",
+"cost": "",
+"link": ""
+},
+{
+"text": "7 · x · Back Up Lights",
+"cost": "",
+"link": ""
+},
+{
+"text": "8 · x · Grease Ball Joints · 61726A",
+"cost": "",
+"link": ""
+},
+{
+"text": "9 · x · Manual Transmission Oil",
+"cost": "",
+"link": ""
+},
+{
+"text": "10 · x · $50 · Torque wrench",
+"cost": "$50",
+"link": ""
+},
+{
+"text": "FG149A · 44-39019-1",
+"cost": "",
+"link": ""
+},
+{
+"text": "65 Steering Conversion · GT20-64FP",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · 1 x 65 Steering Linkage Conversion",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · C5DZ-3304-A · $150 · 65 Center Link",
+"cost": "$150",
+"link": "http://www.falconparts.com/ford-falcon-auto-parts/pc/6-Cylinder-to-V8-Steering-Conversion-d19.htm"
+},
+{
+"text": "x · C5ZZ-3A131-D · $65 · 65 INNER Tie Rod Ends · Qty 2",
+"cost": "$65",
+"link": ""
+},
+{
+"text": "x · 5ZZ-3A130-D · $65 · 65 OUTER Tie Rod Ends · Qty 2",
+"cost": "$65",
+"link": ""
+},
+{
+"text": "x · C2AA-3310-B · $40 · 65 Tie Rod end ADJUSTING SLEEVE · Qty 2",
+"cost": "$40",
+"link": ""
+},
+{
+"text": "x · C5ZZ-3352-A · $100 · 65 IDLER ARM",
+"cost": "$100",
+"link": ""
+},
+{
+"text": "x · C3DZ-3351-A · $75 · 65 IDLER ARM Bracket",
+"cost": "$75",
+"link": ""
+},
+{
+"text": "x · C5ZZ-3590-A · $150 · 65 PITMAN ARM",
+"cost": "$150",
+"link": ""
+},
+{
+"text": "1 x 65 Spindles · $250",
+"cost": "$250",
+"link": ""
+},
+{
+"text": "C5ZZ - Driver",
+"cost": "",
+"link": ""
+},
+{
+"text": "C5ZZ Passanger",
+"cost": "",
+"link": ""
+},
+{
+"text": "Part # · Convertible",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · See Photo · $7 · Door Hinge Pin",
+"cost": "$7",
+"link": ""
+},
+{
+"text": "x · Gas Pedal Retainer",
+"cost": "",
+"link": ""
+},
+{
+"text": "Bucket Seats",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · C5ZZ-6561828/83 · - Seat Latch & Track Spring",
+"cost": "",
+"link": "http://www.drakeautomotivegroup.com/Store/Product/C5ZZ-6561828%2F83.aspx?wid=141"
+},
+{
+"text": "x · 61726A · $11 · - Adjuster Rod",
+"cost": "$11",
+"link": "http://www.cal-mustang.com/product/1964-70-bucket-seat-track-adjuster-rod/interior-interior-hard-trim-seat-trim"
+},
+{
+"text": "x · CTR100 · $15 · Aluminum ConsoleTray",
+"cost": "$15",
+"link": "http://www.profitautointeriors.com/products/Ford/Console-Aluminum-Tray--1964-1965-Ford/363006/CTR100.html"
+},
+{
+"text": "x · 41-34433-2 · $8 · - Glove Box Latch",
+"cost": "$8",
+"link": "http://www.ebay.com/itm/111799674342?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · C2OZ-13A821-A · $8 · Horn Brush",
+"cost": "$8",
+"link": "http://www.ebay.com/itm/Ford-Mercury-horn-contact-brush-Mustang-Falcon-Galaxie-Fairlane-Comet-/201564479689?hash=item2eee2de0c9:g:tbwAAOSwLVZV6NBP&vxp=mtr"
+},
+{
+"text": "Horn Re-assemble",
+"cost": "",
+"link": "http://www.ebay.com/itm/232330298397?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · 17983 · $163 · Cut and Sewn Carpet",
+"cost": "$163",
+"link": "http://www.stockinteriors.com/CSCarpet.asp?Itemid=17983&MakeId=8&ModelId=193&year=1964&Price=0&CId=42&gclid=CjwKEAjw387JBRDPtJePvOej8kASJADkV9TL43z1YdHMcpnVl8ZMuX63R_C8F-8xciEYdGUmzXOqqBoC_Ubw_wcB"
+},
+{
+"text": "x · Convertible Top",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Wiring Harness – Gauges",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Wiring Harness – Headlamps",
+"cost": "",
+"link": ""
+},
+{
+"text": "C4DZ7602344BAB · $50 · Kick Panel - Driver Side · Ford numbers on non convertible red kick panels are",
+"cost": "$50",
+"link": ""
+},
+{
+"text": "x · C4DZ7602345BAB · $30 · Kick Panel - Passenger Side · C4DZ6202344CFD and C5DZ6202345AAE",
+"cost": "$30",
+"link": ""
+},
+{
+"text": "x · Logo-Falcon-16425 · $120 · Floor Mats",
+"cost": "$120",
+"link": "http://www.ebay.com/itm/Ford-Falcon-Custom-Logo-Loop-Carpet-Floor-Mats-Choose-Mat-Color-And-Logo/272246252210"
+},
+{
+"text": "DW00635GBN · $150 · Windshield",
+"cost": "$150",
+"link": "http://www.ebay.com/itm/132144626807?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "18 · - Weatherstripping",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · 700537037325 · $150 · T10 Rebuild Kit",
+"cost": "$150",
+"link": "http://www.ebay.com/itm/302126596615?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · 7285K · $60 · - Shift Levers",
+"cost": "$60",
+"link": "http://www.ebay.com/itm/371941359799?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · Levers and Rods · $200 · - Shift Rods",
+"cost": "$200",
+"link": ""
+},
+{
+"text": "x · C5ZZ-7285-RPK2 · $20 · - Lever Rebuild Kit",
+"cost": "$20",
+"link": "http://www.ebay.com/itm/192169556735?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · $11 · - B/U Switch",
+"cost": "$11",
+"link": ""
+},
+{
+"text": "x · SS-1816-K · $65 · Steering Box Rebuild kit",
+"cost": "$65",
+"link": "http://www.stangerssite.com/GBparts.html"
+},
+{
+"text": "x · GT20-64FP · $50 · Fuel Filler Neck to Trunk · 17983 · C4DZ7602344BAB · 41-77324-1",
+"cost": "$50",
+"link": "http://www.ebay.com/itm/391121504102?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · 44-39019-1 · $20 · Fuel Filler Kit · C4DZ7602345BAB",
+"cost": "$20",
+"link": "http://www.ebay.com/itm/111879406129?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "x · 27 · Shift Boot · C3DZ-7662186-7",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · 103150-L-1377 & 103176-L-1377 · $250 · Door and ¼ Panels Interior",
+"cost": "$250",
+"link": "http://www.championfalcon.com/64-falcon-futura-hardtop-convertible-2-door-sedan-door-panels-pair-red-p-17794.html"
+},
+{
+"text": "41-77324-1 · $120 · New Visors",
+"cost": "$120",
+"link": "http://www.macsautoparts.com/ford_falcon_mercury_comet/convertible-sunvisors-red-falcon-comet-1963-1965.html"
+},
+{
+"text": "C3DZ-7624140PRRED · $100 · New Arm Rests · $60.00",
+"cost": "$100",
+"link": "http://www.ebay.com.au/itm/New-1963-64-Falcon-Arm-Rest-Pads-Deluxe-LH-RH-62-Galaxie-Comet-Ford-Red-/222506189076"
+},
+{
+"text": "41-33924-1 · $149 · Bucket Seat Skirts Red Convertible · C1SZ-17700-D",
+"cost": "$149",
+"link": "http://www.ebay.com/itm/111879406651?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "41-35590-1 · $58 · - Chrome Seat Hinge Cover · GMK3020935642",
+"cost": "$58",
+"link": "http://www.ebay.com/itm/111956610912?_trksid=p2060353.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT"
+},
+{
+"text": "C1SZ-6361696-D · $60 · Bucket Seat Outer Hinge Pin Cove",
+"cost": "$60",
+"link": ""
+},
+{
+"text": "c4BZ9030A",
+"cost": "",
+"link": ""
+},
+{
+"text": "Misc",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Bezel Restore",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Console Restore · s4338 · 41-33924-1",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · $1,100 · Magnum 500 Wheels & Tires · s14347 · C3DZ-7624140PRRED",
+"cost": "$1,100",
+"link": ""
+},
+{
+"text": "x · Skirts",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Flush Coolant System",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Screws around A-Pillar",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Day Nite Mirror · 41-35590-1",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · $3,624 · Under Engine Brace",
+"cost": "$3,624",
+"link": ""
+},
+{
+"text": "x · $65 · Gas Cap · $80.00",
+"cost": "$65",
+"link": ""
+},
+{
+"text": "Tools",
+"cost": "",
+"link": ""
+},
+{
+"text": "Ignition Spark Plug Tester · MBS 5666683",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Infrared Thermometer Reader · No Markings · Distinctive Industries",
+"cost": "",
+"link": ""
+},
+{
+"text": "Carb Fuel Pressure Vacuum · B-1816 · 103150-L-1377",
+"cost": "",
+"link": ""
+},
+{
+"text": "Combustion Analyzer · TTO C932 3 VC 156 112 25 · 103176-L-1377",
+"cost": "",
+"link": "https://www.macsautoparts.com/ford_falcon_mercury_comet/convertible-seat-hinge-shield-kit-falcon-1963-1965.html"
+},
+{
+"text": "Handheld Tachometer",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Compressor · $230.00",
+"cost": "$230.00",
+"link": ""
+},
+{
+"text": "x · Torque wrench",
+"cost": "",
+"link": ""
+},
+{
+"text": "$30 · Belt Tension Gauge · c4BZ9030A",
+"cost": "$30",
+"link": ""
+},
+{
+"text": "700537037325 · C5ZZ-7285-RPK2",
+"cost": "",
+"link": "https://www.macsautoparts.com/ford_falcon_mercury_comet/gas-cap-chrome-with-gold-falcon-on-black-background-falcon-except-station-wagon-sedan-delivery-and-ranchero.html"
+},
+{
+"text": "Steering Bearings · $65.00",
+"cost": "$65.00",
+"link": ""
+},
+{
+"text": "x · Bearing Race · 7285K",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Bearing",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Needle Bearings · SS-1816-K · DW00635GBN",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Seal",
+"cost": "",
+"link": ""
+},
+{
+"text": "HCC AP or AP1",
+"cost": "",
+"link": ""
+},
+{
+"text": "Heim Joints · 39” Input Shaft (to St. Wheel)",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 1/8” Sector Diameter(to Pitman Arm) · $30.00",
+"cost": "$30.00",
+"link": ""
+},
+{
+"text": "C1SB-6361696-D",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · 5 Bolt Bell housing",
+"cost": "",
+"link": "https://www.macsautoparts.com/store/seat-hinge-cover-set-4-pieces-chrome-round.html/?crosssell=Product_Viewed"
+},
+{
+"text": "x · Clutch Kit",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Heater Box & Seals",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Under Motor Brace",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Universal Joints & U-bolts",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Master Cylinder",
+"cost": "",
+"link": ""
+},
+{
+"text": "NO · Harmonic Balancer",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · T10 Parts per Gary",
+"cost": "",
+"link": ""
+},
+{
+"text": "Conv. Top Install",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Compressor",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Staple Gun",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Heat Gun",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Staple Puller",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Scissors · Part number",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Rubber Mallet",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · Yard Sticks (to cut) · Tricky End Drivers Side",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · DAP – Landau Top n Trim",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · -HRR Solvent Type · Passenger Manifold",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · 1/2\" Tack Strip",
+"cost": "",
+"link": ""
+},
+{
+"text": "x · 3/8\" Tack Strip",
+"cost": "",
+"link": ""
+},
+{
+"text": "Single Exhaust Parts List",
+"cost": "",
+"link": ""
+},
+{
+"text": "– ALL 2” & 3” OD Aluminized & all MANDREL Bends",
+"cost": "",
+"link": ""
+},
+{
+"text": "Description",
+"cost": "",
+"link": ""
+},
+{
+"text": "2” OD Aluminized",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 6” Flanged x 12” 120^ (ID end)",
+"cost": "",
+"link": ""
+},
+{
+"text": "3 · 6” x 6” 45^ (OD to ID ends)",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 6” Flanged x 6” 45^ (OD to ID ends) · Part number",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 2 to 1 Merge Collector · Tricky End Drivers Side",
+"cost": "",
+"link": ""
+},
+{
+"text": "Passenger Side",
+"cost": "",
+"link": ""
+},
+{
+"text": "2.5” OD Aluminized · Both Sides",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 5' Straight Pipe (OD to ID ends) · Both Sides",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 1' straight Pipe (OD to ID ends) · Both Sides",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 6” x 6” 45^ (OD to ID ends) · Both Sides",
+"cost": "",
+"link": ""
+},
+{
+"text": "Both Sides",
+"cost": "",
+"link": ""
+},
+{
+"text": "Dual Exhaust Parts List · Both Sides",
+"cost": "",
+"link": ""
+},
+{
+"text": "– ALL 2” OD Aluminized & all MANDREL Bends",
+"cost": "",
+"link": ""
+},
+{
+"text": "Qty · Description",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 6” Flanged x 12” 120^ (ID end)",
+"cost": "",
+"link": ""
+},
+{
+"text": "1 · 6” Flanged x 6” 90^ (Flanged to ID end)",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 1' straight Pipe (OD to ID ends)",
+"cost": "",
+"link": ""
+},
+{
+"text": "6 · 6” x 6” 45^ (OD to ID ends)",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 5' Straight Pipe (OD to ID ends)",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 12” 180^ U's",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 1' straight Pipe (OD to ID ends)",
+"cost": "",
+"link": ""
+},
+{
+"text": "2 · 6” x 6” 90^ (OD to ID ends)",
+"cost": "",
+"link": ""
+},
+{
+"text": "302.9 · Carpet Kit",
+"cost": "",
+"link": "http://www.championfalcon.com/6365-falcon-convertible-v8-4-speed-w-buckets-carpet-kit-red-p-18865.html"
+},
+{
+"text": "233 · Door Panels",
+"cost": "",
+"link": "http://www.championfalcon.com/64-falcon-futura-hardtop-convertible-2-door-sedan-door-panels-pair-red-p-17794.html"
+},
+{
+"text": "74 · ¼ Panels",
+"cost": "",
+"link": "http://www.championfalcon.com/64-falcon-convertible-interior-rear-quarter-panels-pair-redbrfont-colordc143cbpreorderbfont-p-17806.html"
+},
+{
+"text": "95 · Floor Mats",
+"cost": "",
+"link": "http://ocautocarpets.com/i-23797687-1964-ford-falcon-convertible-floor-mat-4pc-fm38-with-logo-54-falcon-loop.html?ref=brand:76419"
+},
+{
+"text": "27 · Seat Belts",
+"cost": "",
+"link": "http://www.macsautoparts.com/ford_falcon_mercury_comet/replacement-seat-belt-universal-dark-red.html"
+},
+{
+"text": "731.9 · total interior",
+"cost": "",
+"link": ""
+},
+{
+"text": "Convertible Top",
+"cost": "",
+"link": "https://www.topsonline.com/model/Convertible_Tops_And_Accessories/Ford/1963_thru_1965_Ford_Falcon_And_Sprint.html"
+},
+{
+"text": "350",
+"cost": "",
+"link": "http://www.ebay.com/itm/FORD-FALCON-CONVERTIBLE-SOFT-TOP-WINDOW-1962-63-64-65-/330370048749?fits=Year%3A1964%7CMake%3AFord%7CModel%3AFalcon&hash=item4ceb96e2ed:m:mCwaHXIk1aVCFKPGauhsiKw&vxp=mtr"
+},
+{
+"text": "",
+"cost": "",
+"link": "http://www.convertibletopguys.com/convertible/373/1962-65-Ford-Falcon-Futura#packages"
+},
+{
+"text": "700 · Hideaway Radio",
+"cost": "",
+"link": ""
+},
+{
+"text": "160 · Rocker Panel Molding",
+"cost": "",
+"link": ""
+},
+{
+"text": "9782 PB2i · Booster",
+"cost": "",
+"link": "http://www.abspowerbrake.com/maincatalog_frameset012.html"
+},
+{
+"text": "Lines",
+"cost": "",
+"link": ""
+},
+{
+"text": "Disc Conversion",
+"cost": "",
+"link": ""
+},
+{
+"text": "65 Spindles",
+"cost": "",
+"link": ""
+},
+{
+"text": "C5DZ-3304-A · 65 Center Link",
+"cost": "",
+"link": "http://www.falconparts.com/ford-falcon-auto-parts/pc/6-Cylinder-to-V8-Steering-Conversion-d19.htm"
+},
+{
+"text": "C5ZZ-3A131-D · 65 INNER Tie Rod Ends · Qty 2",
+"cost": "",
+"link": ""
+},
+{
+"text": "5ZZ-3A130-D · 65 OUTER Tie Rod Ends · Qty 2",
+"cost": "",
+"link": ""
+},
+{
+"text": "C2AA-3310-B · 65 Tie Rod end ADJUSTING SLEEVE · Qty 2",
+"cost": "",
+"link": ""
+},
+{
+"text": "C5ZZ-3352-A · 65 IDLER ARM",
+"cost": "",
+"link": ""
+},
+{
+"text": "C3DZ-3351-A · 65 IDLER ARM Bracket",
+"cost": "",
+"link": ""
+},
+{
+"text": "C5ZZ-3590-A · 65 PITMAN ARM",
+"cost": "",
+"link": ""
+}
+]
+}
+]
+}
+}

@@ -53,6 +53,10 @@
     return '<div class="fp-qrfallback">🔳<br><small>Scan code loads offline — your link is ready to copy below.</small></div>';
   }
   function centerPic(cars){ if(cars&&cars.length){ for(var i=0;i<cars.length;i++){ if(cars[i].photo) return cars[i].photo; } } return 'icons/icon-192.png'; }
+  /* the canonical scan URL for a car — the SAME QR the car's own Badge shows */
+  function carURL(c, idx){ var name=c.nick||c.nickname||((c.year||'')+' Falcon'); var key=c.nick||('car'+idx);
+    var vin=(vins()[key])||c.vin||''; var slug=(name+'-'+(vin||idx)).toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    return location.origin+location.pathname+'#c/'+encodeURIComponent(slug); }
 
   /* ---------- render ---------- */
   function open(){
@@ -69,7 +73,9 @@
     ov.classList.add('on');
     document.getElementById('fpX').onclick=close;
     ov.onclick=function(e){ if(e.target===ov) close(); };
-    if(!edit){ loadQR(function(){ var box=document.getElementById('fpQR'); if(box) box.innerHTML=qrHTML(shareURL(p), centerPic(cars)); });
+    if(!edit){ loadQR(function(){ var box=document.getElementById('fpQR'); if(!box) return;
+        if(cars.length){ box.innerHTML=qrHTML(carURL(cars[0],0), cars[0].photo||centerPic(cars)); }  /* Profile QR = Car #1 */
+        else box.innerHTML=qrHTML(shareURL(p), centerPic(cars)); });
       wireView(p); }
     else wireForm(p);
   }
@@ -87,7 +93,7 @@
     return ''+
       '<div class="fp-badge"><div class="fp-qr" id="fpQR">…</div>'+
         (cars.length?'<span class="fp-carbub" title="cars in your garage">'+cars.length+'🚗</span>':'')+'</div>'+
-      (cars.length?'<div class="fp-carstrip">'+cars.slice(0,6).map(function(c,i){return '<button class="fp-carthumb" data-i="'+i+'" title="'+esc(c.nick||'this car')+' — open its badge">'+(c.photo?'<img src="'+esc(c.photo)+'" alt="">':'🚗')+'</button>';}).join('')+'</div><div class="fp-cbtag" style="margin-top:2px">tap a car → its own QR badge</div>':'')+
+      (cars.length?'<div class="fp-carstrip">'+cars.slice(0,6).map(function(c,i){return '<button class="fp-carthumb" data-i="'+i+'" title="'+esc(c.nick||'this car')+' — open its badge">'+(c.photo?'<img src="'+esc(c.photo)+'" alt="">':'🚗')+'</button>';}).join('')+'</div><div class="fp-cbtag" style="margin-top:2px">▲ big QR = Car #1 · tap any car for its own QR badge</div>':'')+
       '<div class="fp-name">'+esc(p.name||'Your name')+'</div>'+
       '<div class="fp-handle">@'+esc(p.handle||'handle')+(p.chapter?(' · 📍 '+esc(p.chapter)):'')+'</div>'+
       (p.story?'<div class="fp-story">'+esc(p.story)+'</div>':'')+
@@ -132,7 +138,9 @@
   function wireView(p){
     function goEdit(){ var ov=document.getElementById('fpov'); ov.querySelector('.fp-card').innerHTML='<button class="fp-x" id="fpX">✕</button>'+formHTML(p); document.getElementById('fpX').onclick=close; wireForm(p); }
     document.getElementById('fpEdit').onclick=goEdit;
-    var pq=document.getElementById('fpQR'); if(pq){ pq.style.cursor='pointer'; pq.title='Tap your QR to edit your profile'; pq.onclick=goEdit; }
+    var pq=document.getElementById('fpQR'); if(pq){ var cs=myCars(); pq.style.cursor='pointer';
+      if(cs.length){ pq.title='Car #1 — tap for its badge & project log'; pq.onclick=function(){ carBadge(0); }; }
+      else { pq.title='Tap your QR to edit your profile'; pq.onclick=goEdit; } }
     document.getElementById('fpShare').onclick=function(){ var u=shareURL(p);
       if(navigator.share){ navigator.share({title:'My Ford Falcon Friends profile', url:u}).catch(function(){}); }
       else if(navigator.clipboard){ navigator.clipboard.writeText(u); if(window.toast) toast('↗ Profile link copied — your code in one link.'); }
@@ -209,6 +217,7 @@
         '<div class="fp-st"><div class="n">'+(c.for_sale?'$':'—')+'</div><div class="l">🏷️ sale</div></div></div>'+
       '<div class="fp-sect">Awards won</div>'+(awards.length?awards.map(function(a){return '<div class="fp-vc">🏆 '+esc(a)+'</div>';}).join(''):'<div class="fp-empty">No awards yet — get voted on at a meet.</div>')+
       '<div class="fp-sect">Previous awards (prior owners)</div>'+(prev.length?prev.map(function(a){return '<div class="fp-vc">📜 '+esc(a)+'</div>';}).join(''):'<div class="fp-empty">Empty — pedigree carries here when the car changes hands.</div>')+
+      '<div class="fp-sect">🔧 Projects completed</div>'+(window.FFFProjects?FFFProjects.sectionHTML(key):'<div class="fp-empty">Project log loads in a moment…</div>')+
       '<div class="fp-actions" style="margin-top:12px"><button class="fp-btn" id="cbSell">🏷️ List for sale</button><button class="fp-btn ghost" id="cbVote">🗳️ Voting</button></div>'+
       '<div class="fp-actions"><button class="fp-btn ghost" id="cbEdit">✎ Edit car</button><button class="fp-btn ghost" id="cbBack">‹ Back</button></div>'+
       '<div class="fp-note">Print this QR for the windshield. At a meet, visitors · members · judges scan it to vote by category. FF only hosts a for-sale ad — never a party to the sale. When the car sells, its awards move to the new owner’s badge and you keep a Legacy record.</div>';
@@ -218,6 +227,7 @@
     document.getElementById('cbEdit').onclick=function(){ editCar(idx); };
     document.getElementById('cbSell').onclick=function(){ if(window.toast) toast('Nominal for-sale ad goes live at Step 2 — FF hosts the listing, not the sale.'); };
     document.getElementById('cbVote').onclick=function(){ if(window.toast) toast('Voting opens when a meet is live — visitors, members & judges scan to vote by category.'); };
+    if(window.FFFProjects) FFFProjects.wire(ov, key);
     loadQR(function(){ var b=document.getElementById('fpQR'); if(b) b.innerHTML=qrHTML(url, c.photo||'icons/icon-192.png'); });
   }
 

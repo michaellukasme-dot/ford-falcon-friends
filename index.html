@@ -173,7 +173,7 @@ footer .heart{color:var(--maroon)}
 .fcal-dot{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gold-deep)}
 .fcal-cell.sel .fcal-dot{background:var(--cream)}
 .fcal-selday{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
-@media(min-width:960px){ .fff-side{transform:none;box-shadow:none} .fff-side-bk{display:none!important} .app>main,.app>header,.app>nav{margin-left:290px} #calBtn{display:none} }
+@media(min-width:960px){ .fff-side{transform:none;box-shadow:none} .fff-side-bk{display:none!important} .app{max-width:none;margin:0} .app>main,.app>header{max-width:900px;margin-right:auto;margin-left:max(290px,calc((100vw - 900px)/2))} .app>nav{margin-left:290px} #calBtn{display:none} }
 /* ===== shared overlay bits ===== */
 .fpov,.ffreeov,.asov{position:fixed;inset:0;background:rgba(20,10,5,.5);z-index:80;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px}
 .fpov.on,.ffreeov.on,.asov.on{display:flex}
@@ -2307,8 +2307,10 @@ textarea.evt-in{min-height:54px;resize:vertical}
     ]
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="fff_calendar.js"></script>
 <script src="fff_profile.js"></script>
+<script src="fff_projects.js"></script>
 <script src="fff_freestuff.js"></script>
 <script src="fff_ask_steve.js"></script>
 <script src="fff_helptest.js"></script>
