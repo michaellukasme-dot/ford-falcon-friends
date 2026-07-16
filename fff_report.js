@@ -1,11 +1,11 @@
 /* fff_report.js — the single ingress. Every "send" (bug, feature, UX idea, question) AND every
-   auto-detected error funnels to one address: HELPTEST@shakedownstreet.app, subject-tagged so it
+   auto-detected error funnels to one address: HELPTEST@deaddance.app, subject-tagged so it
    can be sorted on inbound. Front-end monitoring auto-cues the user to send when something breaks.
    House rules: honest-state (Step-1 = mailto; when a Supabase client exists we also queue to an `inbox`
    table for triage); nothing is sent without the user tapping Send. */
 (function(){
   'use strict';
-  var TO='HELPTEST@shakedownstreet.app';
+  var TO='HELPTEST@deaddance.app';
   var APP=(function(){ try{ return (navigator.serviceWorker&&'fff')||'fff'; }catch(e){ return 'fff'; } })();
   var lastErr=null;
   function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
