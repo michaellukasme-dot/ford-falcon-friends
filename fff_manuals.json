@@ -1,0 +1,340 @@
+{
+ "_meta": {
+  "title": "Ask Steve manual catalog — metadata + excerpt navigation only",
+  "legal": "Full Forel manuals are copyrighted/licensed-to-owner and are NOT served. This file carries only factual catalog data (which manual covers which year/models) + page-navigation into the licensed Gary’s Garage EXCERPTS. Steve directs members to buy the full manual from Forel.",
+  "era": "OtherFords 1960–1973 (through the year the emissions/gas rules changed)",
+  "in_library_years": [
+   1964,
+   1965,
+   1966,
+   1967,
+   1968,
+   1969,
+   1970
+  ],
+  "missing_years": [
+   1960,
+   1961,
+   1962,
+   1963,
+   1971,
+   1972,
+   1973
+  ],
+  "generated": "2026-07-16"
+ },
+ "catalog": [
+  {
+   "year": 1960,
+   "factory_manual": "1960 Ford Falcon Shop Manual",
+   "models": [
+    "Falcon"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1961,
+   "factory_manual": "1961 Ford Falcon Shop Manual",
+   "models": [
+    "Falcon",
+    "Ranchero"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1962,
+   "factory_manual": "1962 Ford Falcon Shop Manual",
+   "models": [
+    "Falcon",
+    "Ranchero"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1963,
+   "factory_manual": "1963 Ford Falcon / Fairlane Shop Manual",
+   "models": [
+    "Falcon",
+    "Fairlane",
+    "Sprint"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1964,
+   "factory_manual": "1964 Ford Falcon Shop Manual",
+   "models": [
+    "Falcon",
+    "Ranchero",
+    "Sprint"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": false,
+   "excerpt": "falcon_64_shop_manual",
+   "excerpt_pages": 52,
+   "topics": {
+    "body & trim": "5-8, 10, 15-16, 18-19, 23-26, 28-31, 36-41, 43-44, 50-51",
+    "brakes": "9-28, 30, 35-36, 39, 44",
+    "drive shaft & axle": "6, 8, 17, 20-21, 37, 40-41",
+    "engine": "5-16, 18-31, 33-34, 39-40, 44, 46-50",
+    "exhaust": "9, 21, 44",
+    "fuel system": "18",
+    "ignition/electrical": "22-23, 28, 30, 35, 43-44, 51",
+    "maintenance": "22, 37-39, 47, 51",
+    "steering": "29-36, 38-40, 42-50",
+    "suspension": "7, 12, 14-23, 25, 27-48, 50",
+    "transmission": "5-9, 22-23, 29, 44",
+    "vehicle identification": "5-8",
+    "wheels & tires": "9, 11-12, 14-21, 24-48, 50-51"
+   },
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1965,
+   "factory_manual": "1965 Comet · Falcon · Mustang Shop Manual",
+   "models": [
+    "Falcon",
+    "Comet",
+    "Mustang"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": true,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1966,
+   "factory_manual": "1966 Comet · Falcon · Fairlane · Mustang Shop Manual",
+   "models": [
+    "Falcon",
+    "Comet",
+    "Fairlane",
+    "Mustang"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": true,
+   "excerpt": "falcon_66_shop_manual",
+   "excerpt_pages": 52,
+   "topics": {
+    "body & trim": "3, 6-8, 11, 13, 15, 19-23, 26-29, 33-34, 39-42, 44, 51",
+    "brakes": "3, 11-50",
+    "cooling": "3, 28",
+    "drive shaft & axle": "3, 9, 23, 33",
+    "engine": "11-23, 26-30, 33-36, 39-50",
+    "exhaust": "3, 33",
+    "fuel system": "26, 28",
+    "ignition/electrical": "3, 34, 36, 48-49, 51",
+    "maintenance": "3, 26, 28-29, 51",
+    "steering": "3",
+    "suspension": "3, 16-17, 19-23, 26-30, 33-36, 39-46, 50",
+    "transmission": "3, 6-7, 9, 13, 17, 34, 36",
+    "vehicle identification": "3, 6-9",
+    "wheels & tires": "3, 13-17, 19-23, 26-30, 33, 39-40, 44-51"
+   },
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1967,
+   "factory_manual": "1967 Cougar · Fairlane · Falcon · Mustang Shop Manual",
+   "models": [
+    "Falcon",
+    "Fairlane",
+    "Mustang",
+    "Cougar"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": true,
+   "excerpt": "falcon_67_shop_manual",
+   "excerpt_pages": 52,
+   "topics": {
+    "body & trim": "3, 6-8, 12-13, 15, 25-26, 31, 35-38, 40-44, 46, 51",
+    "brakes": "3, 10-44, 50",
+    "cooling": "3, 25",
+    "drive shaft & axle": "3, 7, 10, 12-13, 15, 17-19, 26-30, 32-33",
+    "engine": "10, 12-15, 17-22, 24-38, 41-44, 46, 48, 50",
+    "exhaust": "3, 10",
+    "fuel system": "23, 26",
+    "ignition/electrical": "3, 13, 17-19, 31, 33-34, 44, 46, 50-51",
+    "maintenance": "4, 20, 23, 26, 51",
+    "steering": "3, 10, 46-50",
+    "suspension": "12, 14, 18, 20-24, 26-29, 31, 33-38, 41, 43-44, 46-50",
+    "transmission": "3, 7, 10, 33-35, 38",
+    "vehicle identification": "4, 6-8",
+    "wheels & tires": "3, 10-15, 17, 19-30, 33, 35-37, 42-44, 46-51"
+   },
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1968,
+   "factory_manual": "1968 Cougar · Fairlane · Falcon · Mustang Shop Manual",
+   "models": [
+    "Falcon",
+    "Fairlane",
+    "Mustang",
+    "Cougar",
+    "Torino"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": true,
+   "excerpt": "falcon_68_shop_manual",
+   "excerpt_pages": 46,
+   "topics": {
+    "body & trim": "3, 5-8, 11, 13, 25-26, 35-36, 38-39, 43-45",
+    "brakes": "9-44",
+    "cooling": "3",
+    "drive shaft & axle": "3, 5, 7, 9, 12-13, 17-19, 26-33",
+    "engine": "9-10, 12-14, 17-22, 24-39, 42-44",
+    "exhaust": "3, 10",
+    "fuel system": "23-24, 26",
+    "ignition/electrical": "3, 5, 9, 13, 17-18, 31-34, 44-45",
+    "maintenance": "4, 26, 45",
+    "steering": "3, 9-10",
+    "suspension": "3, 13-14, 18-28, 32-36, 38-39, 43-44",
+    "transmission": "3, 5, 7, 10, 33-35, 38",
+    "vehicle identification": "3, 5-8",
+    "wheels & tires": "3, 9-15, 17-30, 32, 36-37, 39, 42-45"
+   },
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1969,
+   "factory_manual": "1969 Ford Car Shop Manual",
+   "models": [
+    "Falcon",
+    "Fairlane",
+    "Torino",
+    "Mustang",
+    "Galaxie",
+    "LTD"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": true,
+   "excerpt": "falcon_69_shop_manual",
+   "excerpt_pages": 68,
+   "topics": {
+    "body & trim": "6-12, 16-18, 30, 38-39, 50, 54-56, 58-64, 67",
+    "brakes": "1-2, 13-51, 53-66",
+    "cooling": "38",
+    "drive shaft & axle": "1-2, 6-7, 9, 14, 17-19, 22-24, 28, 31, 36, 40-44, 58, 65",
+    "engine": "13-14, 16-20, 22-31, 36-47, 58-66",
+    "exhaust": "14, 28, 58",
+    "fuel system": "15, 29, 39",
+    "ignition/electrical": "7, 15, 19, 23-24, 40, 44-48, 50, 54, 67",
+    "maintenance": "4, 27, 39, 67",
+    "steering": "1-2, 14-15, 36, 38, 45-46",
+    "suspension": "1-2, 16, 18-20, 23-26, 28-30, 36-41, 45-46, 50, 54-56, 59-62, 64-66",
+    "transmission": "1-2, 6-7, 9, 14-15, 27, 41, 45-46",
+    "vehicle identification": "2, 6-12",
+    "wheels & tires": "1-2, 13-20, 22-30, 32, 36-39, 55-56, 58-59, 64-65, 67"
+   },
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1970,
+   "factory_manual": "1970 Ford Car Shop Manual",
+   "models": [
+    "Falcon",
+    "Fairlane",
+    "Torino",
+    "Mustang",
+    "Galaxie",
+    "Maverick"
+   ],
+   "in_library": true,
+   "full_forel_on_hand": true,
+   "excerpt": "falcon_1970_shop_manual",
+   "excerpt_pages": 84,
+   "topics": {
+    "body & trim": "3, 5-11, 16-19, 22-23, 29-30, 39, 46-49, 63-66, 77, 79, 81, 83",
+    "brakes": "3, 12-13, 15-20, 25-82",
+    "drive shaft & axle": "5, 8, 15, 26, 30-32, 35-36, 40-43, 50, 52-53, 58",
+    "engine": "22-23, 26, 28-32, 35-50, 52-66, 68-69",
+    "exhaust": "26, 32",
+    "fuel system": "26, 33, 38, 56",
+    "ignition/electrical": "3, 5, 30-31, 35, 41, 43-45, 52, 59-62, 71-72, 77, 83",
+    "maintenance": "4, 12-13, 18-19, 37, 56, 83",
+    "steering": "13, 16-17, 21-22, 24, 26-28, 44-45, 60-61",
+    "suspension": "12, 16-22, 24, 30-32, 35-47, 50, 52-53, 55-57, 59-61, 63-69, 77, 79-81",
+    "transmission": "5, 8, 26, 28, 41, 43-45, 57, 60-61, 70",
+    "vehicle identification": "5-11",
+    "wheels & tires": "12-24, 26, 28-32, 37-40, 46, 49-50, 52-57, 62-63, 66, 69-70, 80-81, 83"
+   },
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1971,
+   "factory_manual": "1971 Ford Car Shop Manual",
+   "models": [
+    "Torino",
+    "Fairlane",
+    "Mustang",
+    "Galaxie",
+    "Maverick",
+    "Pinto"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1972,
+   "factory_manual": "1972 Ford Car Shop Manual",
+   "models": [
+    "Torino",
+    "Gran Torino",
+    "Mustang",
+    "Galaxie",
+    "Maverick",
+    "Pinto"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  },
+  {
+   "year": 1973,
+   "factory_manual": "1973 Ford Car Shop Manual",
+   "models": [
+    "Torino",
+    "Mustang",
+    "Galaxie",
+    "Maverick",
+    "Pinto"
+   ],
+   "in_library": false,
+   "full_forel_on_hand": false,
+   "excerpt": null,
+   "excerpt_pages": null,
+   "topics": {},
+   "forel_vendor": "https://www.forelpublishing.com"
+  }
+ ]
+}

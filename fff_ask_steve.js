@@ -40,6 +40,9 @@
     if(j && j.survivors){ KB.survivors = Object.assign({}, KB.survivors, j.survivors); if(j._meta&&j._meta.source) KB.survivors.source=j._meta.source; }
   }).catch(function(){}); }catch(e){}
 
+  // Shop-manual catalog (metadata + excerpt page-nav ONLY — never the copyrighted text).
+  try{ fetch('fff_manuals.json').then(function(r){ return r.ok?r.json():null; }).then(function(j){ if(j && j.catalog){ KB.manuals=j; } }).catch(function(){}); }catch(e){}
+
   var MODELS=['2dr Sedan','4dr Sedan','Hardtop','Convertible','Wagon','Ranchero','Sedan Delivery'];
   function pickModel(s){ if(/ranchero/.test(s))return 'Ranchero'; if(/sedan delivery|delivery/.test(s))return 'Sedan Delivery';
     if(/convertible|rag|drop.?top/.test(s))return 'Convertible'; if(/hardtop|sprint/.test(s))return 'Hardtop';
@@ -57,6 +60,10 @@
     }
     // Gary's drop / what's new
     if(/gary|drop|upload|new today|free stuff|miracle/.test(s)) return card('Gary’s Garage — today’s drop', KB.gary.lines, 'VERIFIED', KB.gary.source);
+    // SHOP MANUAL / Bookshelf — legal: names the right book + excerpt page-nav, sends buyers to Forel
+    if(KB.manuals && /manual|bookshelf|repair|rebuild|torque|adjust|replace|remove|install|how (do|to)|which book|what book|section|service (manual|proc|spec)|fix (my|the)/.test(s)){
+      return manualCard(s);
+    }
     // VIN
     if(/\bvin\b|decode|data plate/.test(s)){
       var m=(q.toUpperCase().match(/[0-9][A-Z][0-9A-Z]{3,}/)||[])[0];
@@ -90,6 +97,25 @@
       'I know today’s data dump cold — try: “how many ’63 convertibles are in the registry?”, “what’s the 170 six HP by year?”, “decode VIN 3R01F100001”, “1963 paint codes”, or “what did Gary’s Garage upload?”'
     ], 'GAP', 'Steve’s knowledge base (today’s dump)');
   }
+  // ----- shop-manual helpers (catalog + excerpt navigation; never republishes manual text) -----
+  function yearIn(s){ var m=s.match(/\b(?:19)?([6-7]\d)\b/); if(!m)return null; var y=1900+(+m[1]); return (y>=1960&&y<=1973)?y:null; }
+  var TOPIC=[[/brake/,'brakes'],[/suspension|spring|shock|ball.?joint|control arm|strut/,'suspension'],[/steer|tie.?rod|steering box|column/,'steering'],[/trans|clutch|shift|fordomatic|cruise.?o|c-?4|c-?6|overdrive|synchro/,'transmission'],[/electr|ignition|wir|distribut|\bcoil\b|alternator|generator|headlight|gauge|fuse/,'ignition/electrical'],[/body|trim|door|glass|weatherstrip|panel|seat|dash|windshield/,'body & trim'],[/fuel|carb|gas tank|fuel pump/,'fuel system'],[/cool|radiator|water pump|thermostat|overheat|antifreeze/,'cooling'],[/wheel|tire|tyre|\bhub\b|wheel bearing|lug/,'wheels & tires'],[/axle|different|drive.?shaft|rear end|u.?joint|pinion/,'drive shaft & axle'],[/exhaust|muffler|header|manifold/,'exhaust'],[/mainten|lube|oil change|grease|service interval/,'maintenance'],[/\bvin\b|identification|data plate|serial/,'vehicle identification'],[/engine|motor|piston|valve|head gasket|\bcam\b|crank|timing|rebuild/,'engine']];
+  function pickTopic(s){ for(var i=0;i<TOPIC.length;i++){ if(TOPIC[i][0].test(s)) return TOPIC[i][1]; } return null; }
+  function findCat(y){ var c=(KB.manuals&&KB.manuals.catalog)||[]; for(var i=0;i<c.length;i++){ if(c[i].year===y) return c[i]; } return null; }
+  function manualCard(s){
+    var y=yearIn(s), topic=pickTopic(s);
+    if(!y){ var yrs=(KB.manuals._meta.in_library_years||[]).join(', ');
+      return card('Which year?', ['Give me the year and I’ll point you to the right factory manual. In-app excerpts on the Bookshelf: '+yrs+'.','For any 1960–1973 Ford I can name the correct book and where to buy it.'], 'GAP', 'Ask Steve manual catalog'); }
+    var c=findCat(y); if(!c) return card('Manuals', ['I cover 1960–1973 Ford — ask about a year in that range.'], 'GAP','manual catalog');
+    var lines=['For a '+y+', the factory book is the '+c.factory_manual+' (covers: '+c.models.join(', ')+').'];
+    var conf='VERIFIED';
+    var tpg=c.topics&&(c.topics[topic]||(topic&&c.topics[topic.toLowerCase()]));
+    if(c.excerpt && topic && tpg){ lines.push('In the free Gary’s Garage '+y+' excerpt, '+topic+' is on pages '+tpg+' — open it in the Bookshelf.'); }
+    else if(c.excerpt){ lines.push('There’s a free '+y+' Gary’s Garage excerpt on the Bookshelf ('+c.excerpt_pages+' pages).'+(topic?' Your topic “'+topic+'” may be beyond the excerpt — the full book has it.':'')); }
+    else { lines.push('We don’t have a '+y+' manual in the library yet — it’s on the missing list.'); conf='GAP'; }
+    lines.push('For the complete factory book, get the licensed reprint for your year from Forel Publishing (a Ford Official Licensed Product) — the right, legal source. I won’t copy their pages here.');
+    return card('Shop manual · '+y, lines, conf, 'Manual catalog + Gary’s Garage excerpt page-index · full book: Forel');
+  }
   function card(title, lines, conf, src){
     var tag = {'VERIFIED':'ok','VERIFIED*':'ok','ESTIMATE':'est','GAP':'gap'}[conf]||'gap';
     return '<div class="as-card"><div class="as-conf '+tag+'">'+conf+'</div>'+
@@ -107,7 +133,7 @@
       '<div class="as-top"><div class="as-steve"><span class="as-face">🧑‍🔧</span><div><b>Ask Steve</b><span>Falcon registry brain · updated today</span></div></div>'+
         '<button class="fp-x" id="asX">✕</button></div>'+
       '<div class="as-thread" id="asThread"></div>'+
-      '<div class="as-sug">'+['How many ’63 convertibles survive?','170 six HP by year','Decode VIN 3R01F100001','1963 paint codes','What did Gary upload?']
+      '<div class="as-sug">'+['How many ’63 convertibles survive?','170 six HP by year','Which manual for my ’68 Falcon?','Where are the brakes in the ’66 manual?','1963 paint codes']
         .map(function(q){return '<button class="as-chip" data-q="'+esc(q)+'">'+esc(q)+'</button>';}).join('')+'</div>'+
       '<div class="as-ask"><input id="asIn" placeholder="Ask Steve about your Falcon…" autocomplete="off"><button class="fp-btn sm" id="asGo">Ask</button></div>'+
       '<div class="fp-note">Steve answers from primary sources + the registry harvest, and tags each answer’s confidence. He doesn’t make up numbers — “GAP” means we don’t have it yet.</div>'+
